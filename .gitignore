@@ -8,3 +8,12 @@ config/*
 data/*
 temp/
 ssl/*
+.env
+billionmail.conf
+logs/
+backup/
+vmail-data/
+postfix-data/
+rspamd-data/
+postgresql-data/
+redis-data/

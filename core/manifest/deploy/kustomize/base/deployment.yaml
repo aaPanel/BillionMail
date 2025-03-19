@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: template-single
+  labels:
+    app: template-single
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: template-single
+  template:
+    metadata:
+      labels:
+        app: template-single
+    spec:
+      containers:
+        - name : main
+          image: template-single
+          imagePullPolicy: Always
+

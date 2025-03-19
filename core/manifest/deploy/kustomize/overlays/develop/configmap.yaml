@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: template-single-configmap
+data:
+  config.yaml: |
+    server:
+      address:     ":8000"
+      openapiPath: "/api.json"
+      swaggerPath: "/swagger"
+
+    logger:
+      level : "all"
+      stdout: true
