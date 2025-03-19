@@ -1,0 +1,10 @@
+# IntelliJ project files
+*.iml
+.idea/
+idea/*
+.vscode/*
+test/*
+config/*
+data/*
+temp/
+ssl/*

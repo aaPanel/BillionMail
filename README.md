@@ -80,9 +80,9 @@ If you encounter any issues or have feature requests, please [open an issue](htt
 
 ## License
 
-Billion Mail is licensed under the **MIT License**. This means you can:
+Billion Mail is licensed under the **AGPLv3 License**. This means you can:
 
-✅ Use the software for free, even commercially.  
+✅ Use the software for free.  
 ✅ Modify and distribute the code.  
 ✅ Use it privately without restrictions.
 
