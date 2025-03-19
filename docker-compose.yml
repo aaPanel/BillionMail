@@ -1,0 +1,146 @@
+name: billionmail
+
+services:
+    pgsql-billionmail:
+      image: postgres:17.4-alpine
+      hostname: pgsql
+      volumes:
+        - ./postgresql-data:/var/lib/postgresql/data
+        - ./postgresql-socket:/var/run/postgresql
+      environment:
+        - TZ=${TZ}
+        - POSTGRES_DB=${DBNAME}
+        - POSTGRES_USER=${DBUSER}
+        - POSTGRES_PASSWORD=${DBPASS}
+      restart: always
+      ports:
+        - "${SQL_PORT:-127.0.0.1:25432}:5432"
+      networks:
+        billionmail-network:
+          aliases:
+            - pgsql
+
+    redis-billionmail:
+      image: redis:7.4.2-alpine
+      hostname: redis
+      entrypoint: ["/bin/sh","/redis-conf.sh"]
+      volumes:
+        - ./redis-data:/data
+        - ./conf/redis/redis-conf.sh:/redis-conf.sh
+      restart: always
+      ports:
+        - "${REDIS_PORT:-127.0.0.1:26379}:6379"
+      environment:
+        - TZ=${TZ}
+        - REDISPASS=${REDISPASS}
+      sysctls:
+        - net.core.somaxconn=4096
+      networks:
+        billionmail-network:
+          aliases:
+            - redis
+
+    rspamd-billionmail:
+      image: ghcr.io/aapanel/rspamd:1.0
+      hostname: rspamd
+      depends_on:
+        - dovecot-billionmail
+        - redis-billionmail
+      environment:
+        - TZ=${TZ}
+        - REDISPASS=${REDISPASS}
+      volumes:
+        - ./conf/rspamd/local.d:/etc/rspamd/local.d
+        - ./conf/rspamd/statistic.conf:/etc/rspamd/statistic.conf
+        - ./conf/rspamd/rspamd.conf:/etc/rspamd/rspamd.conf 
+        - ./rspamd-data:/var/lib/rspamd
+        - ./logs/rspamd:/var/log/rspamd
+      restart: always
+      networks:
+        billionmail-network:
+          aliases:
+            - rspamd
+
+    dovecot-billionmail:
+      image: ghcr.io/aapanel/dovecot:1.0
+      hostname: dovecot
+      depends_on:
+        - pgsql-billionmail
+        - redis-billionmail
+      cap_add:
+        - NET_BIND_SERVICE
+      volumes:
+        - ./conf/dovecot/conf.d:/etc/dovecot/conf.d
+        - ./conf/dovecot/dovecot.conf:/etc/dovecot/dovecot.conf
+        - ./conf/dovecot/rsyslog.conf:/etc/rsyslog.conf
+        - ./logs/dovecot:/var/log/mail
+        - ./ssl:/etc/ssl/mail
+        - ./vmail-data:/var/vmail
+        - ./rspamd-data:/var/lib/rspamd
+        - ./postgresql-socket:/var/run/postgresql
+      environment:
+        - DBNAME=${DBNAME}
+        - DBUSER=${DBUSER}
+        - DBPASS=${DBPASS}
+        - TZ=${TZ}
+        - BILLIONMAIL_HOSTNAME=${BILLIONMAIL_HOSTNAME}
+        - REDISPASS=${REDISPASS}
+      ports:
+        - "${IMAP_PORT:-143}:143"
+        - "${IMAPS_PORT:-993}:993"
+        - "${POP_PORT:-110}:110"
+        - "${POPS_PORT:-995}:995"
+      restart: always
+      ulimits:
+        nproc: 65535
+        nofile:
+          soft: 20000
+          hard: 40000
+      networks:
+        billionmail-network:
+          aliases:
+            - dovecot
+
+    postfix-billionmail:
+      image: ghcr.io/aapanel/postfix:1.0
+      hostname: postfix
+      depends_on:
+        pgsql-billionmail:
+          condition: service_started
+      volumes:
+        - ./conf/postfix/main.cf:/etc/postfix/main.cf
+        - ./conf/postfix/master.cf:/etc/postfix/master.cf
+        - ./conf/postfix/conf:/etc/postfix/conf
+        - ./conf/postfix/sql:/etc/postfix/sql
+        - ./conf/postfix/rsyslog.conf:/etc/rsyslog.conf
+        - ./logs/postfix:/var/log/mail
+        - ./ssl:/etc/ssl/mail
+        - ./postfix-data:/var/spool/postfix
+        - ./rspamd-data:/var/lib/rspamd
+        - ./postgresql-socket:/var/run/postgresql
+      environment:
+        - TZ=${TZ}
+        - DBNAME=${DBNAME}
+        - DBUSER=${DBUSER}
+        - DBPASS=${DBPASS}
+        - REDISPASS=${REDISPASS}
+        - BILLIONMAIL_HOSTNAME=${BILLIONMAIL_HOSTNAME}
+      cap_add:
+        - NET_BIND_SERVICE
+      ports:
+        - "${SMTP_PORT:-25}:25"
+        - "${SMTPS_PORT:-465}:465"
+        - "${SUBMISSION_PORT:-587}:587"
+      restart: always
+      networks:
+        billionmail-network:
+          aliases:
+            - postfix
+
+networks:
+  billionmail-network:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: br-billionmail
+    ipam:
+      driver: default
