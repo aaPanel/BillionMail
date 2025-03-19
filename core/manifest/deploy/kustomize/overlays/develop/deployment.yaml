@@ -1,0 +1,10 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: template-single
+spec:
+  template:
+    spec:
+      containers:
+        - name : main
+          image: template-single:develop

@@ -9,6 +9,16 @@ Billion Mail is a **future open-source email marketing platform** designed to he
 
 ![Billion Mail Banner](https://www.billionmail.com/billionMail.png?v1)
 
+## How to use?
+```shell
+cd /opt
+git clone https://github.com/aaPanel/Billion-Mail
+cd Billion-Mail
+
+# install with interact
+bash install.sh
+```
+
 ## Why Billion Mail?
 
 Most email marketing platforms are either **expensive**, **closed-source**, or **lack essential features**. Billion Mail aims to be different:

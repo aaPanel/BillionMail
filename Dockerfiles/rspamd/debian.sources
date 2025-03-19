@@ -1,0 +1,11 @@
+Types: deb
+URIs: http://mirrors.ustc.edu.cn/debian
+Suites: bookworm bookworm-updates
+Components: main contrib non-free non-free-firmware
+Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
+
+Types: deb
+URIs: http://mirrors.ustc.edu.cn/debian-security
+Suites: bookworm-security
+Components: main contrib non-free non-free-firmware
+Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
