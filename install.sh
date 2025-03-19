@@ -1166,6 +1166,7 @@ EOF
     openssl genrsa -out ${SSL_path}/key.pem 2048
     openssl req -x509 -new -nodes -key ${SSL_path}/key.pem -sha256 -days 3650 -out ${SSL_path}/cert.pem \
     -subj "/C=US/ST=State/L=City/O=${BILLIONMAIL_HOSTNAME}/OU=${BILLIONMAIL_HOSTNAME}/CN=*.${BILLIONMAIL_HOSTNAME}" -nodes
+    mkdir ssl
     cp -d -n ${SSL_path}/* ssl/
 
     echo -e "Execute ${DOCKER_COMPOSE} up -d"
