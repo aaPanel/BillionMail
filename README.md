@@ -17,9 +17,6 @@ cd Billion-Mail
 
 # install with interact
 bash install.sh
-
-# or defined domain and time zone.
-# bash install.sh --domain example.com --TZ UTC
 ```
 
 ## Why Billion Mail?
