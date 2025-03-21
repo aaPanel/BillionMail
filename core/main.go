@@ -1,6 +1,7 @@
 package main
 
 import (
+	"billionmail-core/internal/consts"
 	_ "billionmail-core/internal/packed"
 	"fmt"
 	"github.com/gogf/gf/v2/database/gdb"
@@ -12,7 +13,7 @@ import (
 )
 
 func main() {
-	dbPass, err := public.ReadFile("./DBPASS_file.pl")
+	dbPass, err := public.ReadFile(consts.DEFAULT_DB_PASS_FILE)
 
 	if err != nil {
 		panic(fmt.Errorf("Read database password failed: %v", err))

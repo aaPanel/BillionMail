@@ -7,6 +7,7 @@ toolchain go1.23.2
 require (
 	github.com/g0rbe/go-chattr v1.0.1
 	github.com/gogf/gf/v2 v2.9.0
+	github.com/tomasen/fcgi_client v0.0.0-20180423082037-2bb3d819fd19
 	gopkg.in/yaml.v3 v3.0.1
 )
 
