@@ -22,7 +22,8 @@ var (
 					hello.NewV1(),
 				)
 			})
-			s.BindHandler("/php-fpm/*any", phpfpm.PHPFpm)
+
+			s.BindHandler("/php-fpm/*any", phpfpm.PHPFpmHandlerFactory("unix", "../php-sock/php-fpm.sock", "/var/www/html"))
 			s.Run()
 			return nil
 		},
