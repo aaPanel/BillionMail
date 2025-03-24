@@ -6,6 +6,7 @@ import (
 	"github.com/gogf/gf/v2/os/glog"
 	"github.com/gogf/gf/v2/util/gconv"
 	"io"
+	"net"
 	"path/filepath"
 	"strings"
 	"time"
@@ -13,14 +14,27 @@ import (
 	"github.com/tomasen/fcgi_client"
 )
 
-// PHPFpm Handler Factory
-func PHPFpmHandlerFactory(network, fcgiAddr, rootPath string) ghttp.HandlerFunc {
+// PHPFpmHandlerConfig holds the configuration for the PHP-FPM handler.
+type PHPFpmHandlerConfig struct {
+	Network string // Network type (tcp, unix)
+	Addr    string // Address of the FastCGI server
+	Root    string // Document root for PHP files
+	Static  string // Serve static files directly
+}
+
+// PHPFpm Handler Factory creates a handler function for PHP-FPM.
+func PHPFpmHandlerFactory(config PHPFpmHandlerConfig) ghttp.HandlerFunc {
 	return func(r *ghttp.Request) {
 		// Get the requested file path
 		filePath := "/" + r.Get("any").String()
 
+		// Check if the file path is empty
+		if filePath == "/" {
+			filePath = "/index.php"
+		}
+
 		if !strings.HasSuffix(filePath, ".php") {
-			r.Response.ServeFile(filepath.Join("../webmail-data", filePath))
+			r.Response.ServeFile(filepath.Join(config.Static, filePath))
 			return
 		}
 
@@ -30,18 +44,21 @@ func PHPFpmHandlerFactory(network, fcgiAddr, rootPath string) ghttp.HandlerFunc 
 			https = "on"
 		}
 
+		// Get the remote address and port
+		remoteAddr, port, _ := net.SplitHostPort(r.RemoteAddr)
+
 		// Create environment variables for FastCGI
 		env := map[string]string{
-			"SCRIPT_FILENAME": filepath.Join(rootPath, filePath), // Adjust document root as needed
+			"SCRIPT_FILENAME": filepath.Join(config.Root, filePath), // Adjust document root as needed
 			"REQUEST_METHOD":  r.Method,
 			"SCRIPT_NAME":     filePath,
 			"REQUEST_URI":     r.RequestURI,
 			"QUERY_STRING":    r.URL.RawQuery,
 			"CONTENT_TYPE":    r.Header.Get("Content-Type"),
 			"CONTENT_LENGTH":  r.Header.Get("Content-Length"),
-			"REMOTE_ADDR":     r.RemoteAddr,
+			"REMOTE_ADDR":     remoteAddr,
 			"SERVER_NAME":     r.Host,
-			"SERVER_PORT":     r.Request.Header.Get("X-Forwarded-Port"),
+			"SERVER_PORT":     port,
 			"SERVER_PROTOCOL": r.Proto,
 			"HTTPS":           https,
 			"REQUEST_TIME":    gconv.String(time.Now().Unix()),
@@ -57,7 +74,7 @@ func PHPFpmHandlerFactory(network, fcgiAddr, rootPath string) ghttp.HandlerFunc 
 			}
 		}
 
-		fc, err := fcgiclient.Dial(network, fcgiAddr)
+		fc, err := fcgiclient.Dial(config.Network, config.Addr)
 
 		if err != nil {
 			glog.Error(context.Background(), err)

@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"billionmail-core/internal/consts"
 	"billionmail-core/internal/controller/hello"
 	"billionmail-core/internal/service/phpfpm"
 	"context"
@@ -11,11 +12,11 @@ import (
 
 var (
 	Main = gcmd.Command{
-		Name:  "main",
-		Usage: "main",
+		Name:  consts.DEFAULT_SERVER_NAME,
+		Usage: consts.DEFAULT_SERVER_NAME,
 		Brief: "start http server",
 		Func: func(ctx context.Context, parser *gcmd.Parser) (err error) {
-			s := g.Server()
+			s := g.Server(consts.DEFAULT_SERVER_NAME)
 			s.Group("/", func(group *ghttp.RouterGroup) {
 				group.Middleware(ghttp.MiddlewareHandlerResponse)
 				group.Bind(
@@ -23,7 +24,13 @@ var (
 				)
 			})
 
-			s.BindHandler("/php-fpm/*any", phpfpm.PHPFpmHandlerFactory("unix", "../php-sock/php-fpm.sock", "/var/www/html"))
+			// Binding PHP-FPM handler
+			s.BindHandler("/roundcube/*any", phpfpm.PHPFpmHandlerFactory(phpfpm.PHPFpmHandlerConfig{
+				Network: "unix",
+				Addr:    "../php-sock/php-fpm.sock",
+				Root:    "/var/www/html",
+				Static:  "../webmail-data",
+			}))
 			s.Run()
 			return nil
 		},
