@@ -2,7 +2,11 @@ package cmd
 
 import (
 	"billionmail-core/internal/consts"
-	"billionmail-core/internal/controller/hello"
+	"billionmail-core/internal/controller/account"
+	"billionmail-core/internal/controller/domains"
+	"billionmail-core/internal/controller/mail_boxes"
+	"billionmail-core/internal/controller/overview"
+	"billionmail-core/internal/controller/settings"
 	"billionmail-core/internal/service/phpfpm"
 	"context"
 	"github.com/gogf/gf/v2/frame/g"
@@ -20,7 +24,11 @@ var (
 			s.Group("/", func(group *ghttp.RouterGroup) {
 				group.Middleware(ghttp.MiddlewareHandlerResponse)
 				group.Bind(
-					hello.NewV1(),
+					account.NewV1(),
+					domains.NewV1(),
+					mail_boxes.NewV1(),
+					overview.NewV1(),
+					settings.NewV1(),
 				)
 			})
 

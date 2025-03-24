@@ -2,14 +2,15 @@
 // Code generated and maintained by GoFrame CLI tool. DO NOT EDIT.
 // =================================================================================
 
-package hello
+package settings
 
 import (
 	"context"
 
-	"billionmail-core/api/hello/v1"
+	"billionmail-core/api/settings/v1"
 )
 
-type IHelloV1 interface {
-	Hello(ctx context.Context, req *v1.HelloReq) (res *v1.HelloRes, err error)
+type ISettingsV1 interface {
+	Status(ctx context.Context, req *v1.StatusReq) (res *v1.StatusRes, err error)
+	Restart(ctx context.Context, req *v1.RestartReq) (res *v1.RestartRes, err error)
 }
