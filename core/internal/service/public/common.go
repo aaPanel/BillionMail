@@ -41,6 +41,9 @@ import (
 	"billionmail-core/internal/consts"
 )
 
+// Check if it is a development environment
+var isDev = false
+
 // Project root directory
 var ROOT_PATH = GetCwdPath()
 
@@ -634,8 +637,41 @@ func FileSize(filename string) int64 {
 
 // Get current working directory
 func GetCwdPath() string {
-	cwd_path, _ := os.Getwd()
-	return cwd_path
+	if len(os.Args) == 0 {
+		p, _ := os.Getwd()
+		return p
+	}
+
+	// Get executable path
+	exePath := filepath.Dir(os.Args[0])
+
+	// Check if it is a development environment
+	if isDev || strings.Contains(filepath.ToSlash(exePath), "/go-build") {
+		isDev = true
+		p, _ := os.Getwd()
+		return p
+	}
+
+	// Get absolute path
+	p, _ := filepath.Abs(exePath)
+	return p
+}
+
+// Get absolute path
+func AbsPath(p string) string {
+	// In Linux, if the path starts with "/", it is an absolute path
+	if strings.HasPrefix(p, "/") {
+		return p
+	}
+
+	// In Windows, if the path starts with "C:", it is an absolute path
+	if len(p) > 1 && p[1] == ':' {
+		return p
+	}
+
+	p, _ = filepath.Abs(filepath.Join(ROOT_PATH, p))
+
+	return p
 }
 
 // Calculate directory size
