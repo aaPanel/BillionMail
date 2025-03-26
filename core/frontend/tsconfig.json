@@ -1,0 +1,33 @@
+{
+	"compilerOptions": {
+		"baseUrl": "./",
+		"jsx": "preserve",
+		"target": "ESNext",
+		"noEmit": true,
+		"skipLibCheck": true,
+		"jsxImportSource": "vue",
+		"esModuleInterop": true,
+		"useDefineForClassFields": true,
+
+		/* modules */
+		"module": "ESNext",
+		"isolatedModules": true,
+		"resolveJsonModule": true,
+		"moduleResolution": "bundler",
+		"allowImportingTsExtensions": true,
+
+		/* type checking */
+		"strict": true,
+		"noUnusedLocals": false,
+		"noUnusedParameters": false,
+		"noFallthroughCasesInSwitch": false,
+		"lib": ["ESNext", "DOM", "DOM.Iterable"],
+		"types": ["naive-ui/volar"],
+		"paths": {
+			"@/*": ["src/*"],
+			"@images/*": ["src/assets/images/*"]
+		}
+	},
+	"files": ["types/components.d.ts"],
+	"include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "types/*.d.ts"]
+}
