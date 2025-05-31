@@ -2,10 +2,15 @@ package docker
 
 import (
 	v1 "billionmail-core/api/dockerapi/v1"
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/docker/docker/api/types/image"
+	"github.com/docker/docker/api/types/mount"
 	"github.com/gogf/gf/v2/util/gconv"
+	"io"
+	"os"
 	"strings"
 	"time"
 
@@ -229,4 +234,136 @@ func (d *DockerAPI) GetContainer(ctx context.Context, containerID string) (conta
 // Close closes the Docker client connection
 func (d *DockerAPI) Close() error {
 	return d.client.Close()
+}
+
+// HostCommandResult stores the result of a command executed on the host
+type HostCommandResult struct {
+	ExitCode int    `json:"exit_code"` // Command exit status code
+	Output   string `json:"output"`    // Command output
+	Error    string `json:"error"`     // Execution error
+	Duration int64  `json:"duration"`  // Execution time (milliseconds)
+}
+
+// ExecHostCommand executes a command on the host through Docker API
+// Principle: Creates a temporary privileged container mounting the host's root directory,
+// executing commands inside the container that actually operate on the host's file system
+func (d *DockerAPI) ExecHostCommand(ctx context.Context, command []string) (*HostCommandResult, error) {
+	startTime := time.Now()
+	result := &HostCommandResult{
+		ExitCode: -1,
+	}
+
+	// Check if docker.sock is mounted
+	if _, err := os.Stat("/var/run/docker.sock"); os.IsNotExist(err) {
+		return nil, fmt.Errorf("docker.sock not mounted, cannot access Docker API")
+	}
+
+	// Specify the base image to use
+	baseImage := "alpine:latest"
+
+	// Check if the image exists, pull it if it doesn't
+	_, err := d.client.ImageInspect(ctx, baseImage)
+	if err != nil {
+		// Image doesn't exist, try to pull it
+		reader, err := d.client.ImagePull(ctx, baseImage, image.PullOptions{})
+		if err != nil {
+			return nil, fmt.Errorf("failed to pull image: %w", err)
+		}
+		defer reader.Close()
+
+		// Wait for the image pull to complete
+		_, _ = io.Copy(io.Discard, reader)
+	}
+
+	// Create temporary container configuration
+	config := &container.Config{
+		Image:      baseImage,
+		Cmd:        command,
+		WorkingDir: "/host_root", // Set working directory to mount point
+		Tty:        false,
+		Entrypoint: []string{},
+	}
+
+	// Use privileged mode and mount the host's root directory
+	hostConfig := &container.HostConfig{
+		Privileged: true,
+		Mounts: []mount.Mount{
+			{
+				Type:   mount.TypeBind,
+				Source: "/",          // Host root directory
+				Target: "/host_root", // Mount point in the container
+			},
+		},
+		NetworkMode: "host", // No network needed
+	}
+
+	// Create temporary container
+	resp, err := d.client.ContainerCreate(
+		ctx,
+		config,
+		hostConfig,
+		nil,
+		nil,
+		"",
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create temporary container: %w", err)
+	}
+	containerID := resp.ID
+	defer d.cleanupContainer(ctx, containerID) // Ensure container is cleaned up
+
+	// Start container
+	if err := d.client.ContainerStart(ctx, containerID, container.StartOptions{}); err != nil {
+		return nil, fmt.Errorf("failed to start temporary container: %w", err)
+	}
+
+	// Wait for container execution to complete
+	statusCh, errCh := d.client.ContainerWait(ctx, containerID, container.WaitConditionNotRunning)
+	select {
+	case err := <-errCh:
+		if err != nil {
+			return nil, fmt.Errorf("failed waiting for container execution: %w", err)
+		}
+	case status := <-statusCh:
+		result.ExitCode = int(status.StatusCode)
+	}
+
+	// Get container logs
+	options := container.LogsOptions{
+		ShowStdout: true,
+		ShowStderr: true,
+	}
+	logs, err := d.client.ContainerLogs(ctx, containerID, options)
+	if err != nil {
+		result.Error = fmt.Sprintf("failed to get command output: %v", err)
+	} else {
+		defer logs.Close()
+		var buf bytes.Buffer
+		_, err := io.Copy(&buf, logs)
+		if err != nil {
+			result.Error = fmt.Sprintf("failed to read command output: %v", err)
+		} else {
+			result.Output = strings.TrimSpace(buf.String())
+		}
+	}
+
+	result.Duration = time.Since(startTime).Milliseconds()
+	return result, nil
+}
+
+// ExecHostShellCommand executes a shell command (supports pipes, redirects, etc.)
+func (d *DockerAPI) ExecHostShellCommand(ctx context.Context, shellCommand string) (*HostCommandResult, error) {
+	return d.ExecHostCommand(ctx, []string{"/bin/sh", "-c", "chroot /host_root " + shellCommand})
+}
+
+// cleanupContainer cleans up the temporary container
+func (d *DockerAPI) cleanupContainer(ctx context.Context, containerID string) {
+	// Stop container
+	timeout := 1 // 1 second timeout
+	_ = d.client.ContainerStop(ctx, containerID, container.StopOptions{Timeout: &timeout})
+
+	// Remove container
+	_ = d.client.ContainerRemove(ctx, containerID, container.RemoveOptions{
+		Force: true,
+	})
 }

@@ -10,8 +10,8 @@ type EmailTemplate struct {
 	Id         int    `json:"id"          description:"Template ID"     orm:"id"`
 	TempName   string `json:"temp_name"   description:"Template Name"   orm:"temp_name"`
 	AddType    int    `json:"add_type"    description:"Type"           orm:"add_type"`
-	Content    string `json:"content"     description:"Email Content"   orm:"content"`
-	Render     string `json:"render"      description:"Render Data"     orm:"render"`
+	Content    string `json:"html_content"     description:"Email Content"   orm:"content"`
+	Render     string `json:"drag_data"      description:"Render Data"     orm:"render"`
 	CreateTime int    `json:"create_time" description:"Create Time"     orm:"create_time"`
 	UpdateTime int    `json:"update_time" description:"Update Time"     orm:"update_time"`
 }
@@ -21,10 +21,9 @@ type CreateTemplateReq struct {
 	g.Meta        `path:"/email_template/create" method:"post" tags:"EmailTemplate" summary:"Create email template"`
 	Authorization string `json:"authorization" dc:"Authorization" in:"header"`
 	TempName      string `json:"temp_name" v:"required" dc:"Template Name"`
-	AddType       int    `json:"add_type" v:"required|in:0,1" dc:"Add Type(0:Upload HTML 1:Drag and Drop)"`
-	FileData      string `json:"file_data" dc:"HTML File Content(Required when add_type=0)"`
-	Content       string `json:"content" dc:"HTML Content(Required when add_type=1)"`
-	Render        string `json:"render" dc:"Drag and Drop Render Data(Required when add_type=1)"`
+	AddType       int    `json:"add_type" v:"required|in:0,1" dc:"Add Type(0:HTML 1:Drag )"`
+	Content       string `json:"html_content" dc:"HTML Content(Required when add_type=0,1)"`
+	Render        string `json:"drag_data" dc:"Drag and Drop Render Data(Required when add_type=1)"`
 }
 
 type CreateTemplateRes struct {
@@ -51,8 +50,8 @@ type UpdateTemplateReq struct {
 	Authorization string `json:"authorization" dc:"Authorization" in:"header"`
 	Id            int    `json:"id" v:"required" dc:"Template ID"`
 	TempName      string `json:"temp_name" dc:"Template Name"`
-	Content       string `json:"content" dc:"HTML Content"`
-	Render        string `json:"render" dc:"Render Data"`
+	Content       string `json:"html_content" dc:"HTML Content"`
+	Render        string `json:"drag_data" dc:"Render Data"`
 }
 
 type UpdateTemplateRes struct {

@@ -7,7 +7,10 @@ import (
 	"billionmail-core/internal/model/entity"
 	"billionmail-core/internal/service/contact"
 	"billionmail-core/internal/service/public"
+	"bytes"
 	"context"
+	"encoding/csv"
+	"encoding/json"
 	"fmt"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/os/gfile"
@@ -15,6 +18,8 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
+	"time"
 )
 
 func (c *ControllerV1) ExportContacts(ctx context.Context, req *v1.ExportContactsReq) (res *v1.ExportContactsRes, err error) {
@@ -75,7 +80,7 @@ func (c *ControllerV1) ExportContacts(ctx context.Context, req *v1.ExportContact
 
 		// Export file based on format
 		var fileContent []byte
-		fileContent, err = exportContactFile(allContacts, req.Format)
+		fileContent, err = exportContactFile1(allContacts, req.Format)
 		if err != nil {
 			fmt.Println("Export file error: ", err)
 			res.Code = 500
@@ -126,7 +131,7 @@ func (c *ControllerV1) ExportContacts(ctx context.Context, req *v1.ExportContact
 			filePath := filepath.Join(tempDir, fileName)
 
 			// Export file
-			fileContent, err := exportContactFile(filteredContacts, req.Format)
+			fileContent, err := exportContactFile1(filteredContacts, req.Format)
 			if err != nil {
 				continue
 			}
@@ -217,4 +222,97 @@ func createZipFile(files []ExportFile, zipPath string) error {
 	}
 
 	return nil
+}
+
+// exportContactFile1
+func exportContactFile1(contacts []*entity.Contact, format string) ([]byte, error) {
+	var content []byte
+	switch format {
+	case "csv":
+		// Create CSV writer
+		var csvData [][]string
+
+		// Add CSV headers
+		headers := []string{
+			"email",       // Email address
+			"attributes",  // Attributes
+			"active",      // Active status
+			"create_time", // Create time
+		}
+		csvData = append(csvData, headers)
+
+		// Add data rows
+		for _, c := range contacts {
+			if c.Attribs == nil {
+				c.Attribs = make(map[string]string)
+			}
+			// Convert attributes to JSON string
+			attribsJSON, err := json.Marshal(c.Attribs)
+			if err != nil {
+				attribsJSON = []byte("{}")
+			}
+
+			// Format time
+			createdAt := ""
+			if c.CreateTime != 0 {
+				// Convert timestamp to time string
+				t := time.Unix(int64(c.CreateTime), 0)
+				createdAt = t.Format("2006-01-02 15:04:05")
+			}
+
+			row := []string{
+				c.Email,
+				string(attribsJSON),
+				fmt.Sprintf("%d", c.Active),
+				createdAt,
+			}
+			csvData = append(csvData, row)
+		}
+
+		// Write CSV data
+		buf := &bytes.Buffer{}
+		writer := csv.NewWriter(buf)
+		err := writer.WriteAll(csvData)
+		if err != nil {
+			return nil, err
+		}
+		content = buf.Bytes()
+
+	case "txt":
+		var lines []string
+		for _, c := range contacts {
+			// Convert attributes to JSON string
+			attribsJSON, err := json.Marshal(c.Attribs)
+			if err != nil {
+				attribsJSON = []byte("{}")
+			}
+
+			// Format create time
+			createdAt := ""
+			if c.CreateTime != 0 {
+				// Convert timestamp to time string
+				t := time.Unix(int64(c.CreateTime), 0)
+				createdAt = t.Format("2006-01-02 15:04:05")
+			}
+
+			// Format: email,attributes,active,created_at
+			line := fmt.Sprintf("%s,%s,%d,%s",
+				c.Email,
+				string(attribsJSON),
+				c.Active,
+				createdAt,
+			)
+			lines = append(lines, line)
+		}
+		content = []byte(strings.Join(lines, "\n"))
+
+	case "excel":
+
+		return nil, fmt.Errorf("excel format not implemented")
+
+	default:
+		return nil, fmt.Errorf("unsupported format: %s", format)
+	}
+
+	return content, nil
 }

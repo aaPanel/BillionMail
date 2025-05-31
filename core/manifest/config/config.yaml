@@ -46,7 +46,7 @@ server:
   dumpRouterMap: false # Whether to print all route lists when the Server starts. Default is true
 
   # Version
-  version: "1.2"
+  version: "1.5"
 
 viewer:
   Paths: ["template"]

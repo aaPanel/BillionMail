@@ -21,6 +21,7 @@ func ApplyLetsEncryptCertWithHttp(ctx context.Context, domain string, accountInf
 	// Find the existing certificate for the domain
 	if crt, err := FindSSLByDomain(domain); err == nil && crt != nil {
 		if crt.Status == 1 && crt.EndTime > time.Now().Unix() {
+			g.Log().Debug(ctx, "Found existing certificate for domain:", domain)
 			return ApplyCertToService(domain, crt.Certificate, crt.PrivateKey)
 		}
 	}
@@ -80,7 +81,7 @@ func ApplyLetsEncryptCertWithHttp(ctx context.Context, domain string, accountInf
 
 // FindSSLByDomain retrieves the SSL certificate information for a given domain.
 func FindSSLByDomain(domain string) (crt *entity.Letsencrypt, err error) {
-	err = g.DB().Model("letsencrypts").Where("dns::jsonb ? $1", public.FormatMX(domain)).Where("status = 1").Order("endtime desc").Limit(1).Scan(&crt)
+	err = g.DB().Model("letsencrypts").Where("dns::jsonb ? $1", public.FormatMX(domain)).Where("status = 1").Where("endtime > $1", time.Now().Unix()).Order("endtime desc").Limit(1).Scan(&crt)
 	return
 }
 
@@ -96,7 +97,7 @@ func ApplyCertToService(domain, crtPem, keyPem string) (err error) {
 		return err
 	}
 
-	UpdateBaseURL()
+	UpdateBaseURL(context.Background())
 
 	// Attempt apply the certificate to the console panel if domain is the console domain
 	rawurl := GetBaseURL()

@@ -27,22 +27,14 @@ func (c *ControllerV1) CreateTemplate(ctx context.Context, req *v1.CreateTemplat
 
 	var content, render string
 	if req.AddType == 0 { // upload
-		if req.FileData == "" {
+		if req.Content == "" {
 			res.Code = 400
 			res.SetError(gerror.New(public.LangCtx(ctx, "File data is required for upload type")))
 			return
 		}
-		// 直接使用传入的文件内容
-		content = req.FileData
 
-		// 验证内容不为空
-		if content == "" {
-			res.Code = 400
-			res.SetError(gerror.New(public.LangCtx(ctx, "File content cannot be empty")))
-			return
-		}
+		content = req.Content
 
-		//content = public.AddUnsubscribeButton(content)
 	} else { // Drag to generate
 		if req.Content == "" || req.Render == "" {
 			res.Code = 400

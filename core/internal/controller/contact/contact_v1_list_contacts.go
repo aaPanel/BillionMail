@@ -46,6 +46,8 @@ func (c *ControllerV1) ListContacts(ctx context.Context, req *v1.ListContactsReq
 				TaskId:     contactOne.TaskId,
 				CreateTime: contactOne.CreateTime,
 				Groups:     make([]v1.GroupInfo, 0),
+				Status:     contactOne.Status,
+				Attribs:    contactOne.Attribs,
 			}
 			emailMap[contactOne.Email] = contactInfo
 			apiList = append(apiList, contactInfo)

@@ -39,52 +39,50 @@ func (c *ControllerV1) SendTestEmail(ctx context.Context, req *v1.SendTestEmailR
 		return
 	}
 
-	// --------------------------------------
-	if !strings.Contains(template.Content, "__UNSUBSCRIBE_URL__") {
+	if !strings.Contains(template.Content, "{{ UnsubscribeURL }}") {
 		template.Content = public.AddUnsubscribeButton(template.Content)
 	}
 
-	domain := domains.GetBaseURL()
+	content := strings.ReplaceAll(template.Content, "__UNSUBSCRIBE_URL__", "{{ UnsubscribeURL }}")
 
-	// generate unsubscribe URL placeholder
+	jwtToken, _ := batch_mail.GenerateUnsubscribeJWT(req.Recipient, req.TemplateId, 0)
+	domain := domains.GetBaseURL()
 	unsubscribeURL := fmt.Sprintf("%s/api/unsubscribe", domain)
 	groupURL := fmt.Sprintf("%s/api/unsubscribe/user_group", domain)
+	unsubscribeJumpURL := fmt.Sprintf("%s/unsubscribe.html?jwt=%s&email=%s&url_type=%s&url_unsubscribe=%s",
+		domain, jwtToken, req.Recipient, groupURL, unsubscribeURL)
 
-	unsubscribeJumpURL := fmt.Sprintf("%s/unsubscribe.html?jwt=__JWT__&email=__EMAIL__&url_type=%s&url_unsubscribe=%s",
-		domain, groupURL, unsubscribeURL)
-
-	// replace unsubscribe link placeholder
-	content := strings.ReplaceAll(template.Content, "__UNSUBSCRIBE_URL__", unsubscribeJumpURL)
-
-	jwtToken, err := batch_mail.GenerateUnsubscribeJWT(
-		req.Recipient,
-		req.TemplateId,
-		0,
-	)
-
+	var contact entity.Contact
+	err = g.DB().Model("bm_contacts").Where("email", req.Recipient).Scan(&contact)
 	if err != nil {
-		g.Log().Error(ctx, "Failed to generate unsubscribe JWT: %v", err)
-	} else {
-		// replace JWT and email
-		content = strings.ReplaceAll(content, "__JWT__", jwtToken)
-		content = strings.ReplaceAll(content, "__EMAIL__", req.Recipient)
+		g.Log().Error(ctx, "Failed to get contact: %v", err)
 	}
-	// --------------------------------------
 
-	personalizedContent := content
+	engine := batch_mail.GetTemplateEngine()
+	personalizedContent, err := engine.RenderEmailTemplate(ctx, content, &contact, nil, unsubscribeJumpURL)
+	if err != nil {
+		res.Code = 500
+		res.SetError(gerror.New(public.LangCtx(ctx, "failed to render email content: {}", err)))
+		return
+	}
 
-	message := mail_service.NewMessage(req.Subject, personalizedContent)
+	personalizedSubject, err := engine.RenderEmailTemplate(ctx, req.Subject, &contact, nil, unsubscribeJumpURL)
+	if err != nil {
+		res.Code = 500
+		res.SetError(gerror.New(public.LangCtx(ctx, "failed to render email subject: {}", err)))
+		return
+	}
 
+	message := mail_service.NewMessage(personalizedSubject, personalizedContent)
 	message.SetMessageID(sender.GenerateMessageID())
 
 	// send email
 	err = sender.Send(message, []string{req.Recipient})
 	if err != nil {
-		g.Log().Error(ctx, "send email to %s failed: %v", req.Recipient, err)
-		res.SetError(gerror.New(public.LangCtx(ctx, "send email to %s failed: %v", req.Recipient, err)))
+		res.SetError(gerror.New(public.LangCtx(ctx, "send email to {} failed: {}", req.Recipient, err)))
 		return
 	}
-	res.SetSuccess(public.LangCtx(ctx, "send email successfully"))
 
+	res.SetSuccess(public.LangCtx(ctx, "send email successfully"))
 	return
 }

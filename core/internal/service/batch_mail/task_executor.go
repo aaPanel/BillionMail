@@ -651,7 +651,7 @@ func (e *TaskExecutor) processRecipientBatch(ctx context.Context, task *entity.E
 			// print task id
 			//g.Log().Debug(ctx, "current task id", task.Id, "sender-", task.Addresser, "recipient-", recipientBak.Recipient)
 			// personalize content
-			personalized := e.personalizeEmail(ctx, emailContent, task, recipientBak)
+			personalized, _ := e.personalizeEmail(ctx, emailContent, task, recipientBak)
 			//personalized := emailContent
 
 			// send email
@@ -860,47 +860,85 @@ func (e *TaskExecutor) getTemplateInfo(ctx context.Context, templateId int) (*en
 func (e *TaskExecutor) processEmailContent(ctx context.Context, content string, task *entity.EmailTask) string {
 	// process unsubscribe link
 	if task.Unsubscribe == 1 {
-		// __UNSUBSCRIBE_URL__
-		if !strings.Contains(content, "__UNSUBSCRIBE_URL__") {
+		// __UNSUBSCRIBE_URL__  {{ UnsubscribeURL }}
+		if !strings.Contains(content, "__UNSUBSCRIBE_URL__") && !strings.Contains(content, "{{ UnsubscribeURL }}") {
 			content = public.AddUnsubscribeButton(content)
 		}
-		// get current domain
-		domain := domains.GetBaseURL()
 
-		// generate unsubscribe URL placeholder
-		unsubscribeURL := fmt.Sprintf("%s/api/unsubscribe", domain)
-		groupURL := fmt.Sprintf("%s/api/unsubscribe/user_group", domain)
-
-		unsubscribeJumpURL := fmt.Sprintf("%s/unsubscribe.html?jwt=__JWT__&email=__EMAIL__&url_type=%s&url_unsubscribe=%s",
-			domain, groupURL, unsubscribeURL)
-
-		content = strings.ReplaceAll(content, "__UNSUBSCRIBE_URL__", unsubscribeJumpURL)
+		content = strings.ReplaceAll(content, "__UNSUBSCRIBE_URL__", "{{ UnsubscribeURL }}")
 	}
-
 	return content
 }
 
 // personalizeEmail personalize email content
-func (e *TaskExecutor) personalizeEmail(ctx context.Context, content string, task *entity.EmailTask, recipient *entity.RecipientInfo) string {
-	// process unsubscribe JWT
+func (e *TaskExecutor) personalizeEmail(ctx context.Context, content string, task *entity.EmailTask, recipient *entity.RecipientInfo) (string, string) {
+
+	var contact entity.Contact
+	err := g.DB().Model("bm_contacts").Where("email", recipient.Recipient).Scan(&contact)
+	if err != nil {
+		g.Log().Error(ctx, "get contact info failed: %v", err)
+	}
+
+	var emailtask entity.EmailTask
+	err = g.DB().Model("email_tasks").Where("id", task.Id).Scan(&emailtask)
+	if err != nil {
+		g.Log().Error(ctx, "get task info failed: %v", err)
+		emailtask = *task
+	}
+
+	// Unsubscribe
+	var renderedContent, renderedSubject string
+	engine := GetTemplateEngine()
+
 	if task.Unsubscribe == 1 {
-		// generate JWT
+		domain := domains.GetBaseURLBySender(task.Addresser)
+		unsubscribeURL := fmt.Sprintf("%s/api/unsubscribe", domain)
+		groupURL := fmt.Sprintf("%s/api/unsubscribe/user_group", domain)
+
 		jwtToken, err := GenerateUnsubscribeJWT(
 			recipient.Recipient,
 			task.TemplateId,
 			task.Id,
 		)
-
 		if err != nil {
-			g.Log().Error(ctx, "Failed to generate unsubscribe JWT: %v", err)
-		} else {
-			// replace JWT and email
-			content = strings.ReplaceAll(content, "__JWT__", jwtToken)
-			content = strings.ReplaceAll(content, "__EMAIL__", recipient.Recipient)
+			g.Log().Error(ctx, "generate unsubscribe JWT failed: %v", err)
+			jwtToken = ""
+		}
+
+		// generate unsubscribe URL
+		unsubscribeJumpURL := fmt.Sprintf("%s/unsubscribe.html?jwt=%s&email=%s&url_type=%s&url_unsubscribe=%s",
+			domain, jwtToken, recipient.Recipient, groupURL, unsubscribeURL)
+
+		// render email content
+		renderedContent, err = engine.RenderEmailTemplate(ctx, content, &contact, &emailtask, unsubscribeJumpURL)
+		if err != nil {
+			g.Log().Error(ctx, "render email content failed: %v", err)
+			renderedContent = content
+		}
+
+		// render email subject
+		renderedSubject, err = engine.RenderEmailTemplate(ctx, emailtask.Subject, &contact, &emailtask, unsubscribeJumpURL)
+		if err != nil {
+			g.Log().Error(ctx, "render email subject failed: %v", err)
+			renderedSubject = emailtask.Subject
+		}
+	} else {
+		// if unsubscribe is not enabled, render email content
+		renderedContent, err = engine.RenderEmailTemplate(ctx, content, &contact, &emailtask, "")
+		if err != nil {
+			g.Log().Error(ctx, "render email content failed: %v", err)
+			renderedContent = content
+		}
+
+		// render email subject
+		renderedSubject, err = engine.RenderEmailTemplate(ctx, emailtask.Subject, &contact, &emailtask, "")
+		if err != nil {
+			g.Log().Error(ctx, "render email subject failed: %v", err)
+			renderedSubject = emailtask.Subject
 		}
 	}
 
-	return content
+	return renderedContent, renderedSubject
 }
 
 // sendEmail send email
@@ -917,8 +955,8 @@ func (e *TaskExecutor) sendEmail(ctx context.Context, task *entity.EmailTask, re
 		// continue execution
 	}
 
-	// senderder task.Addresser
-	// recipientipient recipient.Recipient
+	// get rendered content and subject
+	renderedContent, renderedSubject := e.personalizeEmail(ctx, content, task, recipient)
 
 	sender, err := mail_service.NewEmailSenderWithLocal(task.Addresser)
 	if err != nil {
@@ -934,15 +972,14 @@ func (e *TaskExecutor) sendEmail(ctx context.Context, task *entity.EmailTask, re
 	messageID := sender.GenerateMessageID()
 
 	//Tracking emails
-	baseURL := domains.GetBaseURL()
-	mail_tracker := maillog_stat.NewMailTracker(content, task.Id, messageID, recipient.Recipient, baseURL)
+	baseURL := domains.GetBaseURLBySender(task.Addresser)
+	mail_tracker := maillog_stat.NewMailTracker(renderedContent, task.Id, messageID, recipient.Recipient, baseURL)
 	mail_tracker.TrackLinks()
 	mail_tracker.AppendTrackingPixel()
-	content = mail_tracker.GetHTML()
+	renderedContent = mail_tracker.GetHTML()
 
-	// create email message
-	message := mail_service.NewMessage(task.Subject, content)
-
+	// create email message with rendered subject
+	message := mail_service.NewMessage(renderedSubject, renderedContent)
 	message.SetMessageID(messageID)
 
 	// set sender display name

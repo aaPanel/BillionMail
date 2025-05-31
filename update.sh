@@ -277,9 +277,8 @@ Update_BillionMail(){
 
     [ ! -d "/opt" ] && mkdir /opt
     echo "${PWD_d}" > /opt/PWD-Billion-Mail.txt
-    ln -sf ${PWD_d}/mail_users.sh /usr/bin/bm
-    ln -sf ${PWD_d}/mail_users.sh ${PWD_d}/bm
-    chmod +x ${PWD_d}/mail_users.sh
+    ln -sf ${PWD_d}/bm.sh /usr/bin/bm
+    chmod +x ${PWD_d}/bm.sh
 
 }
 

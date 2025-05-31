@@ -11,12 +11,14 @@ type ContactGroup struct {
 
 // Contact Entity
 type Contact struct {
-	Id         int    `json:"id"          dc:"Contact ID"`
-	Email      string `json:"email"       dc:"Email Address"`
-	GroupId    int    `json:"group_id"    dc:"Group ID"`
-	Active     int    `json:"active"      dc:"Status(1:Subscribed 0:Unsubscribed)"`
-	TaskId     int    `json:"task_id"     dc:"Bulk Mail Task ID"`
-	CreateTime int    `json:"create_time" dc:"Create Time"`
+	Id         int               `json:"id"          dc:"Contact ID"`
+	Email      string            `json:"email"       dc:"Email Address"`
+	GroupId    int               `json:"group_id"    dc:"Group ID"`
+	Active     int               `json:"active"      dc:"Status(1:Subscribed 0:Unsubscribed)"`
+	TaskId     int               `json:"task_id"     dc:"Bulk Mail Task ID"`
+	CreateTime int               `json:"create_time" dc:"Create Time"`
+	Status     int               `json:"Status" dc:"1:Confirmed   0:Unconfirmed"`
+	Attribs    map[string]string `json:"attribs"`
 }
 
 // EmailTemplate Entity
@@ -73,4 +75,10 @@ type AbnormalRecipient struct {
 	Count       int    `json:"count"       dc:"Count"`
 	AddType     int    `json:"add_type"    dc:"Add Type"`
 	// AddType 1: Manually added, 2: Automatically scanned, 3: Manually scanned
+}
+
+type MailTemplateContext struct {
+	Subscriber     *Contact
+	Task           *EmailTask
+	UnsubscribeURL string
 }

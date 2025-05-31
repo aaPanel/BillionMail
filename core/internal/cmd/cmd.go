@@ -33,10 +33,13 @@ import (
 	"github.com/gogf/gf/v2/net/ghttp"
 	"github.com/gogf/gf/v2/os/gcmd"
 	"github.com/gogf/gf/v2/util/gconv"
+	"net/http"
 	"net/http/httputil"
 	"net/url"
 	"path/filepath"
 	"strings"
+	"sync"
+	"time"
 )
 
 var (
@@ -236,16 +239,22 @@ var (
 			}))
 
 			// Proxy 60880 port for ACME challenge
+			ACMEChallengeProxy := httputil.NewSingleHostReverseProxy(&url.URL{
+				Scheme: "http",
+				Host:   "127.0.0.1:60880",
+			})
+			ACMEChallengeProxy.Transport = &http.Transport{
+				MaxIdleConns:        5,
+				MaxIdleConnsPerHost: 1,
+				IdleConnTimeout:     5 * time.Second,
+			}
 			s.BindHandler("/.well-known/acme-challenge/*any", func(r *ghttp.Request) {
-				proxy := httputil.NewSingleHostReverseProxy(&url.URL{
-					Scheme: "http",
-					Host:   "127.0.0.1:60880",
-				})
-
-				proxy.ServeHTTP(r.Response.BufferWriter, r.Request)
+				ACMEChallengeProxy.ServeHTTP(r.Response.BufferWriter, r.Request)
 			})
 
 			// Proxy Rspamd GUI
+			var rspamdProxy *httputil.ReverseProxy
+			rspamdProxyMutex := sync.Mutex{}
 			s.BindHandler("/rspamd/*any", func(r *ghttp.Request) {
 				if !r.Session.MustGet("UserLogin", false).Bool() {
 					r.Response.WriteHeader(403)
@@ -253,16 +262,32 @@ var (
 					return
 				}
 
-				host := "127.0.0.1:21334"
+				// Ensure the Rspamd proxy created only once
+				if rspamdProxy == nil {
+					func() {
+						rspamdProxyMutex.Lock()
+						defer rspamdProxyMutex.Unlock()
 
-				if public.IsRunningInContainer() {
-					host = "rspamd:11334"
+						if rspamdProxy == nil {
+							host := "127.0.0.1:21334"
+
+							if public.IsRunningInContainer() {
+								host = "rspamd:11334"
+							}
+
+							rspamdProxy = httputil.NewSingleHostReverseProxy(&url.URL{
+								Scheme: "http",
+								Host:   host,
+							})
+
+							rspamdProxy.Transport = &http.Transport{
+								MaxIdleConns:        10,
+								MaxIdleConnsPerHost: 2,
+								IdleConnTimeout:     15 * time.Second,
+							}
+						}
+					}()
 				}
-
-				proxy := httputil.NewSingleHostReverseProxy(&url.URL{
-					Scheme: "http",
-					Host:   host,
-				})
 
 				var password string
 				err = public.OptionsMgrInstance.GetOption(ctx, "rspamd_worker_controller_password", &password)
@@ -277,7 +302,7 @@ var (
 					r.URL.Path = "/"
 				}
 
-				proxy.ServeHTTP(r.Response.BufferWriter, r.Request)
+				rspamdProxy.ServeHTTP(r.Response.BufferWriter, r.Request)
 			})
 
 			// Email Campaign Tracker

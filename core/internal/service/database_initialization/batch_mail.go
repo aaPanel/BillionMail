@@ -25,6 +25,8 @@ func init() {
                 active INTEGER DEFAULT 1,
                 task_id INTEGER DEFAULT 0,
                 create_time INTEGER NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW()),
+                status INTEGER DEFAULT 0, -- 0: Unconfirmed, 1: Confirmed
+                attribs   JSONB DEFAULT '{}'::jsonb,
                 FOREIGN KEY (group_id) REFERENCES bm_contact_groups(id) ON DELETE SET NULL,
                 UNIQUE(group_id, email)
             )`,
@@ -104,6 +106,31 @@ func init() {
 			`CREATE INDEX IF NOT EXISTS idx_bm_contacts_email ON bm_contacts (email)`,
 			`CREATE INDEX IF NOT EXISTS idx_bm_contacts_active ON bm_contacts (active)`,
 			`CREATE INDEX IF NOT EXISTS idx_abnormal_recipient_count ON abnormal_recipient (recipient,count)`,
+			`CREATE INDEX IF NOT EXISTS idx_group_email ON bm_contacts(group_id, email)`,
+			//  attribs
+			`DO $$ 
+			BEGIN
+				IF NOT EXISTS (
+					SELECT 1 
+					FROM information_schema.columns 
+					WHERE table_name = 'bm_contacts' 
+					AND column_name = 'attribs'
+				) THEN
+					ALTER TABLE bm_contacts ADD COLUMN attribs JSONB DEFAULT '{}'::jsonb;
+				END IF;
+			END $$;`,
+			//  status
+			`DO $$ 
+			BEGIN
+				IF NOT EXISTS (
+					SELECT 1 
+					FROM information_schema.columns 
+					WHERE table_name = 'bm_contacts' 
+					AND column_name = 'status'
+				) THEN
+					ALTER TABLE bm_contacts ADD COLUMN status INTEGER DEFAULT 0;
+				END IF;
+			END $$;`,
 		}
 
 		for _, sql := range batchMailSQLList {

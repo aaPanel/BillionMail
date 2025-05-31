@@ -1,0 +1,4 @@
+email,attributes
+example1@example.com,"{""age"": ""13"", ""Gender"": ""XXX""}"
+example2@example.com,"{""age"": ""45"", ""city"": ""XXX""}"
+example3@example.com,"{""age"": ""37"", ""Interest"": ""XXX""}"

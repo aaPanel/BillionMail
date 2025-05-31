@@ -4,6 +4,8 @@ import (
 	v1 "billionmail-core/api/contact/v1"
 	"billionmail-core/internal/model/entity"
 	"context"
+	"encoding/json"
+	"github.com/gogf/gf/v2/database/gdb"
 	"github.com/gogf/gf/v2/frame/g"
 	"strings"
 	"time"
@@ -100,6 +102,8 @@ func BatchCreateContactsIgnoreDuplicate(ctx context.Context, contacts []*entity.
 				"active":      contact.Active,
 				"task_id":     contact.TaskId,
 				"create_time": int(now),
+				"attribs":     contact.Attribs,
+				"status":      contact.Status,
 			})
 		}
 
@@ -223,7 +227,7 @@ func GetContactsWithPage(ctx context.Context, page, pageSize int, groupId int, k
 	}
 
 	subQuery := g.DB().Model("bm_contacts").
-		Fields("DISTINCT ON (email) id")
+		Fields("DISTINCT ON (email) id,attribs, status")
 
 	if len(conditions) > 0 {
 		subQuery = subQuery.Where(conditions)
@@ -236,8 +240,9 @@ func GetContactsWithPage(ctx context.Context, page, pageSize int, groupId int, k
 	subQuery = subQuery.Order("email, create_time DESC")
 
 	list = make([]*entity.Contact, 0)
+	//Where("c.id IN (?)", subQuery).
 	err = g.DB().Model("bm_contacts c").
-		Where("c.id IN (?)", subQuery).
+		Where("c.id IN (SELECT id FROM (?))", subQuery).
 		Order("c.create_time DESC").
 		Page(page, pageSize).
 		Scan(&list)
@@ -292,8 +297,38 @@ func GetContactsTrend(ctx context.Context, startTime, endTime time.Time) ([]*str
 }
 
 func UpdateContactsGroups(ctx context.Context, emails []string, status int, newGroupIds []int) (int, error) {
+
+	var existingContacts []struct {
+		Email   string            `json:"email"`
+		Attribs map[string]string `json:"attribs"`
+		Status  int               `json:"status"`
+	}
+
+	err := g.DB().Model("bm_contacts").
+		Where("email IN(?)", emails).
+		Fields("email, attribs, status").
+		Group("email, attribs, status").
+		Scan(&existingContacts)
+	if err != nil {
+		return 0, err
+	}
+
+	contactInfoMap := make(map[string]struct {
+		Attribs map[string]string
+		Status  int
+	})
+	for _, contact := range existingContacts {
+		contactInfoMap[contact.Email] = struct {
+			Attribs map[string]string
+			Status  int
+		}{
+			Attribs: contact.Attribs,
+			Status:  contact.Status,
+		}
+	}
+
 	// 1. delete old group relations
-	_, err := g.DB().Model("bm_contacts").
+	_, err = g.DB().Model("bm_contacts").
 		Where("email IN(?)", emails).
 		Where("active", status).
 		Delete()
@@ -305,12 +340,24 @@ func UpdateContactsGroups(ctx context.Context, emails []string, status int, newG
 	now := time.Now().Unix()
 	var data []g.Map
 	for _, email := range emails {
+
+		contactInfo, exists := contactInfoMap[email]
+		var attribs map[string]string
+		var contactStatus int
+
+		if exists {
+			attribs = contactInfo.Attribs
+			contactStatus = contactInfo.Status
+		}
+
 		for _, groupId := range newGroupIds {
 			data = append(data, g.Map{
 				"email":       email,
 				"group_id":    groupId,
 				"active":      status,
 				"create_time": now,
+				"attribs":     attribs,
+				"status":      contactStatus,
 			})
 		}
 	}
@@ -352,4 +399,124 @@ func GetGroupContactCount(ctx context.Context, groupIds []int) (int, error) {
 	}
 
 	return result.Count, nil
+}
+
+// BatchCreateContactsWithOverwrite
+func BatchCreateContactsWithOverwrite(ctx context.Context, contacts []*entity.Contact) (int, error) {
+	if len(contacts) == 0 {
+		return 0, nil
+	}
+
+	const batchSize = 1000
+	totalBatches := (len(contacts) + batchSize - 1) / batchSize
+
+	totalSuccessCount := 0
+	now := time.Now().Unix()
+
+	for i := 0; i < totalBatches; i++ {
+		startIdx := i * batchSize
+		endIdx := (i + 1) * batchSize
+		if endIdx > len(contacts) {
+			endIdx = len(contacts)
+		}
+
+		currentBatch := contacts[startIdx:endIdx]
+
+		groupContacts := make(map[int][]*entity.Contact)
+		for _, contact := range currentBatch {
+			groupContacts[contact.GroupId] = append(groupContacts[contact.GroupId], contact)
+		}
+
+		batchSuccessCount := 0
+		err := g.DB().Transaction(ctx, func(ctx context.Context, tx gdb.TX) error {
+
+			for groupId, contacts := range groupContacts {
+
+				emails := make([]string, len(contacts))
+				emailMap := make(map[string]*entity.Contact)
+				for j, contact := range contacts {
+					emails[j] = contact.Email
+					emailMap[contact.Email] = contact
+				}
+
+				var existingContacts []*entity.Contact
+				err := tx.Model("bm_contacts").
+					WhereIn("email", emails).
+					Where("group_id", groupId).
+					Scan(&existingContacts)
+				if err != nil {
+					return err
+				}
+
+				for _, existing := range existingContacts {
+					newContact := emailMap[existing.Email]
+					if newContact == nil {
+						continue
+					}
+
+					updateData := g.Map{
+						"active": newContact.Active,
+					}
+
+					if len(newContact.Attribs) > 0 {
+						attribsBytes, err := json.Marshal(newContact.Attribs)
+						if err == nil {
+							updateData["attribs"] = string(attribsBytes)
+						}
+					}
+
+					_, err := tx.Model("bm_contacts").
+						Where("id", existing.Id).
+						Data(updateData).
+						Update()
+					if err != nil {
+						return err
+					}
+
+					batchSuccessCount++
+					delete(emailMap, existing.Email)
+				}
+
+				// add
+				if len(emailMap) > 0 {
+					newContacts := make([]map[string]interface{}, 0, len(emailMap))
+					for _, contact := range emailMap {
+						attribsBytes, err := json.Marshal(contact.Attribs)
+						if err != nil {
+							continue
+						}
+
+						newContacts = append(newContacts, map[string]interface{}{
+							"email":       contact.Email,
+							"group_id":    groupId,
+							"active":      contact.Active,
+							"status":      contact.Status,
+							"attribs":     string(attribsBytes),
+							"create_time": now,
+						})
+					}
+
+					if len(newContacts) > 0 {
+						_, err := tx.Model("bm_contacts").
+							Data(newContacts).
+							InsertIgnore()
+						if err != nil {
+							return err
+						}
+						batchSuccessCount += len(newContacts)
+					}
+				}
+			}
+			return nil
+		})
+
+		if err != nil {
+			return totalSuccessCount, err
+		}
+
+		totalSuccessCount += batchSuccessCount
+
+	}
+
+	return totalSuccessCount, nil
 }

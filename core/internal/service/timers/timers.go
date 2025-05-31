@@ -45,8 +45,12 @@ func Start(ctx context.Context) (err error) {
 	})
 
 	// Start console panel baseurl update timer
-	gtimer.AddOnce(5*time.Second, domains.UpdateBaseURL)
-	gtimer.Add(5*time.Minute, domains.UpdateBaseURL)
+	gtimer.AddOnce(5*time.Second, func() {
+		domains.UpdateBaseURL(ctx)
+	})
+	gtimer.Add(5*time.Minute, func() {
+		domains.UpdateBaseURL(ctx)
+	})
 
 	g.Log().Debug(ctx, "Start timers complete")
 

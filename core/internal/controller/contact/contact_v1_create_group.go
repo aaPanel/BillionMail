@@ -56,13 +56,18 @@ func (c *ControllerV1) CreateGroup(ctx context.Context, req *v1.CreateGroupReq) 
 	// if type 2 or 3, need to handle file import
 	if req.CreateType == 2 || req.CreateType == 3 {
 		if req.FileData == "" {
+			//Allow 2 to create an empty group
+			if req.CreateType == 2 {
+				res.SetSuccess(public.LangCtx(ctx, "Group created successfully"))
+				return
+			}
 			res.Code = 400
 			res.SetError(gerror.New(public.LangCtx(ctx, "File content cannot be empty")))
 			return
 		}
 
 		// parse contacts from file content
-		contacts := parseEmailContent(req.FileData)
+		contacts := parseEmailContent(ctx, req.FileData, 1)
 		if len(contacts) == 0 {
 			res.Code = 400
 			res.SetError(gerror.New(public.LangCtx(ctx, "No valid contacts found in file")))
@@ -72,6 +77,7 @@ func (c *ControllerV1) CreateGroup(ctx context.Context, req *v1.CreateGroupReq) 
 		// set group id
 		for _, contactInfo := range contacts {
 			contactInfo.GroupId = groupId
+			contactInfo.Status = req.Status
 		}
 
 		err = contact.BatchCreateContacts(ctx, contacts)

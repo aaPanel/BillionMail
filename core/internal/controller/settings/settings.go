@@ -3,3 +3,176 @@
 // =================================================================================
 
 package settings
+
+import (
+	v1 "billionmail-core/api/settings/v1"
+	"billionmail-core/internal/consts"
+	"billionmail-core/internal/service/public"
+	"crypto/x509"
+	"encoding/pem"
+	"fmt"
+	"github.com/gogf/gf/v2/errors/gerror"
+	"os"
+	"path/filepath"
+	"strconv"
+	"strings"
+	"time"
+)
+
+var (
+	//envPath    = "../.env"
+	envPath     = public.AbsPath("../.env")
+	projectPath = public.AbsPath("../")
+)
+
+// loadEnvFile .env
+func loadEnvFile() (map[string]string, error) {
+	content, err := os.ReadFile(envPath)
+	if err != nil {
+		return nil, err
+	}
+
+	envMap := make(map[string]string)
+	lines := strings.Split(string(content), "\n")
+
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+
+		parts := strings.SplitN(line, "=", 2)
+		if len(parts) != 2 {
+			continue
+		}
+
+		key := strings.TrimSpace(parts[0])
+		value := strings.Trim(strings.TrimSpace(parts[1]), `"'`)
+		envMap[key] = value
+	}
+
+	return envMap, nil
+}
+
+// loadSSLInfo
+func loadSSLInfo() (*v1.SSLConfig, error) {
+
+	certPath := public.AbsPath(filepath.Join(consts.SSL_PATH, "cert.pem"))
+	keyPath := public.AbsPath(filepath.Join(consts.SSL_PATH, "key.pem"))
+
+	if _, err := os.Stat(certPath); os.IsNotExist(err) {
+		return nil, gerror.Newf("certificate file %s does not exist", certPath)
+	}
+	if _, err := os.Stat(keyPath); os.IsNotExist(err) {
+		return nil, gerror.Newf("private key file %s does not exist", keyPath)
+	}
+
+	certData, err := os.ReadFile(certPath)
+	if err != nil {
+		return nil, gerror.Wrapf(err, "failed to read certificate file %s", certPath)
+	}
+
+	keyData, err := os.ReadFile(keyPath)
+	if err != nil {
+		return nil, gerror.Wrapf(err, "failed to read private key file %s", keyPath)
+	}
+
+	block, _ := pem.Decode(certData)
+	if block == nil {
+		return nil, gerror.New("failed to decode PEM block containing certificate")
+	}
+
+	cert, err := x509.ParseCertificate(block.Bytes)
+	if err != nil {
+		return nil, gerror.Wrap(err, "failed to parse certificate")
+	}
+
+	// 返回SSL配置
+	return &v1.SSLConfig{
+		CertPath:          certPath,
+		KeyPath:           keyPath,
+		CertData:          string(certData),
+		KeyData:           string(keyData),
+		ValidUntil:        cert.NotAfter.Format(time.RFC3339),
+		ValidFrom:         cert.NotBefore.Format(time.RFC3339),
+		Issuer:            cert.Issuer.String(),
+		Subject:           cert.Subject.String(),
+		DNSNames:          cert.DNSNames,
+		SerialNumber:      cert.SerialNumber.String(),
+		IsCA:              cert.IsCA, // CA Certificate
+		IssuerCommonName:  cert.Issuer.CommonName,
+		SubjectCommonName: cert.Subject.CommonName,
+		Version:           cert.Version,
+	}, nil
+}
+
+// convertEnvToConfig Convert environment variables to configuration structure
+func convertEnvToConfig(envMap map[string]string) *v1.SystemConfig {
+	config := &v1.SystemConfig{}
+
+	// Basic configuration
+	config.AdminUsername = envMap["ADMIN_USERNAME"]
+	config.AdminPassword = envMap["ADMIN_PASSWORD"]
+	config.SafePath = envMap["SafePath"]
+	config.Hostname = envMap["BILLIONMAIL_HOSTNAME"]
+
+	// Database configuration
+	config.DBName = envMap["DBNAME"]
+	config.DBUser = envMap["DBUSER"]
+	//config.DBPass = envMap["DBPASS"]
+
+	// Redis configuration
+	//config.RedisPass = envMap["REDISPASS"]
+	config.RedisPort = envMap["REDIS_PORT"]
+
+	// Mail port configuration
+	if port := envMap["SMTP_PORT"]; port != "" {
+		config.MailPorts.SMTP = parseInt(port, 25)
+	}
+	if port := envMap["SMTPS_PORT"]; port != "" {
+		config.MailPorts.SMTPS = parseInt(port, 465)
+	}
+	if port := envMap["SUBMISSION_PORT"]; port != "" {
+		config.MailPorts.Submission = parseInt(port, 587)
+	}
+	if port := envMap["IMAP_PORT"]; port != "" {
+		config.MailPorts.IMAP = parseInt(port, 143)
+	}
+	if port := envMap["IMAPS_PORT"]; port != "" {
+		config.MailPorts.IMAPS = parseInt(port, 993)
+	}
+	if port := envMap["POP_PORT"]; port != "" {
+		config.MailPorts.POP = parseInt(port, 110)
+	}
+	if port := envMap["POPS_PORT"]; port != "" {
+		config.MailPorts.POPS = parseInt(port, 995)
+	}
+
+	// Management port configuration
+	if port := envMap["HTTP_PORT"]; port != "" {
+		config.ManagePorts.HTTP = parseInt(port, 80)
+	}
+	if port := envMap["HTTPS_PORT"]; port != "" {
+		config.ManagePorts.HTTPS = parseInt(port, 443)
+	}
+	config.ManagePorts.Command1 = fmt.Sprintf("cd %s && echo \"PORT\" | bash bm.sh change-port", projectPath)
+	config.ManagePorts.Command2 = fmt.Sprintf("cd %s && echo \"PORT\" | bash bm.sh change-apply-ssl-port", projectPath)
+
+	// Time zone configuration
+	config.ManageTimeZone.TimeZone = envMap["TZ"]
+	config.ManageTimeZone.Command = fmt.Sprintf("cd %s && echo \"TIME ZONE\" | bash bm.sh change-tz", projectPath)
+
+	// Network configuration
+	config.IPv4Network = envMap["IPV4_NETWORK"]
+	config.Fail2ban = envMap["FAIL2BAN_INIT"] == "y"
+
+	return config
+}
+
+// parseInt Safely convert string to integer
+func parseInt(s string, defaultValue int) int {
+	if v, err := strconv.Atoi(s); err == nil {
+		return v
+	}
+	return defaultValue
+}

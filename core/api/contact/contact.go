@@ -24,4 +24,5 @@ type IContactV1 interface {
 	UpdateContactsGroup(ctx context.Context, req *v1.UpdateContactsGroupReq) (res *v1.UpdateContactsGroupRes, err error)
 	GetContactsTrend(ctx context.Context, req *v1.GetContactsTrendReq) (res *v1.GetContactsTrendRes, err error)
 	GetGroupContactCount(ctx context.Context, req *v1.GetGroupContactCountReq) (res *v1.GetGroupContactCountRes, err error)
+	EditContacts(ctx context.Context, req *v1.EditContactsReq) (res *v1.EditContactsRes, err error)
 }

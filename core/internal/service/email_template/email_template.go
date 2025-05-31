@@ -103,12 +103,11 @@ func GetTemplatesWithPage(ctx context.Context, page, pageSize int, keyword strin
 	if err != nil {
 		return 0, nil, err
 	}
-	selectFields := "id, temp_name, add_type, create_time, update_time"
+	//selectFields := "id, temp_name, add_type, create_time, update_time"
 
 	// Pagination query
 	list = make([]*v1.EmailTemplate, 0)
-	err = model.Fields(selectFields).
-		Page(page, pageSize).
+	err = model.Page(page, pageSize).
 		Order("create_time DESC").
 		Scan(&list)
 

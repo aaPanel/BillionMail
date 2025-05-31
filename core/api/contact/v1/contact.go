@@ -30,13 +30,15 @@ type GroupInfo struct {
 }
 
 type Contact struct {
-	Id         int         `json:"id"          dc:"Contact ID"`
-	Email      string      `json:"email"       dc:"Email Address"`
-	GroupId    int         `json:"group_id"    dc:"Group ID"`
-	Active     int         `json:"active"      dc:"Status(1:Subscribed 0:Unsubscribed)"`
-	TaskId     int         `json:"task_id"     dc:"Bulk Mail Task ID"`
-	CreateTime int         `json:"create_time" dc:"Create Time"`
-	Groups     []GroupInfo `json:"groups"      dc:"Contact Groups"`
+	Id         int               `json:"id"          dc:"Contact ID"`
+	Email      string            `json:"email"       dc:"Email Address"`
+	GroupId    int               `json:"group_id"    dc:"Group ID"`
+	Active     int               `json:"active"      dc:"Status(1:Subscribed 0:Unsubscribed)"`
+	TaskId     int               `json:"task_id"     dc:"Bulk Mail Task ID"`
+	CreateTime int               `json:"create_time" dc:"Create Time"`
+	Groups     []GroupInfo       `json:"groups"      dc:"Contact Groups"`
+	Status     int               `json:"status"      dc:"Status( 1:Confirmed   0:Unconfirmed)"`
+	Attribs    map[string]string `json:"attribs"`
 }
 
 type CreateGroupReq struct {
@@ -48,6 +50,7 @@ type CreateGroupReq struct {
 	FileData      string `json:"file_data" dc:"file data"`
 	FileType      string `json:"file_type" v:"in:csv,excel,txt" dc:"file type, default:txt"`
 	CreateType    int    `json:"create_type" v:"required|in:1,2,3" dc:"Create type (1: Create group only 2: Create new group and import contacts 3: Import files into existing groups)"`
+	Status        int    `json:"status" v:"in:0,1" dc:"Data confirmation (1:Confirmed   0:Unconfirmed) Default:0"`
 }
 
 type CreateGroupRes struct {
@@ -64,6 +67,8 @@ type ImportContactsReq struct {
 	Contacts      string `json:"contacts" dc:"paste content, one email per line, optional with subscription status, format: email[,status]"`
 	ImportType    int    `json:"import_type" v:"required|in:1,2" dc:"Import type (1: Upload file content 2: Paste content)"`
 	DefaultActive int    `json:"default_active" v:"in:0,1" dc:"Default subscription status (1: Subscribed 0: Unsubscribed) Default:1"`
+	Status        int    `json:"status" v:"in:0,1" dc:"Data confirmation (1:Confirmed   0:Unconfirmed) Default:0"`
+	Overwrite     int    `json:"overwrite" v:"in:0,1" dc:"Overwrite attribs, subscription status of existing  (1:overwrite   0:unoverwrite) Default:0"`
 }
 
 // ImportContactsRes Import contacts response
@@ -75,7 +80,7 @@ type ImportContactsRes struct {
 }
 
 type ExportContactsReq struct {
-	g.Meta          `path:"/contact/export" method:"post" tags:"Contact" summary:"Export contacts"`
+	g.Meta          `path:"/contact/group/export" method:"post" tags:"Contact" summary:"Export contacts"`
 	Authorization   string `json:"authorization" dc:"Authorization" in:"header"`
 	GroupIds        []int  `json:"group_ids" v:"required" dc:"Group IDs"`
 	ExportType      int    `json:"export_type" v:"required|in:1,2" dc:"Export Type(1:Merged 2:Separate)"`
@@ -238,4 +243,17 @@ type GetGroupContactCountRes struct {
 	Data struct {
 		Total int `json:"total" dc:"Total contact count"`
 	} `json:"data" dc:"Data"`
+}
+
+type EditContactsReq struct {
+	g.Meta        `path:"/contact/edit" method:"post" tags:"Contact" summary:"Edit contact"`
+	Authorization string `json:"authorization" dc:"Authorization" in:"header"`
+	Emails        string `json:"emails"   v:"required"`
+	Active        int    `json:"active"`
+	GroupIds      []int  `json:"group_ids"`
+	Attribs       string `json:"attribs"`
+}
+
+type EditContactsRes struct {
+	api_v1.StandardRes
 }

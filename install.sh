@@ -402,6 +402,7 @@ Docker_Start() {
     if Command_Exists docker || [ -f /lib/systemd/system/docker.service ]; then
         if Command_Exists systemctl; then
             # systemctl mask getty@tty1.service
+            grep docker /etc/group >/dev/null 2>&1 || groupadd docker
             systemctl enable docker
             systemctl reset-failed docker.service
             systemctl start docker.service
@@ -1365,9 +1366,8 @@ EOF
 
     [ ! -d "/opt" ] && mkdir /opt
     echo "${PWD_d}" > /opt/PWD-Billion-Mail.txt
-    ln -sf ${PWD_d}/mail_users.sh /usr/bin/bm
-    ln -sf ${PWD_d}/mail_users.sh ${PWD_d}/bm
-    chmod +x ${PWD_d}/mail_users.sh
+    ln -sf ${PWD_d}/bm.sh /usr/bin/bm
+    chmod +x ${PWD_d}/bm.sh
 
 }
 
@@ -1438,7 +1438,7 @@ else
 fi
 echo -e "BillionMail Username: \e[1;33m${ADMIN_USERNAME}\e[0m Password: \e[1;33m${ADMIN_PASSWORD}\e[0m"
 echo -e ""
-echo -e "Tip: Use \e[33m bm \e[0m or \e[33mbash mail_users.sh\e[0m to Add Domain and login info etc."
+echo -e "Tip: Use \e[33m bm \e[0m or \e[33mbash bm.sh\e[0m to Add Domain and login info etc."
 
 # Install
 curl -o /dev/null -fsSLk --connect-time 10 -X POST "https://www.aapanel.com/api/panel/panel_count_daily?name=billionmail" >/dev/null 2>&1
