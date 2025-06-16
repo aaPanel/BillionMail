@@ -14,7 +14,7 @@ import (
 func (c *ControllerV1) DownloadFile(ctx context.Context, req *v1.DownloadFileReq) (res *v1.DownloadFileRes, err error) {
 
 	filePath := req.FilePath
-	if strings.HasPrefix(filePath, "../") {
+	if strings.HasPrefix(filePath, "./") {
 		filePath = public.AbsPath(filePath)
 	}
 	if err = c.validateFilePath(filePath); err != nil {

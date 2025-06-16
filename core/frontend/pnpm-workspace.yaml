@@ -1,6 +1,0 @@
-ignoredBuiltDependencies:
-  - '@parcel/watcher'
-  - core-js
-  - cpu-features
-  - esbuild
-  - ssh2

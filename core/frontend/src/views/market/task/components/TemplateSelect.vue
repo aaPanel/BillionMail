@@ -25,7 +25,7 @@ const options = ref<SelectOption[]>([])
 const handleUpdateTemplate = (val: number, option: SelectOption) => {
 	const { data } = option
 	if (isObject<Template>(data)) {
-		content.value = data.content
+		content.value = data.html_content
 	}
 }
 
@@ -41,7 +41,7 @@ const getList = async () => {
 			}))
 			if (templateId.value === null) {
 				templateId.value = res[0].id
-				content.value = res[0].content
+				content.value = res[0].html_content
 			}
 		}
 	} finally {

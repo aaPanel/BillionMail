@@ -1,6 +1,6 @@
 import { get } from 'lodash-es'
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
-import { is } from '@/utils'
+import { is, isDev } from '@/utils'
 
 // Import routes from modules
 const modules = import.meta.webpackContext('./modules', {
@@ -27,6 +27,16 @@ menuList.sort((a, b) => {
 	return aSort - bSort
 })
 
+const otherArray: RouteRecordRaw[] = []
+
+if (isDev) {
+	otherArray.push({
+		path: '/test',
+		name: 'Test',
+		component: () => import('@/views/test/index.vue'),
+	})
+}
+
 export const routes: RouteRecordRaw[] = [
 	{
 		path: '/login',
@@ -38,6 +48,7 @@ export const routes: RouteRecordRaw[] = [
 		redirect: '/overview',
 	},
 	...menuList,
+	...otherArray,
 ]
 
 const router = createRouter({

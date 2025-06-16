@@ -105,3 +105,23 @@ type GetAllTemplatesReq struct {
 type GetAllTemplatesRes struct {
 	api_v1.StandardRes
 }
+
+type ScoreItem struct {
+	Name   string  `json:"name"`
+	Detail string  `json:"detail"`
+	Score  float64 `json:"score"`
+}
+
+type CheckEmailContentReq struct {
+	g.Meta        `path:"/email_template/check" method:"post" tags:"EmailTemplate" summary:"Check email content"`
+	Authorization string `json:"authorization" dc:"Authorization" in:"header"`
+	Content       string `json:"content" dc:"Email Content"`
+}
+
+type CheckEmailContentRes struct {
+	api_v1.StandardRes
+	Data struct {
+		Score float64     `json:"score"`
+		Items []ScoreItem `json:"items"`
+	} `json:"data"`
+}

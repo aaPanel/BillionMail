@@ -3,12 +3,15 @@ package domains
 import (
 	v2 "billionmail-core/api/dockerapi/v1"
 	v1 "billionmail-core/api/domains/v1"
+	mail_v1 "billionmail-core/api/mail_boxes/v1"
 	"billionmail-core/internal/consts"
 	docker "billionmail-core/internal/service/dockerapi"
+	"billionmail-core/internal/service/mail_boxes"
 	"billionmail-core/internal/service/mail_service"
 	"billionmail-core/internal/service/public"
 	"context"
 	"fmt"
+	"github.com/gogf/gf/util/grand"
 	"github.com/gogf/gf/v2/frame/g"
 	"os"
 	"path/filepath"
@@ -28,6 +31,22 @@ func Add(ctx context.Context, domain *v1.Domain) error {
 	_, err := g.DB().Model("domain").Ctx(ctx).Insert(domain)
 
 	if err == nil {
+		// Create mailbox abuse, postmaster, admin, noreply, and support for the new domain
+		mailboxes := []string{"abuse", "postmaster", "admin", "noreply", "support"}
+
+		for _, mailbox := range mailboxes {
+			_ = mail_boxes.Add(ctx, &mail_v1.Mailbox{
+				Username:  mailbox + "@" + domain.Domain,
+				Password:  grand.S(16),
+				FullName:  mailbox,
+				IsAdmin:   0,
+				Quota:     5242880,
+				LocalPart: mailbox,
+				Domain:    domain.Domain,
+				Active:    1,
+			})
+		}
+
 		// attempt update hostname in .env file
 		hostname := public.MustGetDockerEnv("BILLIONMAIL_HOSTNAME", "")
 
@@ -293,7 +312,7 @@ func GetDKIMRecord(domain string, validateImmediate bool) (record v1.DNSRecord, 
 		defer mutex.Unlock()
 
 		var res *v2.ExecResult
-		res, err = dk.ExecCommandByName(context.Background(), "billionmail-rspamd-billionmail-1", []string{"rspamadm", "dkim_keygen", "-s", "'default'", "-b", "1024", "-d", domain, "-k", fmt.Sprintf("/var/lib/rspamd/dkim/%s/default.private", domain)}, "root")
+		res, err = dk.ExecCommandByName(context.Background(), "billionmail-rspamd-billionmail-1", []string{"rspamadm", "dkim_keygen", "-s", "'default'", "-b", "2048", "-d", domain, "-k", fmt.Sprintf("/var/lib/rspamd/dkim/%s/default.private", domain)}, "root")
 
 		if err != nil {
 			err = fmt.Errorf("Failed to generate DKIM key pair: %v", err)
@@ -322,7 +341,7 @@ func GetDKIMRecord(domain string, validateImmediate bool) (record v1.DNSRecord, 
    selectors [
     {
       path: "/var/lib/rspamd/dkim/%s/default.private";
-      selector: "default"
+      selector: "default";
     }
   ]
 }
@@ -331,7 +350,9 @@ func GetDKIMRecord(domain string, validateImmediate bool) (record v1.DNSRecord, 
 
 		// Write DKIM sign config to file
 		signConfPath := public.AbsPath(filepath.Join(consts.RSPAMD_LOCAL_D_PATH, "dkim_signing.conf"))
-		signContent := `domain {
+		signContent := `sign_headers = "from:sender:reply-to:subject:date:message-id:to:cc:mime-version:content-type:content-transfer-encoding:content-language:resent-to:resent-cc:resent-from:resent-sender:resent-message-id:in-reply-to:references:list-id:list-help:list-owner:list-unsubscribe:list-subscribe:list-post:list-unsubscribe-post:disposition-notification-to:disposition-notification-options:original-recipient:openpgp:autocrypt";
+
+domain {
 #BT_DOMAIN_DKIM_BEGIN
 #BT_DOMAIN_DKIM_END
 }`

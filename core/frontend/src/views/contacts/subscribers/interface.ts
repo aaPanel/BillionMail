@@ -5,6 +5,7 @@ export interface Subscriber {
 	active: number
 	task_id: number
 	create_time: number
+	attribs: Record<string, string> | null
 	groups: Array<{
 		id: number
 		name: string

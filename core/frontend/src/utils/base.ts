@@ -1,10 +1,12 @@
 import { isNumber } from './is'
 
+export const isDev = import.meta.env.DEV
+
 // Server prefix
 export const apiUrlPrefix: string = import.meta.env.API_URL_PREFIX
 
 /**
- * Byte conversion with specified unit
+ * @description Byte conversion with specified unit
  * @param bytes Number of bytes
  * @param isUnit Whether to display unit
  * @param fixed Decimal point position
@@ -42,4 +44,16 @@ export const getByteUnit = (
 	}
 
 	return '--'
+}
+
+/**
+ * @description 首字母大写
+ * @param val
+ * @returns
+ */
+export const capitalizeFirstLetter = (val: string) => {
+	return val
+		.split(' ')
+		.map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+		.join(' ')
 }

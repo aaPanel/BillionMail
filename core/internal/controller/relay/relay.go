@@ -13,7 +13,6 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/hex"
-	"encoding/json"
 	"fmt"
 	"github.com/gogf/gf/v2/crypto/gaes"
 	"github.com/gogf/gf/v2/errors/gerror"
@@ -31,7 +30,6 @@ var (
 	senderRelayFile     = "/conf/sender_relay"
 	saslPasswdFile      = "/conf/sasl_passwd"
 	senderTransportFile = "/conf/sender_transport_relay"
-	headerChecks        = "/conf/header_checks"
 	mainCfFile          = "main.cf"
 	//mainCfFileExtra      = "/conf/extra.cf"
 	postfixContainerName = "billionmail-postfix-billionmail-1"
@@ -269,7 +267,6 @@ func generateRelayConfigFiles(ctx context.Context, configs []*entity.BmRelay) er
 	senderRelayPath := path.Join(postfixConfigDir, senderRelayFile)
 	saslPasswdPath := path.Join(postfixConfigDir, saslPasswdFile)
 	senderTransportPath := path.Join(postfixConfigDir, senderTransportFile)
-	headerChecksPath := path.Join(postfixConfigDir, headerChecks)
 
 	if !gfile.Exists(postfixConfigDir) {
 		return gerror.New(public.LangCtx(ctx, "Postfix configuration directory does not exist : {}", postfixConfigDir))
@@ -278,10 +275,6 @@ func generateRelayConfigFiles(ctx context.Context, configs []*entity.BmRelay) er
 	var senderRelayContent strings.Builder
 	var saslPasswdContent strings.Builder
 	var senderTransportContent strings.Builder
-	var headerChecksContent strings.Builder
-	// Add basic rules for header_checks
-	headerChecksContent.WriteString("# Custom email header addition rules\n")
-	headerChecksContent.WriteString("# Format: /^Subject:/ PREPEND X-Custom: value\n\n")
 	if len(configs) == 0 {
 		senderRelayContent.WriteString("# No active relay configurations\n")
 		saslPasswdContent.WriteString("# No active relay configurations\n")
@@ -317,25 +310,6 @@ func generateRelayConfigFiles(ctx context.Context, configs []*entity.BmRelay) er
 
 			senderTransportContent.WriteString(fmt.Sprintf("%s %s:[%s]:%s\n",
 				strings.TrimPrefix(senderDomain, "@"), smtpName, config.RelayHost, config.RelayPort))
-			// Add custom headers for each domain
-			if config.HeaderJson != "" {
-				headerChecksContent.WriteString(fmt.Sprintf("# Adding custom headers for %s\n", senderDomain))
-				headerChecksContent.WriteString(fmt.Sprintf("/^From:.*%s/ PREPEND X-Relay-Provider: %s\n",
-					strings.TrimPrefix(senderDomain, "@"), config.SmtpName))
-				// Parse HeaderJson and add custom headers
-				if config.HeaderJson != "" && config.HeaderJson != "{}" {
-					var headers map[string]string
-					if err := json.Unmarshal([]byte(config.HeaderJson), &headers); err == nil {
-						for header, value := range headers {
-							headerChecksContent.WriteString(fmt.Sprintf("/^From:.*%s/ PREPEND %s: %s\n",
-								strings.TrimPrefix(senderDomain, "@"), header, value))
-						}
-					} else {
-						g.Log().Warning(ctx, "Failed to parse HeaderJson:", err)
-					}
-				}
-				headerChecksContent.WriteString("\n")
-			}
 		}
 	}
 
@@ -350,10 +324,6 @@ func generateRelayConfigFiles(ctx context.Context, configs []*entity.BmRelay) er
 
 	if err := gfile.PutContents(senderTransportPath, senderTransportContent.String()); err != nil {
 		return gerror.Newf("Failed to write sender_transport file: %v", err)
-	}
-
-	if err := gfile.PutContents(headerChecksPath, headerChecksContent.String()); err != nil {
-		return gerror.Newf("Failed to write header_checks file: %v", err)
 	}
 
 	return nil
@@ -524,7 +494,6 @@ func reloadPostfixConfigs(ctx context.Context) error {
 		{"postmap", "/etc/postfix/conf/sender_relay"},
 		{"postmap", "/etc/postfix/conf/sasl_passwd"},
 		{"postmap", "/etc/postfix/conf/sender_transport_relay"},
-		{"postmap", "/etc/postfix/conf/header_checks"},
 		{"postfix", "reload"},
 	}
 	// Execute commands
@@ -588,7 +557,6 @@ sender_dependent_relayhost_maps = hash:/etc/postfix/conf/sender_relay
 smtp_sasl_password_maps = hash:/etc/postfix/conf/sasl_passwd
 sender_dependent_default_transport_maps = hash:/etc/postfix/conf/sender_transport_relay
 smtp_sasl_mechanism_filter = login, plain, cram-md5
-smtp_header_checks = regexp:/etc/postfix/conf/header_checks
 %s`, beginMarker, endMarker)
 
 	// Find the existing configuration block

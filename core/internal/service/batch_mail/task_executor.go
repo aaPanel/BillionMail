@@ -861,11 +861,11 @@ func (e *TaskExecutor) processEmailContent(ctx context.Context, content string, 
 	// process unsubscribe link
 	if task.Unsubscribe == 1 {
 		// __UNSUBSCRIBE_URL__  {{ UnsubscribeURL }}
-		if !strings.Contains(content, "__UNSUBSCRIBE_URL__") && !strings.Contains(content, "{{ UnsubscribeURL }}") {
+		if !strings.Contains(content, "__UNSUBSCRIBE_URL__") && !strings.Contains(content, "{{ UnsubscribeURL . }}") {
 			content = public.AddUnsubscribeButton(content)
 		}
 
-		content = strings.ReplaceAll(content, "__UNSUBSCRIBE_URL__", "{{ UnsubscribeURL }}")
+		content = strings.ReplaceAll(content, "__UNSUBSCRIBE_URL__", "{{ UnsubscribeURL . }}")
 	}
 	return content
 }

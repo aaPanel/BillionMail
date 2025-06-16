@@ -5,6 +5,7 @@ import (
 	"billionmail-core/internal/service/public"
 	"context"
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/text/gregex"
 	"net"
 	"strings"
 )
@@ -61,6 +62,56 @@ func ValidateTXTRecord(record v1.DNSRecord, domain string) bool {
 		public.SetCache(cacheKey, txtRecords, 60)
 	}
 
+	vl := strings.ToLower(record.Value)
+
+	switch {
+	case strings.HasPrefix(vl, "v=dmarc"):
+		// Match DMARC Record
+		for _, txt := range txtRecords {
+			txtl := strings.ToLower(txt)
+			if strings.HasPrefix(txtl, "v=dmarc") && (strings.Contains(vl, "p=quarantine") || strings.Contains(vl, "q=reject")) && strings.Contains(vl, "rua=") {
+				return true
+			}
+		}
+	case strings.HasPrefix(vl, "v=dkim"):
+		// Match DKIM Record
+		break
+	case strings.HasPrefix(vl, "v=spf"):
+		// Match SPF Record
+		addrs := make([]string, 0)
+
+		ms, err := gregex.MatchAllString("[+-]?((?:ip4|ip6|include):[^ ]+)", vl)
+
+		if err != nil {
+			return false
+		}
+
+		for _, m := range ms {
+			if len(m) < 2 {
+				continue
+			}
+
+			addrs = append(addrs, m[1])
+		}
+
+		for _, txt := range txtRecords {
+			txtl := strings.TrimSpace(strings.ToLower(txt))
+			if strings.HasPrefix(txtl, "v=spf") && (strings.HasSuffix(txtl, "~all") || strings.HasSuffix(txtl, "-all")) {
+				spfPassed := true
+				for _, addr := range addrs {
+					if !strings.Contains(txtl, addr) {
+						spfPassed = false
+						break
+					}
+				}
+
+				if spfPassed {
+					return true
+				}
+			}
+		}
+	}
+
 	// Check if any TXT record matches the expected value
 	for _, txt := range txtRecords {
 		if txt == record.Value {
@@ -72,7 +123,7 @@ func ValidateTXTRecord(record v1.DNSRecord, domain string) bool {
 }
 
 // ValidateMXRecord checks if the given MX record is valid
-func ValidateMXRecord(record v1.DNSRecord, domain string) bool {
+func ValidateMXRecord(record v1.DNSRecord, domain string, aRecordHosts ...string) bool {
 	if strings.ToUpper(record.Type) != "MX" {
 		return false
 	}
@@ -91,9 +142,13 @@ func ValidateMXRecord(record v1.DNSRecord, domain string) bool {
 	g.Log().Debug(context.Background(), "query mx record success", mxRecords)
 
 	// Check if any MX record matches the expected value
+	aRecordHosts = append([]string{record.Value}, aRecordHosts...)
 	for _, mx := range mxRecords {
-		if strings.TrimSuffix(mx.Host, ".") == record.Value {
-			return true
+		mxHost := strings.TrimSuffix(mx.Host, ".")
+		for _, aRecordHost := range aRecordHosts {
+			if aRecordHost == mxHost {
+				return true
+			}
 		}
 	}
 

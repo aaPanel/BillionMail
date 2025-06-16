@@ -1,0 +1,699 @@
+{
+    "common": {
+        "all": {
+            "text": "すべて",
+            "domain": "すべてのドメイン"
+        },
+        "time": {
+            "today": "今日",
+            "yesterday": "昨日",
+            "last7days": "過去7日間",
+            "custom": "カスタム"
+        },
+        "columns": {
+            "actions": "操作"
+        },
+        "actions": {
+            "view": "閲覧",
+            "edit": "編集",
+            "delete": "削除",
+            "add": "追加",
+            "create": "作成",
+            "update": "更新",
+            "save": "保存",
+            "cancel": "キャンセル",
+            "confirm": "確認",
+            "back": "戻る",
+            "search": "検索",
+            "reset": "リセット",
+            "more": "その他",
+            "refresh": "再読み込み",
+            "copy": "コピー",
+            "restart": "再起動",
+            "import": "インポート",
+            "export": "エクスポート",
+            "download": "ダウンロード",
+            "upload": "アップロード",
+            "apply": "適用",
+            "test": "テスト",
+            "rename": "名前変更",
+            "preview": "プレビュー",
+            "modify": "修正",
+            "config": "設定",
+            "help": "ヘルプ"
+        },
+        "useCopy": {
+            "noText": "コピーするテキストがありません",
+            "success": "コピーに成功しました",
+            "failed": "コピーに失敗しました"
+        }
+    },
+    "components": {
+        "tableHelp": {
+            "text1": "質問や提案は {issues} に投稿し、プロジェクトを応援するために Github で {star} を付けてください。",
+            "text2": "皆様の積極的な参加を高く評価しています。ありがとうございます。"
+        },
+        "upload": {
+            "error": {
+                "fileSizeExceeded": "ファイル [{fileName}] のサイズは {maxSize}MB を超えることはできません",
+                "uploadFailed": "ファイルのアップロードに失敗しました。もう一度お試しください"
+            },
+            "prompt": {
+                "dragText": "クリックまたはファイルをドラッグしてこのエリアに追加",
+                "supportedFiles": "{suffix} 形式のファイルのみ対応"
+            }
+        }
+    },
+    "layout": {
+        "header": {
+            "submit": "リクエストを送信"
+        },
+        "menu": {
+            "overview": "概要",
+            "market": "マーケティング",
+            "task": "タスク",
+            "template": "テンプレート",
+            "contacts": "連絡先",
+            "subscribers": "購読者",
+            "group": "グループ",
+            "domain": "ドメイン",
+            "mailboxes": "メールボックス",
+            "settings": "設定",
+            "common": "共通設定",
+            "bcc": "BCC",
+            "forward": "メール転送",
+            "logout": "ログアウト"
+        }
+    },
+    "login": {
+        "title": "BillionMail",
+        "form": {
+            "usernamePlaceholder": "ユーザー名",
+            "passwordPlaceholder": "パスワード",
+            "loginButton": "ログイン",
+            "captchaPlaceholder": "認証コード",
+            "changeCaptcha": "クリックして変更",
+            "captcha": "認証コード"
+        },
+        "validation": {
+            "usernameRequired": "ユーザー名を入力してください！",
+            "passwordRequired": "パスワードを入力してください！",
+            "captchaRequired": "認証コードを入力してください"
+        },
+        "messages": {
+            "loginSuccess": "ログインに成功しました",
+            "loginFailed": "ログインに失敗しました",
+            "networkError": "ネットワークエラーです。後で再試行してください"
+        }
+    },
+    "user": {
+        "logout": {
+            "title": "確認",
+            "content": "ログアウトしてもよろしいですか？"
+        },
+        "api": {
+            "loading": {
+                "logout": "ログアウト中です。お待ちください..."
+            }
+        }
+    },
+    "overview": {
+        "delivered": "配信済み",
+        "opened": "開封済み",
+        "clicked": "クリック済み",
+        "bounced": "バウンス（送信失敗）",
+        "mailProviders": "メールプロバイダー",
+        "sendStats": "送信統計",
+        "provider": {
+            "mailProvider": "メールプロバイダー",
+            "delivered": "配信",
+            "open": "開封",
+            "click": "クリック",
+            "bounce": "バウンス"
+        },
+        "send": {
+            "successRate": "成功率",
+            "success": "成功",
+            "fail": "失敗",
+            "sendSuccess": "送信成功",
+            "sendFail": "送信失敗"
+        },
+        "rate": {
+            "openRate": "開封率",
+            "clickRate": "クリック率",
+            "bounceRate": "バウンス率"
+        },
+        "sendFailDetails": {
+            "title": "送信失敗の詳細",
+            "columns": {
+                "recipient": "受信者",
+                "dsn": "DSN",
+                "delay": "遅延",
+                "delays": "遅延数",
+                "status": "ステータス",
+                "relay": "リレー",
+                "details": "詳細"
+            }
+        }
+    },
+    "market": {
+        "task": {
+            "title": "タスク",
+            "actions": {
+                "add": "タスク追加",
+                "detail": "表示",
+                "export": "エクスポート",
+                "send": "送信",
+                "pause": "一時停止"
+            },
+            "columns": {
+                "time": "時間",
+                "subject": "件名",
+                "sender": "送信者",
+                "recipients": "宛先",
+                "success": "成功",
+                "failed": "失敗",
+                "status": "ステータス",
+                "remark": "備考",
+                "progress": "進捗",
+                "email": "メール",
+                "errorMsg": "エラーメッセージ"
+            },
+            "status": {
+                "pending": "保留中",
+                "processing": "処理中",
+                "done": "完了"
+            },
+            "search": {
+                "subjectPlaceholder": "件名で検索"
+            },
+            "changeStatus": {
+                "title": "タスクステータス変更 [{subject}]",
+                "startConfirm": "今すぐタスクを開始しますか？",
+                "pauseConfirm": "タスクを一時停止後、再開できます！"
+            },
+            "delete": {
+                "title": "タスク削除",
+                "confirm": "タスク「{subject}」を削除してもよろしいですか？"
+            },
+            "detail": {
+                "title": "タスク詳細",
+                "displayName": "表示名",
+                "sender": "送信者",
+                "subject": "メール件名",
+                "groups": "グループ",
+                "sendTime": "送信時間",
+                "unsubscribeLink": "購読解除リンク",
+                "threads": "スレッド数",
+                "remark": "備考",
+                "yes": "はい",
+                "no": "いいえ",
+                "auto": "自動"
+            },
+            "edit": {
+                "addTitle": "タスク追加",
+                "from": "送信元",
+                "to": "宛先",
+                "displayName": "表示名",
+                "displayNamePlaceholder": "表示名を入力してください",
+                "subject": "件名",
+                "subjectPlaceholder": "メール件名を入力してください",
+                "recipients": "受信者",
+                "recipientsPlaceholder": "受信者グループを選択してください",
+                "recipientsCount": "メール送信（{count} 件）",
+                "template": "メールテンプレート",
+                "saveOutbox": "送信済みに保存",
+                "unsubscribeLink": "購読解除リンク",
+                "threads": "スレッド数",
+                "threadsAuto": "自動",
+                "threadsCustom": "カスタム",
+                "sendTime": "送信時間",
+                "sendTimeNow": "今すぐ送信",
+                "sendTimeSchedule": "スケジュール",
+                "remark": "備考",
+                "remarkPlaceholder": "備考を入力してください",
+                "testEmail": "テストメール",
+                "testEmailPlaceholder": "テストメールを入力してください",
+                "sendTest": "テストメール送信",
+                "viewCase": "ケースを見る",
+                "preview": {
+                    "empty": "プレビューするメールテンプレートを選択してください"
+                },
+                "validation": {
+                    "displayNameRequired": "表示名を入力してください",
+                    "subjectRequired": "メール件名を入力してください",
+                    "recipientsRequired": "連絡先を選択してください",
+                    "sendTimeRequired": "送信時間を選択してください",
+                    "testEmailRequired": "テストメールを入力してください",
+                    "templateRequired": "メールテンプレートを選択してください"
+                },
+                "discard": {
+                    "title": "確認",
+                    "content": "現在の編集を破棄しますか？"
+                }
+            },
+            "createGroup": {
+                "title": "グループ作成",
+                "groupName": "グループ名",
+                "email": "メール",
+                "groupNamePlaceholder": "グループ名を入力してください",
+                "validation": {
+                    "groupNameRequired": "グループ名を入力してください"
+                }
+            }
+        },
+        "template": {
+            "title": "テンプレート",
+            "name": "テンプレート名",
+            "content": "テンプレート内容",
+            "uploadHtml": "HTML ファイルをアップロード",
+            "file": "テンプレートファイル",
+            "actions": {
+                "add": "テンプレート追加",
+                "preview": "プレビュー",
+                "duplicate": "複製",
+                "export": "エクスポート",
+                "import": "インポート"
+            },
+            "columns": {
+                "name": "テンプレート名",
+                "type": "タイプ",
+                "createdAt": "作成日"
+            },
+            "search": {
+                "namePlaceholder": "テンプレート名で検索"
+            },
+            "delete": {
+                "title": "テンプレート削除",
+                "confirm": "テンプレート {name} を削除してもよろしいですか？"
+            },
+            "form": {
+                "name": "テンプレート名",
+                "type": "テンプレートタイプ",
+                "content": "テンプレート内容"
+            },
+            "add": {
+                "title": "テンプレート追加",
+                "namePlaceholder": "テンプレート名を入力してください",
+                "validation": {
+                    "nameRequired": "テンプレート名を入力してください",
+                    "uploadRequired": "HTML ファイルをアップロードしてください"
+                }
+            },
+            "preview": {
+                "title": "テンプレートプレビュー"
+            }
+        }
+    },
+    "contacts": {
+        "subscribers": {
+            "search": {
+                "emailPlaceholder": "メールアドレスを入力して検索"
+            },
+            "columns": {
+                "email": "メール",
+                "name": "グループ名",
+                "createdAt": "作成日時"
+            },
+            "status": {
+                "subscribed": "購読中",
+                "unsubscribed": "購読解除"
+            },
+            "actions": {
+                "changeGroup": "グループ変更"
+            },
+            "delete": {
+                "title": "購読者削除",
+                "confirm": "購読者 {email} を削除してもよろしいですか？"
+            },
+            "select": {
+                "prefix": "グループ: "
+            },
+            "edit": {
+                "title": "グループ変更",
+                "email": "メール",
+                "group": "グループ",
+                "validation": {
+                    "emailRequired": "メールを入力してください",
+                    "groupRequired": "グループを選択してください"
+                }
+            },
+            "import": {
+                "title": "連絡先インポート",
+                "group": "グループ",
+                "data": "データ",
+                "pasteData": "データを貼り付け",
+                "uploadFile": "ファイルをアップロード",
+                "pastePlaceholder": "1行につき1メールでデータを貼り付けてください",
+                "fileTypeHint": "ファイル形式: txt、1行につき1メール、5MB以内",
+                "validation": {
+                    "groupRequired": "グループを選択してください",
+                    "dataRequired": "1行につき1メールでデータを貼り付けてください",
+                    "fileRequired": "ファイルをアップロードしてください"
+                }
+            },
+            "loading": {
+                "importSubscribers": "連絡先をインポート中... お待ちください",
+                "updateSubscriberGroup": "グループを更新中... お待ちください",
+                "deleteSubscriber": "連絡先を削除中... お待ちください"
+            }
+        },
+        "group": {
+            "search": {
+                "namePlaceholder": "グループ名で検索"
+            },
+            "columns": {
+                "name": "グループ名",
+                "subscribers": "購読者数",
+                "unsubscribe": "解除数",
+                "createdAt": "作成日"
+            },
+            "form": {
+                "name": "グループ名",
+                "file": "ファイル",
+                "nameRequired": "グループ名を入力してください"
+            },
+            "add": {
+                "title": "グループ追加"
+            },
+            "rename": {
+                "title": "グループ名変更"
+            },
+            "delete": {
+                "title": "グループ削除",
+                "confirm": "グループ {name} を削除してもよろしいですか？"
+            },
+            "fileUpload": {
+                "hint": "ファイル形式: txt、1行につき1メール、5MB以内",
+                "emptyHint": "ファイルをアップロードしない場合は空のグループが作成されます"
+            },
+            "loading": {
+                "createGroup": "グループ作成中... お待ちください",
+                "updateGroup": "グループ更新中... お待ちください",
+                "deleteGroup": "グループ削除中... お待ちください"
+            }
+        }
+    },
+    "domain": {
+        "title": "メールドメイン",
+        "addDomain": "ドメイン追加",
+        "help": "メール送信に使用するドメインを追加してください",
+        "columns": {
+            "domain": "ドメイン",
+            "quota": "クォータ",
+            "mailboxes": "メールボックス",
+            "defaultMailboxSize": "デフォルトメールボックスサイズ",
+            "actions": "操作"
+        },
+        "actions": {
+            "dnsRecord": "DNS レコード"
+        },
+        "delete": {
+            "title": "ドメイン削除",
+            "confirm": "ドメイン [{domain}] を削除してもよろしいですか？"
+        },
+        "form": {
+            "addTitle": "ドメイン追加",
+            "editTitle": "ドメイン編集",
+            "domain": "ドメイン",
+            "domainPlaceholder": "例: aapanel.com",
+            "aRecord": "A レコード",
+            "aRecordPlaceholder": "例: mail.aapanel.com",
+            "quota": "ドメインクォータ",
+            "mailboxCount": "メールボックス数",
+            "globalCatch": "グローバルキャッチ",
+            "globalCatchPlaceholder": "存在しないメールをこのアドレスへ転送",
+            "validation": {
+                "domainRequired": "ドメイン名は空にできません！"
+            },
+            "tips": {
+                "aRecordFailed": "A レコードの解決に失敗しました。A レコードが正しくサーバーIPに向いているか確認してください",
+                "dnsSetup": "DNS プロバイダーのコンソールで A レコードを追加する必要があります",
+                "cloudflare": "CloudFlare を使用している場合、レコード追加時に [DNS only] を選択してください"
+            }
+        },
+        "dns": {
+            "title": "DNS レコード",
+            "verify": "レコードを設定したら、DNS 解決を検証",
+            "status": {
+                "ok": "OK",
+                "notSet": "未設定"
+            },
+            "columns": {
+                "domain": "ドメイン"
+            },
+            "table": {
+                "recordType": "レコードタイプ",
+                "host": "ホスト",
+                "value": "値",
+                "mxPriority": "MX 優先度"
+            },
+            "step1": {
+                "title": "ステップ1: A レコードを追加"
+            },
+            "step2": {
+                "title": "ステップ2: MX レコードを追加",
+                "description": "ドメインサービスプロバイダーにログインし、メールサービス用の MX レコードを追加してください（以下のパラメータをコピーして使用してください）"
+            },
+            "step3": {
+                "title": "ステップ3: TXT レコードを追加",
+                "description": "メールスパム対策の TXT レコードを追加してください（以下のパラメータをコピーして使用してください）"
+            },
+            "step4": {
+                "title": "ステップ4: PTR レコードを追加",
+                "description1": "（任意）PTR レコードは逆引きDNSに使用されます",
+                "description2": "IP プロバイダーに連絡して PTR レコードを作成してください"
+            }
+        },
+        "ssl": {
+            "expired": "期限切れ",
+            "daysLeft": "{days} 日",
+            "notSet": "未設定",
+            "title": "ドメイン SSL",
+            "tabs": {
+                "otherCertificate": "他の証明書"
+            },
+            "cert": {
+                "brand": "ブランド",
+                "domains": "証明書対象ドメイン",
+                "privateKey": "秘密鍵 (KEY)",
+                "certificate": "証明書 (CRT/PEM)",
+                "keyPlaceholder": "秘密鍵を入力",
+                "certPlaceholder": "証明書を入力"
+            },
+            "actions": {
+                "applyFree": "無料証明書を申請"
+            },
+            "tips": {
+                "paste": "KEY と CRT の内容を貼り付けて保存してください",
+                "chainCheck": "ブラウザで証明書チェーンの不備が表示された場合、PEM 証明書が正しく連結されているか確認してください",
+                "pemFormat": "PEM 形式証明書 = ドメイン証明書 .crt + ルート証明書 (root_bundle).crt",
+                "defaultSite": "SSL デフォルトサイトが指定されていない場合、SSL 未設定サイトは SSL 設定済みサイトの HTTPS を使用します"
+            }
+        },
+        "api": {
+            "loading": {
+                "creating": "ドメインを作成中... お待ちください",
+                "updating": "ドメインを更新中... お待ちください",
+                "deleting": "ドメインを削除中... お待ちください",
+                "settingSSL": "SSL を設定中... お待ちください",
+                "applyingCert": "SSL 証明書を申請中... お待ちください",
+                "refreshingDns": "DNS レコードを更新中... お待ちください"
+            }
+        }
+    },
+    "mailbox": {
+        "title": "メールボックス管理",
+        "actions": {
+            "add": "メールボックス追加"
+        },
+        "search": {
+            "usernamePlaceholder": "ユーザー名検索"
+        },
+        "domain": {
+            "selectPlaceholder": "ドメイン選択"
+        },
+        "columns": {
+            "username": "ユーザー名",
+            "password": "パスワード",
+            "loginInfo": "ログイン情報",
+            "quota": "クォータ",
+            "type": "タイプ",
+            "status": "ステータス"
+        },
+        "userType": {
+            "admin": "管理者",
+            "general": "一般ユーザー"
+        },
+        "form": {
+            "addTitle": "メールボックス追加",
+            "editTitle": "メールボックス編集",
+            "emailAddress": "メールアドレス",
+            "password": "パスワード",
+            "passwordPlaceholder": "メールボックスのパスワードを入力",
+            "quota": "クォータ",
+            "userType": "ユーザータイプ",
+            "status": "ステータス"
+        },
+        "validation": {
+            "emailRequired": "メールアドレスを入力してください",
+            "passwordLength": "パスワードは8文字以上である必要があります",
+            "passwordFormat": "パスワードは大文字・小文字・数字をそれぞれ1文字以上含む必要があります"
+        },
+        "delete": {
+            "title": "メールボックス削除",
+            "confirm": "メールボックス [{name}] を削除してもよろしいですか？"
+        },
+        "loginInfo": {
+            "template": "WebMail: {webmail}\nユーザー名: {username}\nパスワード: {password}\nPOP サービス [ アドレス: {mx} ポート: 110/995 ]\nIMAP サービス [ アドレス: {mx} ポート: 143/993 ]\nSMTP サービス [ アドレス: {mx} ポート: 25/465/587 ]"
+        },
+        "api": {
+            "loading": {
+                "creating": "メールボックスを作成中... お待ちください",
+                "updating": "メールボックスを更新中... お待ちください",
+                "deleting": "メールボックスを削除中... お待ちください"
+            }
+        }
+    },
+    "smtp": {
+        "title": "SMTP リレーサービス管理",
+        "description": "複数のサービスプロバイダーに対応した SMTP リレーサービスを管理",
+        "empty": "SMTP リレーサービスがありません",
+        "providers": {
+            "gmail": "Gmail",
+            "mailgun": "Mailgun",
+            "aws": "AWS SES",
+            "sendgrid": "SendGrid",
+            "custom": "カスタム SMTP"
+        },
+        "delete": {
+            "title": "リレー削除",
+            "confirm": "リレーサービス [{name}] を削除してもよろしいですか？"
+        },
+        "card": {
+            "domain": "紐付けドメイン",
+            "server": "サーバー",
+            "port": "ポート",
+            "username": "ユーザー名"
+        },
+        "form": {
+            "addTitle": "SMTP 追加",
+            "editTitle": "SMTP 編集",
+            "remark": "備考",
+            "domain": "紐付けドメイン",
+            "server": "SMTP サーバー",
+            "port": "SMTP ポート",
+            "username": "ユーザー名",
+            "password": "パスワード",
+            "testConnection": "接続テスト",
+            "bind": " [紐付け済み]",
+            "validation": {
+                "nameRequired": "リレー名を入力してください",
+                "domainRequired": "紐付けドメインを選択してください",
+                "serverRequired": "SMTP サーバーを入力してください",
+                "portRequired": "SMTP ポートを入力してください",
+                "usernameRequired": "ユーザー名を入力してください",
+                "passwordRequired": "パスワードを入力してください"
+            }
+        },
+        "status": {
+            "online": "オンライン",
+            "offline": "オフライン"
+        },
+        "api": {
+            "loading": {
+                "adding": "SMTP を追加中... お待ちください",
+                "editing": "SMTP を編集中... お待ちください",
+                "testing": "SMTP 接続をテスト中... お待ちください",
+                "deleting": "SMTP を削除中... お待ちください"
+            }
+        }
+    },
+    "settings": {
+        "title": "設定",
+        "service": {
+            "title": "サービス状態",
+            "tips": "ヒント: Ctrl+F で検索、Ctrl+S で保存、Ctrl+H で検索置換",
+            "editTitle": "{name} をオンライン編集",
+            "columns": {
+                "name": "サービス名",
+                "status": "状態"
+            },
+            "status": {
+                "running": "稼働中",
+                "stopped": "停止中"
+            },
+            "actions": {
+                "restart": "再起動"
+            },
+            "restart": {
+                "title": "サービス再起動",
+                "confirm": "[{name}] を再起動してもよろしいですか？"
+            }
+        },
+        "bcc": {
+            "title": "BCC 管理",
+            "add": "BCC 追加",
+            "edit": "BCC 編集",
+            "needCopy": "コピー元",
+            "copyTo": "コピー先",
+            "domain": "ドメイン",
+            "type": "BCC タイプ",
+            "status": "状態",
+            "active": "有効",
+            "types": {
+                "sender": "送信時",
+                "recipient": "受信時"
+            },
+            "delete": {
+                "title": "BCC [{address}] を削除",
+                "content": "BCC 設定を削除しますか？"
+            },
+            "placeholders": {
+                "needCopy": "BCC 対象ユーザーを入力",
+                "copyTo": "BCC 受信メールを入力"
+            },
+            "loading": {
+                "adding": "BCC を追加中... お待ちください",
+                "saving": "BCC を保存中... お待ちください",
+                "deleting": "BCC を削除中... お待ちください"
+            }
+        },
+        "forward": {
+            "add": "転送追加",
+            "edit": "転送編集",
+            "columns": {
+                "address": "アドレス",
+                "goto": "転送先",
+                "domain": "ドメイン",
+                "created": "作成日",
+                "modified": "更新日",
+                "status": "状態"
+            },
+            "form": {
+                "status": "状態",
+                "forwardedUsers": "転送元ユーザー",
+                "forwardedUsersPlaceholder": "転送元メールを入力",
+                "domain": "ドメイン",
+                "domainPlaceholder": "転送元ユーザーのドメイン名",
+                "receivingUser": "受信ユーザー",
+                "receivingUserPlaceholder": "転送メール受信者。複数ある場合は改行区切り"
+            },
+            "delete": {
+                "title": "メール転送削除",
+                "content": "メール転送 [{address}] を削除してもよろしいですか？"
+            },
+            "loading": {
+                "adding": "メール転送を追加中... お待ちください",
+                "editing": "メール転送を編集中... お待ちください",
+                "deleting": "メール転送を削除中... お待ちください"
+            }
+        },
+        "api": {
+            "loading": {
+                "restarting": "サービスを再起動中... お待ちください",
+                "saving": "設定を保存中... お待ちください"
+            }
+        }
+    }
+}

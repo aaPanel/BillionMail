@@ -23,3 +23,11 @@ type GetCertListReq struct {
 type GetCertListRes struct {
 	api_v1.StandardRes
 }
+
+type ConsoleApplyCertReq struct {
+	g.Meta        `path:"/ssl/console_apply_cert" tags:"SSL" method:"post" sm:"ConsoleApplyCert" in:"body"`
+	Authorization string `json:"authorization" dc:"Authorization" in:"header"`
+}
+type ConsoleApplyCertRes struct {
+	api_v1.StandardRes
+}

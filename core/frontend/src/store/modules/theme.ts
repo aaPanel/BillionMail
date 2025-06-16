@@ -62,6 +62,7 @@ export default defineStore(
 					labelFontSizeTopMedium: '13px',
 					labelFontSizeLeftMedium: '13px',
 					labelPaddingHorizontal: '0 20px 0 0',
+					labelFontWeight: '700',
 				},
 				Radio: {
 					buttonColor: getCssVar('--color-radio-1'),

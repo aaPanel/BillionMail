@@ -18,6 +18,7 @@ func (c *ControllerV1) Form(ctx context.Context, req *v1.FormReq) (res *v1.FormR
 		// Verify Csrf token if needed
 		if req.Token == "" {
 			r.Response.WriteStatus(400, "CSRF token not provided")
+			return
 		}
 
 		var v *g.Var
@@ -45,7 +46,9 @@ func (c *ControllerV1) Form(ctx context.Context, req *v1.FormReq) (res *v1.FormR
 				GroupId:    groupId,
 				Active:     1,
 				CreateTime: int(time.Now().Unix()),
-				// TODO : Add extra fields if needed
+				Attribs: map[string]string{
+					"Username": req.Name,
+				},
 			})
 		}
 

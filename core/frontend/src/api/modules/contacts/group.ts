@@ -15,6 +15,8 @@ export const getGroupAll = () => {
 export const createGroup = (data: {
 	create_type: number
 	name: string
+	description: string
+	status: number
 	file_data?: string
 	file_type?: string
 }) => {
@@ -46,4 +48,18 @@ export const deleteGroup = (data: { group_ids: number[] }) => {
 
 export const getContactCount = (data: { group_ids: number[] }) => {
 	return instance.post('/contact/group/contact_count', data)
+}
+
+export const exportGroup = (data: {
+	format: string
+	include_unsubscribe: boolean
+	group_ids: number[]
+	export_type: number
+}) => {
+	return instance.post('/contact/group/export', data, {
+		fetchOptions: {
+			loading: 'Exporting, please wait...',
+			successMessage: true,
+		},
+	})
 }

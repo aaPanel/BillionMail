@@ -21,6 +21,12 @@ const route: RouteRecordRaw = {
 					component: () => import('@/views/settings/common/index.vue'),
 				},
 				{
+					path: 'service',
+					name: 'SettingsService',
+					meta: { title: 'Service', titleKey: '' },
+					component: () => import('@/views/settings/service/index.vue'),
+				},
+				{
 					path: 'bcc',
 					name: 'SettingsBcc',
 					meta: { title: 'BCC', titleKey: 'layout.menu.bcc' },

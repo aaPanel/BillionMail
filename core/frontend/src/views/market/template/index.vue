@@ -30,7 +30,7 @@
 				</bt-table-page>
 			</template>
 			<template #modal>
-				<add-modal />
+				<form-modal />
 				<preview-modal />
 			</template>
 		</bt-table-layout>
@@ -38,14 +38,15 @@
 </template>
 
 <script lang="tsx" setup>
-import { DataTableColumns, NButton, NFlex } from 'naive-ui'
+import { DataTableColumns, NButton, NFlex, NTag } from 'naive-ui'
 import { useModal } from '@/hooks/modal/useModal'
 import { useTableData } from '@/hooks/useTableData'
 import { confirm, formatTime } from '@/utils'
 import { deleteTemplate, duplicateTemplate, getTemplateList } from '@/api/modules/market/template'
 import type { Template, TemplateParams } from './interface'
 
-import TemplateAdd from './components/TemplateAdd.vue'
+// import TemplateAdd from './components/TemplateAdd.vue'
+import TemplateForm from './components/TemplateForm.vue'
 import TemplatePreview from './components/TemplatePreview.vue'
 
 const { t } = useI18n()
@@ -73,6 +74,36 @@ const columns = ref<DataTableColumns<Template>>([
 		ellipsis: {
 			tooltip: true,
 		},
+		render: row => (
+			<NButton
+				type="primary"
+				text
+				onClick={() => {
+					handleEdit(row)
+				}}>
+				{row.temp_name}
+			</NButton>
+		),
+	},
+	{
+		key: 'add_type',
+		title: 'Type',
+		minWidth: 140,
+		render: row => {
+			if (row.add_type === 1) {
+				return (
+					<NTag size="small" bordered={false} type="primary">
+						Drag
+					</NTag>
+				)
+			} else if (row.add_type === 0) {
+				return (
+					<NTag size="small" bordered={false} type="info">
+						HTML
+					</NTag>
+				)
+			}
+		},
 	},
 	{
 		key: 'create_time',
@@ -91,7 +122,7 @@ const columns = ref<DataTableColumns<Template>>([
 					type="primary"
 					text={true}
 					onClick={() => {
-						handlePreview(row)
+						handlePreview(row.html_content)
 					}}>
 					{t('common.actions.preview')}
 				</NButton>
@@ -124,25 +155,27 @@ const columns = ref<DataTableColumns<Template>>([
 	},
 ])
 
-const [AddModal, addModalApi] = useModal({
-	component: TemplateAdd,
+const [FormModal, formModalApi] = useModal({
+	component: TemplateForm,
 	state: {
+		isEdit: false,
 		refresh: getTableData,
+		preview: (html: string) => {
+			handlePreview(html)
+		},
 	},
 })
 
 // Handle add template
 const handleAdd = () => {
-	addModalApi.open()
+	formModalApi.setState({ isEdit: false, row: null })
+	formModalApi.open()
 }
-
-const router = useRouter()
 
 // Handle edit
 const handleEdit = (row: Template) => {
-	router.push({
-		path: `/market/template/edit/${row.id}`,
-	})
+	formModalApi.setState({ isEdit: true, row })
+	formModalApi.open()
 }
 
 const [PreviewModal, previewModalApi] = useModal({
@@ -150,8 +183,8 @@ const [PreviewModal, previewModalApi] = useModal({
 })
 
 // Handle preview
-const handlePreview = (row: Template) => {
-	previewModalApi.setState({ row })
+const handlePreview = (html: string) => {
+	previewModalApi.setState({ html })
 	previewModalApi.open()
 }
 

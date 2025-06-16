@@ -18,3 +18,4 @@ temp.yaml
 bin
 **/config/config.yaml
 data/
+/test.go

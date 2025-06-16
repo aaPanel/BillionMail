@@ -1,696 +1,773 @@
 {
-	"common": {
-		"all": {
-			"text": "全部",
-			"domain": "全部域名"
-		},
-		"time": {
-			"today": "今天",
-			"yesterday": "昨天",
-			"last7days": "过去7天",
-			"custom": "自定义"
-		},
-		"columns": {
-			"actions": "操作"
-		},
-		"actions": {
-			"view": "查看",
-			"edit": "编辑",
-			"delete": "删除",
-			"add": "添加",
-			"create": "创建",
-			"update": "更新",
-			"save": "保存",
-			"cancel": "取消",
-			"confirm": "确认",
-			"back": "返回",
-			"search": "搜索",
-			"reset": "重置",
-			"more": "更多",
-			"refresh": "刷新",
-			"copy": "复制",
-			"restart": "重启",
-			"import": "导入",
-			"export": "导出",
-			"download": "下载",
-			"upload": "上传",
-			"apply": "应用",
-			"test": "测试",
-			"rename": "重命名",
-			"preview": "预览",
-			"modify": "修改",
-			"config": "配置",
-			"help": "Help"
-		},
-		"useCopy": {
-			"noText": "没有要复制的文本",
-			"success": "复制成功",
-			"failed": "复制失败"
-		}
-	},
-	"components": {
-		"tableHelp": {
-			"text1": "有问题或建议可提{issues}，也可在Github给我们{star}，",
-			"text2": "我们高度重视您的积极参与，谢谢。"
-		},
-		"upload": {
-			"error": {
-				"fileSizeExceeded": "文件【{fileName}】大小不能超过{maxSize}MB",
-				"uploadFailed": "上传文件失败，请重试"
-			},
-			"prompt": {
-				"dragText": "点击或将文件拖拽到该区域",
-				"supportedFiles": "仅支持{suffix}文件"
-			}
-		}
-	},
-	"layout": {
-		"header": {
-			"submit": "提交需求"
-		},
-		"menu": {
-			"overview": "概览",
-			"market": "邮件营销",
-			"task": "任务",
-			"template": "模板",
-			"contacts": "联系人",
-			"subscribers": "订阅",
-			"group": "分组",
-			"domain": "域名",
-			"mailboxes": "邮箱",
-			"settings": "设置",
-			"common": "常用设置",
-			"bcc": "BCC",
-			"forward": "邮件转发",
-			"logout": "退出"
-		}
-	},
-	"login": {
-		"title": "BillionMail",
-		"form": {
-			"usernamePlaceholder": "用户名",
-			"passwordPlaceholder": "密码",
-			"loginButton": "登录",
-			"captchaPlaceholder": "验证码",
-			"changeCaptcha": "点击切换验证码",
-			"captcha": "验证码"
-		},
-		"validation": {
-			"usernameRequired": "用户名不能为空！",
-			"passwordRequired": "密码不能为空！",
-			"captchaRequired": "请输入验证码"
-		},
-		"messages": {
-			"loginSuccess": "登录成功",
-			"loginFailed": "登录失败",
-			"networkError": "网络错误，请稍后重试"
-		}
-	},
-	"user": {
-		"logout": {
-			"title": "提示",
-			"content": "是否确认退出登录？",
-			"confirm": "确认",
-			"cancel": "取消"
-		},
-		"api": {
-			"loading": {
-				"logout": "正在退出登录，请稍候..."
-			}
-		}
-	},
-	"overview": {
-		"delivered": "已送达",
-		"opened": "已打开",
-		"clicked": "已点击",
-		"bounced": "已退回",
-		"mailProviders": "邮件提供商",
-		"sendStats": "发送统计",
-		"provider": {
-			"mailProvider": "邮件提供商",
-			"delivered": "送达率",
-			"open": "打开率",
-			"click": "点击率",
-			"bounce": "退回率"
-		},
-		"send": {
-			"successRate": "成功率",
-			"success": "成功",
-			"fail": "失败",
-			"sendSuccess": "发送成功",
-			"sendFail": "发送失败"
-		},
-		"rate": {
-			"openRate": "打开率",
-			"clickRate": "点击率",
-			"bounceRate": "退回率"
-		},
-		"sendFailDetails": {
-			"title": "发送失败详情",
-			"columns": {
-				"recipient": "收件人",
-				"dsn": "Dsn",
-				"delay": "延迟",
-				"delays": "延迟详情",
-				"status": "状态",
-				"relay": "中继",
-				"details": "详情"
-			}
-		}
-	},
-	"market": {
-		"task": {
-			"title": "任务",
-			"actions": {
-				"add": "添加任务",
-				"detail": "查看详情",
-				"export": "导出",
-				"send": "发送",
-				"pause": "暂停"
-			},
-			"columns": {
-				"time": "时间",
-				"subject": "邮件主题",
-				"sender": "发件人",
-				"recipients": "收件人",
-				"success": "成功",
-				"failed": "失败",
-				"status": "状态",
-				"remark": "备注",
-				"progress": "进度",
-				"email": "邮箱",
-				"errorMsg": "错误信息"
-			},
-			"status": {
-				"pending": "等待中",
-				"processing": "处理中",
-				"done": "已完成"
-			},
-			"search": {
-				"subjectPlaceholder": "搜索邮件主题"
-			},
-			"changeStatus": {
-				"title": "更改任务状态【{subject}】",
-				"startConfirm": "立即开始发送任务吗？",
-				"pauseConfirm": "暂停任务后，可以继续发送任务！"
-			},
-			"delete": {
-				"title": "删除任务",
-				"confirm": "确定要删除任务 \"{subject}\" 吗？"
-			},
-			"detail": {
-				"title": "任务详情",
-				"displayName": "显示名称",
-				"sender": "发件人",
-				"subject": "邮件主题",
-				"groups": "分组",
-				"sendTime": "发送时间",
-				"unsubscribeLink": "退订链接",
-				"threads": "线程数",
-				"remark": "备注",
-				"yes": "是",
-				"no": "否",
-				"auto": "自动"
-			},
-			"edit": {
-				"addTitle": "添加任务",
-				"from": "发件人",
-				"to": "收件人",
-				"displayName": "显示名称",
-				"displayNamePlaceholder": "请输入显示名称",
-				"subject": "主题",
-				"subjectPlaceholder": "请输入邮件主题",
-				"recipients": "收件人",
-				"recipientsPlaceholder": "请选择收件人分组",
-				"recipientsCount": "发送邮件 ({count} 收件人)",
-				"template": "邮件模板",
-				"saveOutbox": "保存到发件箱",
-				"unsubscribeLink": "退订链接",
-				"threads": "线程数",
-				"threadsAuto": "自动",
-				"threadsCustom": "自定义",
-				"sendTime": "发送时间",
-				"sendTimeNow": "立即发送",
-				"sendTimeSchedule": "定时发送",
-				"remark": "备注",
-				"remarkPlaceholder": "请输入备注",
-				"testEmail": "测试邮件",
-				"testEmailPlaceholder": "请输入测试邮箱",
-				"sendTest": "发送测试邮件",
-				"viewCase": "查看案例",
-				"preview": {
-					"empty": "请选择邮件模板查看预览"
-				},
-				"validation": {
-					"displayNameRequired": "请输入显示名称",
-					"subjectRequired": "请输入邮件主题",
-					"recipientsRequired": "请选择联系人",
-					"sendTimeRequired": "请选择发送时间",
-					"testEmailRequired": "请输入测试邮箱",
-					"templateRequired": "请选择邮件模板"
-				},
-				"discard": {
-					"title": "提示",
-					"content": "是否放弃当前编辑？"
-				}
-			},
-			"createGroup": {
-				"title": "创建分组",
-				"groupName": "分组名称",
-				"email": "邮箱",
-				"groupNamePlaceholder": "请输入分组名称",
-				"validation": {
-					"groupNameRequired": "请输入分组名称"
-				}
-			}
-		},
-		"template": {
-			"title": "模板",
-			"name": "模板名称",
-			"content": "模板内容",
-			"uploadHtml": "上传HTML文件",
-			"file": "模板文件",
-			"actions": {
-				"add": "添加模板",
-				"preview": "预览",
-				"duplicate": "复制",
-				"export": "导出",
-				"import": "导入"
-			},
-			"columns": {
-				"name": "模板名称",
-				"type": "类型",
-				"createdAt": "创建时间"
-			},
-			"search": {
-				"namePlaceholder": "搜索模板名称"
-			},
-			"delete": {
-				"title": "删除模板",
-				"confirm": "确定要删除模板 {name} 吗？"
-			},
-			"form": {
-				"name": "模板名称",
-				"type": "模板类型",
-				"content": "模板内容",
-				"html": "HTML",
-				"drag": "拖拽"
-			},
-			"add": {
-				"title": "添加模板",
-				"namePlaceholder": "请输入模板名称",
-				"validation": {
-					"nameRequired": "请输入模板名称",
-					"uploadRequired": "请上传HTML文件"
-				}
-			},
-			"preview": {
-				"title": "预览模板"
-			}
-		}
-	},
-	"contacts": {
-		"subscribers": {
-			"search": {
-				"emailPlaceholder": "请输入邮箱地址搜索"
-			},
-			"columns": {
-				"email": "邮箱",
-				"name": "分组名称",
-				"createdAt": "创建时间"
-			},
-			"status": {
-				"subscribed": "订阅",
-				"unsubscribed": "取消订阅"
-			},
-			"actions": {
-				"changeGroup": "更改分组"
-			},
-			"delete": {
-				"title": "删除订阅者",
-				"confirm": "确定要删除订阅者 {email} 吗？"
-			},
-			"select": {
-				"prefix": "分组："
-			},
-			"edit": {
-				"title": "更改分组",
-				"email": "邮箱",
-				"group": "分组",
-				"validation": {
-					"emailRequired": "请填写邮箱",
-					"groupRequired": "请选择分组"
-				}
-			},
-			"import": {
-				"title": "导入联系人",
-				"group": "分组",
-				"data": "数据",
-				"pasteData": "粘贴数据",
-				"uploadFile": "上传文件",
-				"pastePlaceholder": "请粘贴数据，每行一个邮箱",
-				"fileTypeHint": "文件类型：txt 每行一个邮箱 不超过5 MB",
-				"validation": {
-					"groupRequired": "请选择分组",
-					"dataRequired": "请粘贴数据，每行一个邮箱",
-					"fileRequired": "请上传文件"
-				}
-			}
-		},
-		"group": {
-			"search": {
-				"namePlaceholder": "请输入分组名称搜索"
-			},
-			"columns": {
-				"name": "分组名称",
-				"subscribers": "订阅者数量",
-				"unsubscribe": "取消订阅",
-				"createdAt": "创建时间"
-			},
-			"form": {
-				"name": "分组名称",
-				"file": "文件",
-				"nameRequired": "请输入分组名称"
-			},
-			"add": {
-				"title": "添加分组"
-			},
-			"rename": {
-				"title": "重命名分组"
-			},
-			"delete": {
-				"title": "删除分组",
-				"confirm": "确定要删除分组 {name} 吗？"
-			},
-			"fileUpload": {
-				"hint": "文件类型：txt 每行一个邮箱 不超过5 MB",
-				"emptyHint": "文件传空时，会自动创建一个空分组"
-			},
-			"loading": {
-				"createGroup": "正在创建分组，请稍候...",
-				"updateGroup": "正在更新分组，请稍候...",
-				"deleteGroup": "正在删除分组，请稍候...",
-				"importSubscribers": "正在导入联系人，请稍候...",
-				"updateSubscriberGroup": "正在修改分组，请稍候...",
-				"deleteSubscriber": "正在删除联系人，请稍候..."
-			}
-		}
-	},
-	"domain": {
-		"title": "MailDomain",
-		"addDomain": "添加域名",
-		"help": "添加你要用来发邮件的域名",
-		"columns": {
-			"domain": "域名",
-			"quota": "配额",
-			"mailboxes": "邮箱数量",
-			"defaultMailboxSize": "默认邮箱大小",
-			"actions": "操作"
-		},
-		"actions": {
-			"dnsRecord": "DNS记录"
-		},
-		"delete": {
-			"title": "删除域名",
-			"confirm": "确定要删除域名【{domain}】吗？",
-			"confirmButton": "删除"
-		},
-		"form": {
-			"addTitle": "添加域名",
-			"editTitle": "编辑域名",
-			"domain": "域名",
-			"domainPlaceholder": "请输入域名，例如：aapanelCom",
-			"aRecord": "A记录",
-			"aRecordPlaceholder": "请输入A记录，例如：mailAapanelCom",
-			"quota": "域名配额",
-			"mailboxCount": "邮箱数量",
-			"globalCatch": "全局捕获",
-			"globalCatchPlaceholder": "捕获不存在的邮件，转发至此邮件",
-			"validation": {
-				"domainRequired": "邮箱域名不能为空!"
-			},
-			"tips": {
-				"aRecordFailed": "提示A记录解析失败。请检查填写的A记录域名是否已解析到服务器 IP",
-				"dnsSetup": "需要在您的DNS服务提供商控制台添加A记录",
-				"cloudflare": "如果使用CloudFlare，请在添加记录时选择【仅DNS】"
-			}
-		},
-		"dns": {
-			"title": "DNS 记录",
-			"verify": "已设置，验证域名解析",
-			"status": {
-				"ok": "正常",
-				"notSet": "未设置"
-			},
-			"columns": {
-				"domain": "域名"
-			},
-			"table": {
-				"recordType": "记录类型",
-				"host": "主机记录",
-				"value": "记录值",
-				"mxPriority": "MX优先级"
-			},
-			"step1": {
-				"title": "步骤1：添加A记录"
-			},
-			"step2": {
-				"title": "步骤2：添加MX记录",
-				"description": "登录到域名服务提供商，添加记录类型为MX的记录用于邮箱服务（请直接复制以下参数）"
-			},
-			"step3": {
-				"title": "步骤3：添加TXT记录",
-				"description": "添加记录类型为TXT的记录用于邮箱反垃圾邮件（请直接复制以下参数）"
-			},
-			"step4": {
-				"title": "步骤4：添加PTR记录",
-				"description1": "（可选）PTR记录用于反向 DNS 查找",
-				"description2": "联系您的IP提供商创建 PTR 记录"
-			}
-		},
-		"ssl": {
-			"expired": "已过期",
-			"daysLeft": "{days}天",
-			"notSet": "未设置",
-			"title": "域名 SSL",
-			"tabs": {
-				"otherCertificate": "其他证书"
-			},
-			"cert": {
-				"brand": "品牌",
-				"domains": "证书域名",
-				"privateKey": "私钥 (KEY)",
-				"certificate": "证书 (CRT/PEM)",
-				"keyPlaceholder": "请输入私钥内容",
-				"certPlaceholder": "请输入证书内容"
-			},
-			"actions": {
-				"save": "保存",
-				"applyFree": "申请免费证书"
-			},
-			"tips": {
-				"paste": "粘贴您的 KEY 和 CRT 内容，然后保存",
-				"chainCheck": "如果浏览器提示证书链不完整，请检查 PEM 证书是否正确拼接",
-				"pemFormat": "PEM 格式证书 = 域名证书 Crt + 根证书 (root_bundle)Crt",
-				"defaultSite": "当未指定 SSL 默认站点时，未配置 SSL 的站点将使用 HTTPS 访问启用了 SSL 的站点"
-			}
-		},
-		"api": {
-			"loading": {
-				"creating": "正在创建域名，请稍候...",
-				"updating": "正在更新域名，请稍候...",
-				"deleting": "正在删除域名，请稍候...",
-				"settingSSL": "正在设置 SSL，请稍候...",
-				"applyingCert": "正在申请 SSL 证书，请稍候...",
-				"refreshingDns": "正在刷新DNS记录，请稍候..."
-			}
-		}
-	},
-	"mailbox": {
-		"title": "邮箱管理",
-		"actions": {
-			"add": "添加邮箱"
-		},
-		"search": {
-			"usernamePlaceholder": "搜索用户名"
-		},
-		"domain": {
-			"selectPlaceholder": "请选择域名"
-		},
-		"columns": {
-			"username": "用户名",
-			"password": "密码",
-			"loginInfo": "登录信息",
-			"quota": "配额",
-			"type": "类型",
-			"status": "状态"
-		},
-		"userType": {
-			"admin": "管理员",
-			"general": "普通用户"
-		},
-		"form": {
-			"addTitle": "添加邮箱",
-			"editTitle": "编辑邮箱",
-			"emailAddress": "邮箱地址",
-			"password": "密码",
-			"passwordPlaceholder": "请输入您的邮箱密码",
-			"quota": "配额",
-			"userType": "用户类型",
-			"status": "状态"
-		},
-		"validation": {
-			"emailRequired": "请输入邮箱地址",
-			"passwordLength": "密码长度少于8位，请重新输入",
-			"passwordFormat": "密码必须包含至少一个大写字母、一个小写字母和数字，请重新输入"
-		},
-		"delete": {
-			"title": "删除邮箱",
-			"confirm": "确定要删除邮箱【{name}】吗？"
-		},
-		"loginInfo": {
-			"template": "WebMail: {webmail}\n用户名: {username}\n密码: {password}\nPOP service [ Address: {mx} Port: 110/995 ]\nIMAP service [ Address: {mx} Port: 143/993 ]\nSMTP service [ Address: {mx} Port: 25/465/587 ]"
-		},
-		"api": {
-			"loading": {
-				"creating": "正在创建邮箱，请稍候...",
-				"updating": "正在更新邮箱，请稍候...",
-				"deleting": "正在删除邮箱，请稍候..."
-			}
-		}
-	},
-	"smtp": {
-		"title": "SMTP中继服务管理",
-		"description": "管理您的SMTP中继服务，支持多种服务提供商",
-		"empty": "暂无SMTP中继服务",
-		"providers": {
-			"custom": "自定义SMTP"
-		},
-		"delete": {
-			"title": "删除中继",
-			"confirm": "确定要删除此中继服务【{name}】吗？"
-		},
-		"card": {
-			"domain": "绑定域名",
-			"server": "服务器",
-			"port": "端口",
-			"username": "用户名"
-		},
-		"form": {
-			"addTitle": "添加SMTP",
-			"editTitle": "编辑SMTP",
-			"remark": "备注",
-			"domain": "绑定域名",
-			"server": "SMTP服务器",
-			"port": "SMTP端口",
-			"username": "用户名",
-			"password": "密码",
-			"testConnection": "测试链接",
-			"bind": "【已绑定】",
-			"validation": {
-				"nameRequired": "请输入中继名称",
-				"domainRequired": "请选择绑定域名",
-				"serverRequired": "请输入SMTP服务器",
-				"portRequired": "请输入SMTP端口",
-				"usernameRequired": "请输入用户名",
-				"passwordRequired": "请输入密码"
-			}
-		},
-		"status": {
-			"online": "在线",
-			"offline": "离线"
-		},
-		"api": {
-			"loading": {
-				"adding": "正在添加SMTP，请稍等...",
-				"editing": "正在编辑SMTP，请稍等...",
-				"testing": "正在测试SMTP连接，请稍等...",
-				"deleting": "正在删除SMTP，请稍等..."
-			}
-		}
-	},
-	"settings": {
-		"title": "系统设置",
-		"service": {
-			"title": "服务状态",
-			"tips": "提示：Ctrl+F 搜索关键词，Ctrl+S 保存，Ctrl+H 搜索和替换",
-			"editTitle": "在线编辑 {name}",
-			"columns": {
-				"name": "服务名称",
-				"status": "状态"
-			},
-			"status": {
-				"running": "运行中",
-				"stopped": "已停止"
-			},
-			"restart": {
-				"title": "重启服务",
-				"confirm": "确定要重启【{name}】吗？"
-			}
-		},
-		"bcc": {
-			"title": "BCC管理",
-			"add": "添加BCC",
-			"edit": "编辑BCC",
-			"needCopy": "需要复制",
-			"copyTo": "复制到",
-			"domain": "域名",
-			"type": "BCC类型",
-			"status": "状态",
-			"active": "激活",
-			"types": {
-				"sender": "发送时",
-				"recipient": "接收时"
-			},
-			"delete": {
-				"title": "删除BCC [{address}]",
-				"content": "是否删除此BCC设置？"
-			},
-			"placeholders": {
-				"needCopy": "请输入需要BCC的用户",
-				"copyTo": "请输入需要接收BCC的邮箱"
-			},
-			"loading": {
-				"adding": "正在添加BCC，请稍候...",
-				"saving": "正在保存BCC，请稍候...",
-				"deleting": "正在删除BCC，请稍候..."
-			}
-		},
-		"forward": {
-			"add": "添加转发",
-			"edit": "编辑转发",
-			"columns": {
-				"address": "地址",
-				"goto": "转发至",
-				"domain": "域名",
-				"created": "创建时间",
-				"modified": "修改时间",
-				"status": "状态"
-			},
-			"form": {
-				"status": "状态",
-				"forwardedUsers": "转发用户",
-				"forwardedUsersPlaceholder": "输入需要转发的邮箱",
-				"domain": "域名",
-				"domainPlaceholder": "转发用户的域名",
-				"receivingUser": "接收用户",
-				"receivingUserPlaceholder": "需要接收转发邮件的用户。如果有多个，请用换行符分隔"
-			},
-			"delete": {
-				"title": "删除邮件转发",
-				"content": "您确定要删除邮件转发【{address}】吗？"
-			},
-			"loading": {
-				"adding": "正在添加邮件转发，请稍候...",
-				"editing": "正在编辑邮件转发，请稍候...",
-				"deleting": "正在删除邮件转发，请稍候..."
-			}
-		},
-		"api": {
-			"loading": {
-				"restarting": "正在重启服务，请稍候...",
-				"saving": "正在保存配置，请稍候..."
-			}
-		}
-	}
+  "common": {
+    "all": {
+      "text": "全部",
+      "domain": "全部域名"
+    },
+    "time": {
+      "today": "今天",
+      "yesterday": "昨天",
+      "last7days": "过去7天",
+      "custom": "自定义"
+    },
+    "columns": {
+      "actions": "操作"
+    },
+    "actions": {
+      "view": "查看",
+      "edit": "编辑",
+      "delete": "删除",
+      "add": "添加",
+      "create": "创建",
+      "update": "更新",
+      "save": "保存",
+      "cancel": "取消",
+      "confirm": "确认",
+      "back": "返回",
+      "search": "搜索",
+      "reset": "重置",
+      "more": "更多",
+      "refresh": "刷新",
+      "copy": "复制",
+      "restart": "重启",
+      "import": "导入",
+      "export": "导出",
+      "download": "下载",
+      "upload": "上传",
+      "apply": "应用",
+      "test": "测试",
+      "rename": "重命名",
+      "preview": "预览",
+      "modify": "修改",
+      "config": "配置",
+      "help": "Help"
+    },
+    "useCopy": {
+      "noText": "没有要复制的文本",
+      "success": "复制成功",
+      "failed": "复制失败"
+    }
+  },
+  "components": {
+    "tableHelp": {
+      "text1": "有问题或建议可提{issues}，也可在Github给我们{star}，",
+      "text2": "我们高度重视您的积极参与，谢谢。"
+    },
+    "upload": {
+      "error": {
+        "fileSizeExceeded": "文件【{fileName}】大小不能超过{maxSize}MB",
+        "uploadFailed": "上传文件失败，请重试"
+      },
+      "prompt": {
+        "dragText": "点击或将文件拖拽到该区域",
+        "supportedFiles": "仅支持{suffix}文件"
+      }
+    }
+  },
+  "layout": {
+    "header": {
+      "submit": "提交需求"
+    },
+    "menu": {
+      "overview": "概览",
+      "market": "邮件营销",
+      "task": "任务",
+      "template": "模板",
+      "contacts": "联系人",
+      "subscribers": "订阅",
+      "group": "分组",
+      "domain": "域名",
+      "mailboxes": "邮箱",
+      "settings": "设置",
+      "common": "常用设置",
+      "bcc": "BCC",
+      "forward": "邮件转发",
+      "logout": "退出"
+    }
+  },
+  "login": {
+    "title": "BillionMail",
+    "form": {
+      "usernamePlaceholder": "用户名",
+      "passwordPlaceholder": "密码",
+      "loginButton": "登录",
+      "captchaPlaceholder": "验证码",
+      "changeCaptcha": "点击切换验证码",
+      "captcha": "验证码"
+    },
+    "validation": {
+      "usernameRequired": "用户名不能为空！",
+      "passwordRequired": "密码不能为空！",
+      "captchaRequired": "请输入验证码"
+    },
+    "messages": {
+      "loginSuccess": "登录成功",
+      "loginFailed": "登录失败",
+      "networkError": "网络错误，请稍后重试"
+    }
+  },
+  "user": {
+    "logout": {
+      "title": "提示",
+      "content": "是否确认退出登录？",
+      "confirm": "确认",
+      "cancel": "取消"
+    },
+    "api": {
+      "loading": {
+        "logout": "正在退出登录，请稍候..."
+      }
+    }
+  },
+  "overview": {
+    "delivered": "已送达",
+    "opened": "已打开",
+    "clicked": "已点击",
+    "bounced": "已退回",
+    "mailProviders": "邮件提供商",
+    "sendStats": "发送统计",
+    "provider": {
+      "mailProvider": "邮件提供商",
+      "delivered": "送达率",
+      "open": "打开率",
+      "click": "点击率",
+      "bounce": "退回率"
+    },
+    "send": {
+      "successRate": "成功率",
+      "success": "成功",
+      "fail": "失败",
+      "sendSuccess": "发送成功",
+      "sendFail": "发送失败"
+    },
+    "rate": {
+      "openRate": "打开率",
+      "clickRate": "点击率",
+      "bounceRate": "退回率"
+    },
+    "sendFailDetails": {
+      "title": "发送失败详情",
+      "columns": {
+        "recipient": "收件人",
+        "dsn": "Dsn",
+        "delay": "延迟",
+        "delays": "延迟详情",
+        "status": "状态",
+        "relay": "中继",
+        "details": "详情"
+      }
+    }
+  },
+  "market": {
+    "task": {
+      "title": "任务",
+      "actions": {
+        "add": "添加任务",
+        "detail": "查看详情",
+        "export": "导出",
+        "send": "发送",
+        "pause": "暂停"
+      },
+      "columns": {
+        "time": "时间",
+        "subject": "邮件主题",
+        "sender": "发件人",
+        "recipients": "收件人",
+        "success": "成功",
+        "failed": "失败",
+        "status": "状态",
+        "remark": "备注",
+        "progress": "进度",
+        "email": "邮箱",
+        "errorMsg": "错误信息"
+      },
+      "status": {
+        "pending": "等待中",
+        "processing": "处理中",
+        "done": "已完成"
+      },
+      "search": {
+        "subjectPlaceholder": "搜索邮件主题"
+      },
+      "changeStatus": {
+        "title": "更改任务状态【{subject}】",
+        "startConfirm": "立即开始发送任务吗？",
+        "pauseConfirm": "暂停任务后，可以继续发送任务！"
+      },
+      "delete": {
+        "title": "删除任务",
+        "confirm": "确定要删除任务 \"{subject}\" 吗？"
+      },
+      "detail": {
+        "title": "任务详情",
+        "displayName": "显示名称",
+        "sender": "发件人",
+        "subject": "邮件主题",
+        "groups": "分组",
+        "sendTime": "发送时间",
+        "unsubscribeLink": "退订链接",
+        "threads": "线程数",
+        "remark": "备注",
+        "yes": "是",
+        "no": "否",
+        "auto": "自动"
+      },
+      "edit": {
+        "addTitle": "添加任务",
+        "from": "发件人",
+        "to": "收件人",
+        "displayName": "显示名称",
+        "displayNamePlaceholder": "请输入显示名称",
+        "subject": "主题",
+        "subjectPlaceholder": "请输入邮件主题",
+        "recipients": "收件人",
+        "recipientsPlaceholder": "请选择收件人分组",
+        "recipientsCount": "发送邮件 ({count} 收件人)",
+        "template": "邮件模板",
+        "saveOutbox": "保存到发件箱",
+        "unsubscribeLink": "退订链接",
+        "threads": "线程数",
+        "threadsAuto": "自动",
+        "threadsCustom": "自定义",
+        "sendTime": "发送时间",
+        "sendTimeNow": "立即发送",
+        "sendTimeSchedule": "定时发送",
+        "remark": "备注",
+        "remarkPlaceholder": "请输入备注",
+        "testEmail": "测试邮件",
+        "testEmailPlaceholder": "请输入测试邮箱",
+        "sendTest": "发送测试邮件",
+        "viewCase": "查看案例",
+        "preview": {
+          "empty": "请选择邮件模板查看预览"
+        },
+        "validation": {
+          "displayNameRequired": "请输入显示名称",
+          "subjectRequired": "请输入邮件主题",
+          "recipientsRequired": "请选择联系人",
+          "sendTimeRequired": "请选择发送时间",
+          "testEmailRequired": "请输入测试邮箱",
+          "templateRequired": "请选择邮件模板"
+        },
+        "discard": {
+          "title": "提示",
+          "content": "是否放弃当前编辑？"
+        }
+      },
+      "createGroup": {
+        "title": "创建分组",
+        "groupName": "分组名称",
+        "email": "邮箱",
+        "groupNamePlaceholder": "请输入分组名称",
+        "validation": {
+          "groupNameRequired": "请输入分组名称"
+        }
+      }
+    },
+    "template": {
+      "title": "模板",
+      "name": "模板名称",
+      "content": "模板内容",
+      "uploadHtml": "上传HTML文件",
+      "file": "模板文件",
+      "actions": {
+        "add": "添加模板",
+        "preview": "预览",
+        "duplicate": "复制",
+        "export": "导出",
+        "import": "导入"
+      },
+      "columns": {
+        "name": "模板名称",
+        "type": "类型",
+        "createdAt": "创建时间"
+      },
+      "search": {
+        "namePlaceholder": "搜索模板名称"
+      },
+      "delete": {
+        "title": "删除模板",
+        "confirm": "确定要删除模板 {name} 吗？"
+      },
+      "form": {
+        "name": "模板名称",
+        "type": "模板类型",
+        "content": "模板内容",
+        "html": "HTML",
+        "drag": "拖拽"
+      },
+      "add": {
+        "title": "添加模板",
+        "namePlaceholder": "请输入模板名称",
+        "validation": {
+          "nameRequired": "请输入模板名称",
+          "uploadRequired": "请上传HTML文件"
+        }
+      },
+      "preview": {
+        "title": "预览模板"
+      }
+    }
+  },
+  "contacts": {
+    "subscribers": {
+      "search": {
+        "emailPlaceholder": "请输入邮箱地址搜索"
+      },
+      "columns": {
+        "email": "邮箱",
+        "name": "分组名称",
+        "createdAt": "创建时间"
+      },
+      "status": {
+        "subscribed": "订阅",
+        "unsubscribed": "取消订阅"
+      },
+      "actions": {
+        "changeGroup": "更改分组"
+      },
+      "delete": {
+        "title": "删除订阅者",
+        "confirm": "确定要删除订阅者 {email} 吗？"
+      },
+      "select": {
+        "prefix": "分组："
+      },
+      "edit": {
+        "title": "更改分组",
+        "email": "邮箱",
+        "group": "分组",
+        "validation": {
+          "emailRequired": "请填写邮箱",
+          "groupRequired": "请选择分组"
+        }
+      },
+      "import": {
+        "title": "导入联系人",
+        "group": "分组",
+        "data": "数据",
+        "pasteData": "粘贴数据",
+        "uploadFile": "上传文件",
+        "pastePlaceholder": "请粘贴数据，每行一个邮箱，属性（可为空）\n例如：example1@example.com\nexample1@example.com,\"{\"\"age\"\": \"\"13\"\", \"\"Gender\"\": \"\"XXX\"\"}\"",
+        "fileTypeHint": "文件类型：csv，不超过5 MB",
+        "overwriteLabel": "覆盖现有用户",
+        "overwriteDescription": "在导入时是否按照导入数据来覆盖列表中存在的客户信息",
+        "subscriptionStatus": "订阅状态",
+        "status": "状态",
+        "exampleCsvLabel": "CSV示例",
+        "overwriteOptions": {
+          "no": "否",
+          "yes": "是"
+        },
+        "subscriptionOptions": {
+          "subscribe": "订阅",
+          "unsubscribe": "取消订阅"
+        },
+        "statusOptions": {
+          "confirmed": "已确认",
+          "unconfirmed": "未确认"
+        },
+        "validation": {
+          "groupRequired": "请选择分组",
+          "dataRequired": "请粘贴数据，每行一个邮箱",
+          "fileRequired": "请上传文件"
+        }
+      }
+    },
+    "group": {
+      "search": {
+        "namePlaceholder": "请输入分组名称搜索"
+      },
+      "columns": {
+        "name": "分组名称",
+        "subscribers": "订阅者数量",
+        "unsubscribe": "取消订阅",
+        "createdAt": "创建时间"
+      },
+      "form": {
+        "name": "分组名称",
+        "file": "文件",
+        "nameRequired": "请输入分组名称"
+      },
+      "add": {
+        "title": "添加分组"
+      },
+      "rename": {
+        "title": "重命名分组"
+      },
+      "delete": {
+        "title": "删除分组",
+        "confirm": "确定要删除分组 {name} 吗？"
+      },
+      "fileUpload": {
+        "hint": "文件类型：csv，不超过5 MB",
+        "emptyHint": "文件传空时，会自动创建一个空分组"
+      },
+      "loading": {
+        "createGroup": "正在创建分组，请稍候...",
+        "updateGroup": "正在更新分组，请稍候...",
+        "deleteGroup": "正在删除分组，请稍候...",
+        "importSubscribers": "正在导入联系人，请稍候...",
+        "updateSubscriberGroup": "正在修改分组，请稍候...",
+        "deleteSubscriber": "正在删除联系人，请稍候..."
+      }
+    }
+  },
+  "domain": {
+    "title": "MailDomain",
+    "addDomain": "添加域名",
+    "help": "添加你要用来发邮件的域名",
+    "columns": {
+      "domain": "域名",
+      "quota": "配额",
+      "mailboxes": "邮箱数量",
+      "defaultMailboxSize": "默认邮箱大小",
+      "actions": "操作"
+    },
+    "actions": {
+      "dnsRecord": "DNS记录"
+    },
+    "delete": {
+      "title": "删除域名",
+      "confirm": "确定要删除域名【{domain}】吗？",
+      "confirmButton": "删除"
+    },
+    "form": {
+      "addTitle": "添加域名",
+      "editTitle": "编辑域名",
+      "domain": "域名",
+      "domainPlaceholder": "请输入域名，例如：aapanelCom",
+      "aRecord": "A记录",
+      "aRecordPlaceholder": "请输入A记录，例如：mailAapanelCom",
+      "quota": "域名配额",
+      "mailboxCount": "邮箱数量",
+      "globalCatch": "全局捕获",
+      "globalCatchPlaceholder": "捕获不存在的邮件，转发至此邮件",
+      "validation": {
+        "domainRequired": "邮箱域名不能为空!"
+      },
+      "tips": {
+        "aRecordFailed": "提示A记录解析失败。请检查填写的A记录域名是否已解析到服务器 IP",
+        "dnsSetup": "需要在您的DNS服务提供商控制台添加A记录",
+        "cloudflare": "如果使用CloudFlare，请在添加记录时选择【仅DNS】"
+      }
+    },
+    "dns": {
+      "title": "DNS 记录",
+      "verify": "已设置，验证域名解析",
+      "status": {
+        "ok": "正常",
+        "notSet": "未设置"
+      },
+      "columns": {
+        "domain": "域名"
+      },
+      "table": {
+        "recordType": "记录类型",
+        "host": "主机记录",
+        "value": "记录值",
+        "mxPriority": "MX优先级"
+      },
+      "step1": {
+        "title": "步骤1：添加A记录"
+      },
+      "step2": {
+        "title": "步骤2：添加MX记录",
+        "description": "登录到域名服务提供商，添加记录类型为MX的记录用于邮箱服务（请直接复制以下参数）"
+      },
+      "step3": {
+        "title": "步骤3：添加TXT记录",
+        "description": "添加记录类型为TXT的记录用于邮箱反垃圾邮件（请直接复制以下参数）"
+      },
+      "step4": {
+        "title": "步骤4：添加PTR记录",
+        "description1": "（可选）PTR记录用于反向 DNS 查找",
+        "description2": "联系您的IP提供商创建 PTR 记录"
+      }
+    },
+    "ssl": {
+      "expired": "已过期",
+      "daysLeft": "{days}天",
+      "notSet": "未设置",
+      "title": "域名 SSL",
+      "tabs": {
+        "otherCertificate": "其他证书"
+      },
+      "cert": {
+        "brand": "品牌",
+        "domains": "证书域名",
+        "privateKey": "私钥 (KEY)",
+        "certificate": "证书 (CRT/PEM)",
+        "keyPlaceholder": "请输入私钥内容",
+        "certPlaceholder": "请输入证书内容"
+      },
+      "actions": {
+        "save": "保存",
+        "applyFree": "申请免费证书"
+      },
+      "tips": {
+        "paste": "粘贴您的 KEY 和 CRT 内容，然后保存",
+        "chainCheck": "如果浏览器提示证书链不完整，请检查 PEM 证书是否正确拼接",
+        "pemFormat": "PEM 格式证书 = 域名证书 Crt + 根证书 (root_bundle)Crt",
+        "defaultSite": "当未指定 SSL 默认站点时，未配置 SSL 的站点将使用 HTTPS 访问启用了 SSL 的站点"
+      }
+    },
+    "api": {
+      "loading": {
+        "creating": "正在创建域名，请稍候...",
+        "updating": "正在更新域名，请稍候...",
+        "deleting": "正在删除域名，请稍候...",
+        "settingSSL": "正在设置 SSL，请稍候...",
+        "applyingCert": "正在申请 SSL 证书，请稍候...",
+        "refreshingDns": "正在刷新DNS记录，请稍候..."
+      }
+    }
+  },
+  "mailbox": {
+    "title": "邮箱管理",
+    "actions": {
+      "add": "添加邮箱"
+    },
+    "search": {
+      "usernamePlaceholder": "搜索用户名"
+    },
+    "domain": {
+      "selectPlaceholder": "请选择域名"
+    },
+    "columns": {
+      "username": "用户名",
+      "password": "密码",
+      "loginInfo": "登录信息",
+      "quota": "配额",
+      "type": "类型",
+      "status": "状态"
+    },
+    "userType": {
+      "admin": "管理员",
+      "general": "普通用户"
+    },
+    "form": {
+      "addTitle": "添加邮箱",
+      "editTitle": "编辑邮箱",
+      "emailAddress": "邮箱地址",
+      "password": "密码",
+      "passwordPlaceholder": "请输入您的邮箱密码",
+      "quota": "配额",
+      "userType": "用户类型",
+      "status": "状态"
+    },
+    "validation": {
+      "emailRequired": "请输入邮箱地址",
+      "passwordLength": "密码长度少于8位，请重新输入",
+      "passwordFormat": "密码必须包含至少一个大写字母、一个小写字母和数字，请重新输入"
+    },
+    "delete": {
+      "title": "删除邮箱",
+      "confirm": "确定要删除邮箱【{name}】吗？"
+    },
+    "loginInfo": {
+      "template": "WebMail: {webmail}\n用户名: {username}\n密码: {password}\nPOP service [ Address: {mx} Port: 110/995 ]\nIMAP service [ Address: {mx} Port: 143/993 ]\nSMTP service [ Address: {mx} Port: 25/465/587 ]"
+    },
+    "api": {
+      "loading": {
+        "creating": "正在创建邮箱，请稍候...",
+        "updating": "正在更新邮箱，请稍候...",
+        "deleting": "正在删除邮箱，请稍候..."
+      }
+    }
+  },
+  "smtp": {
+    "title": "SMTP中继服务管理",
+    "description": "管理您的SMTP中继服务，支持多种服务提供商",
+    "empty": "暂无SMTP中继服务",
+    "providers": {
+      "custom": "自定义SMTP"
+    },
+    "delete": {
+      "title": "删除中继",
+      "confirm": "确定要删除此中继服务【{name}】吗？"
+    },
+    "card": {
+      "domain": "绑定域名",
+      "server": "服务器",
+      "port": "端口",
+      "username": "用户名"
+    },
+    "form": {
+      "addTitle": "添加SMTP",
+      "editTitle": "编辑SMTP",
+      "remark": "备注",
+      "domain": "绑定域名",
+      "server": "SMTP服务器",
+      "port": "SMTP端口",
+      "username": "用户名",
+      "password": "密码",
+      "testConnection": "测试链接",
+      "bind": "【已绑定】",
+      "validation": {
+        "nameRequired": "请输入中继名称",
+        "domainRequired": "请选择绑定域名",
+        "serverRequired": "请输入SMTP服务器",
+        "portRequired": "请输入SMTP端口",
+        "usernameRequired": "请输入用户名",
+        "passwordRequired": "请输入密码"
+      }
+    },
+    "status": {
+      "online": "在线",
+      "offline": "离线"
+    },
+    "api": {
+      "loading": {
+        "adding": "正在添加SMTP，请稍等...",
+        "editing": "正在编辑SMTP，请稍等...",
+        "testing": "正在测试SMTP连接，请稍等...",
+        "deleting": "正在删除SMTP，请稍等..."
+      }
+    }
+  },
+  "settings": {
+    "title": "系统设置",
+    "service": {
+      "title": "服务状态",
+      "tips": "提示：Ctrl+F 搜索关键词，Ctrl+S 保存，Ctrl+H 搜索和替换",
+      "editTitle": "在线编辑 {name}",
+      "columns": {
+        "name": "服务名称",
+        "status": "状态"
+      },
+      "status": {
+        "running": "运行中",
+        "stopped": "已停止"
+      },
+      "restart": {
+        "title": "重启服务",
+        "confirm": "确定要重启【{name}】吗？"
+      }
+    },
+    "bcc": {
+      "title": "BCC管理",
+      "add": "添加BCC",
+      "edit": "编辑BCC",
+      "needCopy": "需要复制",
+      "copyTo": "复制到",
+      "domain": "域名",
+      "type": "BCC类型",
+      "status": "状态",
+      "active": "激活",
+      "types": {
+        "sender": "发送时",
+        "recipient": "接收时"
+      },
+      "delete": {
+        "title": "删除BCC [{address}]",
+        "content": "是否删除此BCC设置？"
+      },
+      "placeholders": {
+        "needCopy": "请输入需要BCC的用户",
+        "copyTo": "请输入需要接收BCC的邮箱"
+      },
+      "loading": {
+        "adding": "正在添加BCC，请稍候...",
+        "saving": "正在保存BCC，请稍候...",
+        "deleting": "正在删除BCC，请稍候..."
+      }
+    },
+    "forward": {
+      "add": "添加转发",
+      "edit": "编辑转发",
+      "columns": {
+        "address": "地址",
+        "goto": "转发至",
+        "domain": "域名",
+        "created": "创建时间",
+        "modified": "修改时间",
+        "status": "状态"
+      },
+      "form": {
+        "status": "状态",
+        "forwardedUsers": "转发用户",
+        "forwardedUsersPlaceholder": "输入需要转发的邮箱",
+        "domain": "域名",
+        "domainPlaceholder": "转发用户的域名",
+        "receivingUser": "接收用户",
+        "receivingUserPlaceholder": "需要接收转发邮件的用户。如果有多个，请用换行符分隔"
+      },
+      "delete": {
+        "title": "删除邮件转发",
+        "content": "您确定要删除邮件转发【{address}】吗？"
+      },
+      "loading": {
+        "adding": "正在添加邮件转发，请稍候...",
+        "editing": "正在编辑邮件转发，请稍候...",
+        "deleting": "正在删除邮件转发，请稍候..."
+      }
+    },
+    "common": {
+      "confirm": "确认修改",
+      "security": {
+        "title": "账户安全设置",
+        "username": "修改用户名",
+        "currentUsername": "当前用户名",
+        "newUsernamePlaceholder": "输入新用户名",
+        "usernameRule": "4-20位字母数字组合",
+        "usernameExists": "用户名已存在",
+        "changePassword": "修改密码",
+        "currentPassword": "当前密码",
+        "newPassword": "新密码",
+        "confirmPassword": "确认新密码",
+        "passwordStrength": "密码强度",
+        "passwordMismatch": "两次输入的密码不一致",
+        "strength": {
+          "weak": "弱",
+          "medium": "中",
+          "strong": "强"
+        },
+        "securityPath": "修改安全入口",
+        "currentPath": "当前入口路径",
+        "newPathPlaceholder": "输入新路径，如admin-abc123",
+        "pathRule": "建议使用复杂路径增强安全性",
+        "usernameValidation": {
+          "lengthError": "用户名长度不能小于4位，不能大于20位",
+          "formatError": "用户名必须由字母、数字或下划线组成",
+          "duplicateError": "用户名不能与当前用户名相同"
+        }
+      },
+      "network": {
+        "title": "网络配置",
+        "domain": "域名设置",
+        "currentDomain": "当前域名",
+        "newDomainPlaceholder": "输入新域名，如admin.yourdomain.com",
+        "domainRule": "请输入有效的域名",
+        "ssl": "SSL证书配置",
+        "sslEnabled": "SSL已启用",
+        "certStatus": "证书状态",
+        "certValid": "（剩余 {days} 天）",
+        "sslCert": "SSL证书 (PEM格式)",
+        "sslKey": "私钥 (PEM格式)",
+        "certPlaceholder": "-----BEGIN CERTIFICATE-----\nMIIFazCCA1OgAwIBAgIURv...\n-----END CERTIFICATE-----",
+        "keyPlaceholder": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG...\n-----END PRIVATE KEY-----",
+        "updateSSL": "更新SSL证书",
+        "certValidStatus": "证书有效",
+        "certExpiredStatus": "证书过期",
+        "certExpireTime": "证书到期：{time}"
+      },
+      "system": {
+        "title": "系统配置",
+        "port": "端口设置",
+        "currentPort": "当前端口",
+        "terminalRequired": "此设置需要终端操作",
+        "copyCommand": "复制以上命令并在服务器终端执行",
+        "commandCopied": "命令已复制到剪贴板",
+        "timezone": "时区设置",
+        "currentTime": "当前系统时区"
+      }
+    },
+    "api": {
+      "loading": {
+        "restarting": "正在重启服务，请稍候...",
+        "saving": "正在保存配置，请稍候..."
+      }
+    }
+  }
 }

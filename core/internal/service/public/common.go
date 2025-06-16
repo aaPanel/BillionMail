@@ -2547,10 +2547,10 @@ func SanitizeUTF8(s string) string {
 
 func AddUnsubscribeButton(content string) string {
 	// Unsubscribe button HTML
-	unsubscribeButton := `<div style="padding: 16px 0; text-align: center"><a href="{{ UnsubscribeURL }}" style="color: #ccc; font-size: 12px">Unsubscribe</a></div>`
+	unsubscribeButton := `<div style="padding: 16px 0; text-align: center"><a href="{{ UnsubscribeURL . }}" style="color: #ccc; font-size: 12px">Unsubscribe</a></div>`
 
 	// If content already contains unsubscribe link, return directly
-	if strings.Contains(content, "{{ UnsubscribeURL }}") {
+	if strings.Contains(content, "{{ UnsubscribeURL . }}") {
 		return content
 	}
 
@@ -2573,4 +2573,34 @@ func AddUnsubscribeButton(content string) string {
 // FormatMX format the email domain
 func FormatMX(domain string) string {
 	return "mail." + strings.TrimPrefix(domain, "mail.")
+}
+
+// loadEnvFile .env
+func LoadEnvFile() (map[string]string, error) {
+	envPath := AbsPath("../.env")
+	content, err := os.ReadFile(envPath)
+	if err != nil {
+		return nil, err
+	}
+
+	envMap := make(map[string]string)
+	lines := strings.Split(string(content), "\n")
+
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+
+		parts := strings.SplitN(line, "=", 2)
+		if len(parts) != 2 {
+			continue
+		}
+
+		key := strings.TrimSpace(parts[0])
+		value := strings.Trim(strings.TrimSpace(parts[1]), `"'`)
+		envMap[key] = value
+	}
+
+	return envMap, nil
 }

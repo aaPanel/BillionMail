@@ -121,7 +121,7 @@ const columns = ref<DataTableColumns<Subscriber>>([
 					onClick={() => {
 						handleEdit(row)
 					}}>
-					{t('contacts.subscribers.actions.changeGroup')}
+					{t('common.actions.edit')}
 				</NButton>
 				<NButton
 					type="error"

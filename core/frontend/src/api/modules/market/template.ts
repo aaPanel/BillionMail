@@ -13,15 +13,14 @@ export function getTemplateDetails(params: { id: string }) {
 	return instance.get('/email_template/get', { params })
 }
 
-interface TemplateAddForm {
+interface TemplateForm {
 	temp_name: string
 	add_type: number
-	file_data: string
-	content: string
-	render: string
+	html_content: string
+	drag_data: string
 }
 
-export function addTemplate(params: TemplateAddForm) {
+export function addTemplate(params: TemplateForm) {
 	return instance.post('/email_template/create', params, {
 		fetchOptions: {
 			loading: 'Creating template, please wait...',
@@ -30,13 +29,7 @@ export function addTemplate(params: TemplateAddForm) {
 	})
 }
 
-interface TemplateEditForm {
-	id: number
-	temp_name: string
-	content: string
-}
-
-export function updateTemplate(params: TemplateEditForm) {
+export function updateTemplate(params: TemplateForm & { id: number }) {
 	return instance.post('/email_template/update', params, {
 		fetchOptions: {
 			loading: 'Updating template, please wait...',

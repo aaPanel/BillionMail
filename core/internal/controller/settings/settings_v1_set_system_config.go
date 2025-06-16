@@ -15,7 +15,33 @@ import (
 func (c *ControllerV1) SetSystemConfig(ctx context.Context, req *v1.SetSystemConfigReq) (res *v1.SetSystemConfigRes, err error) {
 	res = &v1.SetSystemConfigRes{}
 
-	envMap, err := loadEnvFile()
+	// Parameter validation
+	if req.AdminUsername != "" {
+		if err := validateConfigValue("ADMIN_USERNAME", req.AdminUsername); err != nil {
+			res.SetError(gerror.New(public.LangCtx(ctx, "Parameter validation failed: {}", err)))
+			return res, nil
+		}
+	}
+	if req.AdminPassword != "" {
+		if err := validateConfigValue("ADMIN_PASSWORD", req.AdminPassword); err != nil {
+			res.SetError(gerror.New(public.LangCtx(ctx, "Parameter validation failed: {}", err)))
+			return res, nil
+		}
+	}
+	if req.SafePath != "" {
+		if err := validateConfigValue("SafePath", req.SafePath); err != nil {
+			res.SetError(gerror.New(public.LangCtx(ctx, "Parameter validation failed: {}", err)))
+			return res, nil
+		}
+	}
+	if req.Hostname != "" {
+		if err := validateConfigValue("BILLIONMAIL_HOSTNAME", req.Hostname); err != nil {
+			res.SetError(gerror.New(public.LangCtx(ctx, "Parameter validation failed: {}", err)))
+			return res, nil
+		}
+	}
+
+	envMap, err := public.LoadEnvFile()
 	if err != nil {
 		res.SetError(gerror.New(public.LangCtx(ctx, "Failed to read environment variable file: {}", err)))
 		return res, nil

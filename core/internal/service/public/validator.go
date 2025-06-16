@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 )
 
 var (
@@ -193,4 +194,90 @@ func FileCheck(s string) bool {
 // IsApiPath matches API paths
 func IsApiPath(s string) bool {
 	return reMap["api_path"].MatchString(s)
+}
+
+// IsValidUsername
+// Rules: 4-32 bit characters, only allowed letters, numbers, underscores
+func IsValidUsername(username string) bool {
+	pattern := `^[a-zA-Z0-9_]{4,32}$`
+	matched, _ := regexp.MatchString(pattern, username)
+	return matched
+}
+
+// IsValidHostname
+// Rules: DNS host name format, allowed letters, numbers, hyphens and dots, but cannot start or end with a hyphen
+func IsValidHostname(hostname string) bool {
+	// Check total length
+	if len(hostname) > 255 {
+		return false
+	}
+
+	// Split into labels for checking
+	labels := strings.Split(hostname, ".")
+	for _, label := range labels {
+		// Each label rule:
+		// 1. Length between 1-63
+		// 2. Only letters, numbers and hyphens
+		// 3. Cannot start or end with a hyphen
+		if len(label) < 1 || len(label) > 63 {
+			return false
+		}
+		if strings.HasPrefix(label, "-") || strings.HasSuffix(label, "-") {
+			return false
+		}
+		pattern := `^[a-zA-Z0-9-]+$`
+		matched, _ := regexp.MatchString(pattern, label)
+		if !matched {
+			return false
+		}
+	}
+	return true
+}
+
+// IsValidCIDR Check if it is a valid CIDR format
+func IsValidCIDR(cidr string) bool {
+	_, _, err := net.ParseCIDR(cidr)
+	return err == nil
+}
+
+// IsValidTimezone Check if it is a valid timezone
+func IsValidTimezone(tz string) bool {
+	_, err := time.LoadLocation(tz)
+	return err == nil
+}
+
+// ContainsDangerousChars Check if it contains dangerous characters
+func ContainsDangerousChars(value string) bool {
+	dangerousChars := []string{
+		";", "|", "&", "$", "<", ">", "`", "\\",
+		"(", ")", "{", "}", "[", "]", "!", "#",
+		"\x00",
+	}
+
+	for _, char := range dangerousChars {
+		if strings.Contains(value, char) {
+			return true
+		}
+	}
+
+	// Check if it contains control characters (ASCII 0-31, except for common tab, newline, etc.)
+	for _, r := range value {
+		if r < 32 && r != '\t' && r != '\n' && r != '\r' {
+			return true
+		}
+	}
+
+	return false
+}
+
+// ParseInt Safely convert string to integer
+func ParseInt(s string) int {
+	// Remove whitespace
+	s = strings.TrimSpace(s)
+
+	i, err := strconv.Atoi(s)
+	if err != nil {
+		return 0
+	}
+	return i
 }

@@ -273,7 +273,14 @@ func (e *EmailSender) GenerateMessageID() string {
 	randomBytes := grand.B(16)
 	randomID := hex.EncodeToString(randomBytes)
 	timestampMillis := time.Now().UnixMilli()
-	return fmt.Sprintf("<%d.%s@billionmail>", timestampMillis, randomID)
+
+	domain := strings.SplitN(e.Email, "@", 2)
+	domainPart := "billionmail"
+	if len(domain) > 1 {
+		domainPart = domain[1]
+	}
+
+	return fmt.Sprintf("<%d.%s@%s>", timestampMillis, randomID, domainPart)
 }
 
 // Send sends an email to specified recipients

@@ -56,7 +56,7 @@
 <script lang="ts" setup>
 import { UploadFileInfo } from 'naive-ui'
 import { isObject } from '@/utils'
-import { getTemplateDetails, updateTemplate } from '@/api/modules/market/template'
+import { getTemplateDetails } from '@/api/modules/market/template'
 import type { Template } from './interface'
 
 const route = useRoute()
@@ -81,11 +81,11 @@ const handleFileUpload = (file: UploadFileInfo) => {
 
 // Save
 const onEdit = async () => {
-	await updateTemplate({
-		id: form.id,
-		temp_name: form.temp_name,
-		content: form.content,
-	})
+	// await updateTemplate({
+	// 	id: form.id,
+	// 	temp_name: form.temp_name,
+	// 	content: form.content,
+	// })
 }
 
 const onGoBack = () => {
@@ -97,7 +97,7 @@ const getTemplateHtml = async () => {
 	if (isObject<Template>(res)) {
 		form.id = res.id
 		form.temp_name = res.temp_name
-		form.content = res.content
+		// form.content = res.content
 	}
 }
 

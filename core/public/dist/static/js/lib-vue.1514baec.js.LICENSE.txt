@@ -1,0 +1,31 @@
+/*! #__NO_SIDE_EFFECTS__ */
+
+/**
+* @vue/reactivity v3.5.15
+* (c) 2018-present Yuxi (Evan) You and Vue contributors
+* @license MIT
+**/
+
+/**
+* @vue/runtime-core v3.5.15
+* (c) 2018-present Yuxi (Evan) You and Vue contributors
+* @license MIT
+**/
+
+/**
+* @vue/runtime-dom v3.5.15
+* (c) 2018-present Yuxi (Evan) You and Vue contributors
+* @license MIT
+**/
+
+/**
+* @vue/shared v3.5.15
+* (c) 2018-present Yuxi (Evan) You and Vue contributors
+* @license MIT
+**/
+
+/**
+* vue v3.5.15
+* (c) 2018-present Yuxi (Evan) You and Vue contributors
+* @license MIT
+**/

@@ -82,3 +82,30 @@ type MailTemplateContext struct {
 	Task           *EmailTask
 	UnsubscribeURL string
 }
+
+type ApiTemplates struct {
+	Id                int    `json:"id" dc:"id"`
+	ApiKey            string `json:"api_key" dc:"api key"`
+	ApiName           string `json:"api_name" dc:"api name"`
+	TemplateId        int    `json:"template_id" dc:"template id"`
+	Subject           string `json:"subject" dc:"subject"`
+	Addresser         string `json:"addresser" dc:"addresser"`
+	FullName          string `json:"full_name" dc:"full name"`
+	Unsubscribe       int    `json:"unsubscribe" dc:"unsubscribe"`
+	TrackOpen         int    `json:"track_open" dc:"track open"`
+	TrackClick        int    `json:"track_click" dc:"track click"`
+	Active            int    `json:"active" dc:"active"`
+	CreateTime        int    `json:"create_time" dc:"create time"`
+	UpdateTime        int    `json:"update_time" dc:"update time"`
+	ExpireTime        int    `json:"expire_time" dc:"expire time"`
+	LastKeyUpdateTime int    `json:"last_key_update_time" dc:"last key update time"`
+}
+
+type ApiMailLogs struct {
+	Id        int    `json:"id" dc:"id"`
+	ApiId     int    `json:"api_id" dc:"api id"`
+	Recipient string `json:"recipient" dc:"recipient"`
+	MessageId string `json:"message_id" dc:"message id"`
+	Addresser string `json:"addresser" dc:"addresser"`
+	SendTime  int    `json:"send_time" dc:"send time"`
+}

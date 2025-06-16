@@ -13,6 +13,8 @@
     "MaybeRefOrGetter": true,
     "PropType": true,
     "Ref": true,
+    "Slot": true,
+    "Slots": true,
     "VNode": true,
     "WritableComputedRef": true,
     "computed": true,
@@ -64,6 +66,7 @@
     "useAttrs": true,
     "useCssModule": true,
     "useCssVars": true,
+    "useI18n": true,
     "useId": true,
     "useLink": true,
     "useModel": true,
@@ -74,7 +77,6 @@
     "watch": true,
     "watchEffect": true,
     "watchPostEffect": true,
-    "watchSyncEffect": true,
-    "useI18n": true
+    "watchSyncEffect": true
   }
 }

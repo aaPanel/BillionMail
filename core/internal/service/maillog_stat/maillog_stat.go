@@ -371,35 +371,48 @@ func (ms *MaillogStat) Analysis(ctx context.Context) (<-chan MailRecorfContract,
 	go func() {
 		defer close(recordChan)
 
+		n := 0
+
 		err := public.ReadEachReverse(ms.maillogPath, func(line string, cnt int) bool {
+			n++
+
 			select {
 			case <-ctx.Done():
 				return false
 			default:
-				record := ms.analyzeLine(line)
-				if record != nil {
-					if r, ok := record.(*MailSendRecord); ok && r.Status == "deferred" {
-						recordChan <- &MailDeferredRecord{
-							MailRecord: MailRecord{
-								PostfixMessageID: r.PostfixMessageID,
-								LogTimeMillis:    r.LogTimeMillis,
-							},
-							Delay:       r.Delay,
-							Delays:      r.Delays,
-							Dsn:         r.Dsn,
-							Relay:       r.Relay,
-							Description: r.Description,
-						}
-					}
+				record, stop := ms.analyzeLine(line)
 
-					recordChan <- record
+				if stop {
+					return false
 				}
+
+				if record == nil || record.GetLogTimeMillis() < 1 {
+					return true
+				}
+
+				if r, ok := record.(*MailSendRecord); ok && r.Status == "deferred" {
+					recordChan <- &MailDeferredRecord{
+						MailRecord: MailRecord{
+							PostfixMessageID: r.PostfixMessageID,
+							LogTimeMillis:    r.LogTimeMillis,
+						},
+						Delay:       r.Delay,
+						Delays:      r.Delays,
+						Dsn:         r.Dsn,
+						Relay:       r.Relay,
+						Description: r.Description,
+					}
+				}
+
+				recordChan <- record
 			}
 			return true
 		})
 
+		g.Log().Debug(ctx, "Total scanned lines:", n)
+
 		if err != nil {
-			fmt.Printf("Error reading maillog: %v\n", err)
+			g.Log().Warning(ctx, "Error reading maillog: %v\n", err)
 		}
 	}()
 
@@ -407,48 +420,57 @@ func (ms *MaillogStat) Analysis(ctx context.Context) (<-chan MailRecorfContract,
 }
 
 // analyzeLine analyzes single log line
-func (ms *MaillogStat) analyzeLine(line string) MailRecorfContract {
+func (ms *MaillogStat) analyzeLine(line string) (record MailRecorfContract, stop bool) {
 	line = strings.TrimSpace(line)
 	logTime := ms.parseLogTimeMillis(line)
 
 	if logTime < 1 {
-		return nil
+		return
 	}
 
 	if ms.endTime > 0 && logTime > ms.endTime {
-		return nil
+		return
 	}
 
 	if ms.startTime > 0 && logTime < ms.startTime {
-		return nil
+		stop = true
+		return
 	}
 
 	// Analyze different types of logs
 	if strings.Contains(line, "postfix/lmtp[") {
-		return ms.analyzeReceiveMail(line, logTime)
+		record = ms.analyzeReceiveMail(line, logTime)
+		return
 	}
 
 	if strings.Contains(line, "postfix/qmgr[") {
 		if strings.Contains(line, "from=<") {
-			return ms.analyzeSender(line, logTime)
+			record = ms.analyzeSender(line, logTime)
+			return
 		}
+
 		if strings.Contains(line, "removed") {
-			return ms.analyzeRemoved(line, logTime)
+			record = ms.analyzeRemoved(line, logTime)
+			return
 		}
 	}
 
 	if strings.Contains(line, "postfix/cleanup[") && strings.Contains(line, "message-id=<") {
-		return ms.analyzeMessageID(line, logTime)
+		record = ms.analyzeMessageID(line, logTime)
+		return
 	}
 
 	if strings.Contains(line, "to=<") && strings.Contains(line, "status=") && strings.Contains(line, "dsn=") {
-		return ms.analyzeSendMail(line, logTime)
+		record = ms.analyzeSendMail(line, logTime)
+		return
 	}
 
-	return &MailRecord{
+	record = &MailRecord{
 		PostfixMessageID: "",
 		LogTimeMillis:    logTime,
 	}
+
+	return
 }
 
 // analyzeReceiveMail analyzes mail receiving logs
@@ -664,6 +686,10 @@ func (ms *MaillogStat) AnalysisAndSaveToDatabase(ctx context.Context) error {
 			lastMaillogTime = record.GetLogTimeMillis()
 		}
 
+		if record.GetPostfixMessageID() == "" {
+			continue
+		}
+
 		switch r := record.(type) {
 		case *MailSendRecord:
 			if _, ok := existsPostfixMessageIdsForSends[r.GetPostfixMessageID()]; ok {
@@ -823,12 +849,16 @@ func (handler *MallogEventHandler) Start() {
 	for {
 		select {
 		case <-handler.timer.C:
-			handler.isHanding = false
-			g.Log().Debug(context.Background(), "MallogEventHandler: timer event")
-			handler.maillogStat.startTime = GetLastMaillogTimeMillis()
-			if err = handler.maillogStat.AnalysisAndSaveToDatabase(context.Background()); err != nil {
-				g.Log().Error(context.Background(), "MallogEventHandler: error analysing maillog", err)
-			}
+			func() {
+				defer func() {
+					handler.isHanding = false
+				}()
+				g.Log().Debug(context.Background(), "MallogEventHandler: timer event")
+				handler.maillogStat.startTime = GetLastMaillogTimeMillis()
+				if err = handler.maillogStat.AnalysisAndSaveToDatabase(context.Background()); err != nil {
+					g.Log().Error(context.Background(), "MallogEventHandler: error analysing maillog", err)
+				}
+			}()
 		}
 	}
 }

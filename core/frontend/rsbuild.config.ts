@@ -56,11 +56,14 @@ export default defineConfig({
 	html: {
 		template: './index.html',
 	},
-	source: {
+	resolve: {
+		extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx', '.json', '.d.ts'],
 		alias: {
 			'@': './src/',
 			'@images': './src/assets/images/',
 		},
+	},
+	source: {
 		define: {
 			'import.meta.env': JSON.stringify({
 				SERVER: server,

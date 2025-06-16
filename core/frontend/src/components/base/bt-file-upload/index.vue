@@ -22,7 +22,7 @@
 			</n-upload-dragger>
 		</template>
 		<template v-else>
-			<n-button secondary :type="buttonType">
+			<n-button ghost :type="buttonType">
 				<slot></slot>
 			</n-button>
 		</template>

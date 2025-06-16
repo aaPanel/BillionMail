@@ -53,7 +53,6 @@ fi
 Red_Error(){
     echo '=================================================';
     printf '\033[1;31;40m%b\033[0m\n' "$@";
-    # GetSysInfo
     exit 1;
 }
 
@@ -80,17 +79,79 @@ Docker_Compose_Check(){
 }
 Docker_Compose_Check
 
-# GET_CONTAINER_ID() {
+GET_SERVICE_NAME() {
 
-#     if [[ "$1" == "/core:" ]]; then
-#         echo "Getting the "$1" container ID..."
-#         CONTAINER_ID=$(${DOCKER_COMPOSE} ps -a --format "{{.ID}} {{.Image}}" |grep "/core:" | awk '{print $1}' )
-#         if [ -z "${CONTAINER_ID}" ]; then
-#             echo "ERROR: The "$1" container does not exist"
-#         fi
-#     fi
-# }
+    # ALL_SERVICE_NAME=$(${DOCKER_COMPOSE} config --services |grep "${SERVICE}")
+    # echo "${ALL_SERVICE_NAME}"
 
+    if [[ "${SERVICE}" == "core" ]] || [[ "${SERVICE}" == "manage" ]]; then
+        #echo "Getting the "${SERVICE}" service..."
+        SERVICE_NAME=$(${DOCKER_COMPOSE} ps -a --format " {{.Service}} {{.ID}} {{.Image}}" |grep "/core:" | awk '{print $1}' )
+    
+    elif [[ "${SERVICE}" == "postfix" ]] || [[ "${SERVICE}" == "postfix-billionmail" ]]; then
+        SERVICE_NAME="postfix-billionmail"
+    
+    elif [[ "${SERVICE}" == "dovecot" ]] || [[ "${SERVICE}" == "dovecot-billionmail" ]]; then
+        SERVICE_NAME="dovecot-billionmail"
+    
+    elif [[ "${SERVICE}" == "rspamd" ]] || [[ "${SERVICE}" == "rspamd-billionmail" ]]; then
+        SERVICE_NAME="rspamd-billionmail"
+    
+    elif [[ "${SERVICE}" == "pgsql" ]] || [[ "${SERVICE}" == "postgres" ]] || [[ "${SERVICE}" == "pgsql-billionmail" ]]; then
+        SERVICE_NAME="pgsql-billionmail"
+    
+    elif [[ "${SERVICE}" == "redis" ]] || [[ "${SERVICE}" == "redis-billionmail" ]]; then
+        SERVICE_NAME="redis-billionmail"
+
+    elif [[ "${SERVICE}" == "webmail" ]] || [[ "${SERVICE}" == "roundcube" ]] || [[ "${SERVICE}" == "webmail-billionmail" ]]; then
+        SERVICE_NAME="webmail-billionmail"
+    
+    else
+        echo "Please use: core|postfix|dovecot|rspamd|pgsql|redis|webmail"
+        Red_Error "ERROR: The "${SERVICE}" service does not exist"
+
+    fi
+
+    if [ -z "${SERVICE_NAME}" ]; then
+        Red_Error "ERROR: The "${SERVICE}" service does not exist"
+    fi
+
+}
+
+
+GET_CONTAINER_ID() {
+
+    if [ -z "${CONTAINER}" ]; then
+        CONTAINER="$1"
+    fi
+
+    if [[ "${CONTAINER}" == "core" ]] || [[ "${CONTAINER}" == "manage" ]]; then
+        CONTAINER_ID=$(${DOCKER_COMPOSE} ps -a --format "{{.ID}} {{.Image}}" |grep "/core:" | awk '{print $1}' )
+    
+    elif [[ ""${CONTAINER}"" == "postfix" ]] || [[ ""${CONTAINER}"" == "postfix-billionmail" ]]; then
+        CONTAINER_ID=$(${DOCKER_COMPOSE} ps -a --format "{{.ID}} {{.Image}}" |grep "/postfix:" | awk '{print $1}' )
+    
+    elif [[ ""${CONTAINER}"" == "dovecot" ]] || [[ ""${CONTAINER}"" == "dovecot-billionmail" ]]; then
+        CONTAINER_ID=$(${DOCKER_COMPOSE} ps -a --format "{{.ID}} {{.Image}}" |grep "/dovecot:" | awk '{print $1}' )
+    
+    elif [[ ""${CONTAINER}"" == "rspamd" ]] || [[ ""${CONTAINER}"" == "rspamd-billionmail" ]]; then
+        CONTAINER_ID=$(${DOCKER_COMPOSE} ps -a --format "{{.ID}} {{.Image}}" |grep "/rspamd:" | awk '{print $1}' )
+    
+    elif [[ ""${CONTAINER}"" == "pgsql" ]] || [[ ""${CONTAINER}"" == "postgres" ]] || [[ ""${CONTAINER}"" == "pgsql-billionmail" ]]; then
+        CONTAINER_ID=$(${DOCKER_COMPOSE} ps -a --format "{{.ID}} {{.Image}}" |grep "postgres:" | awk '{print $1}' )
+    
+    elif [[ ""${CONTAINER}"" == "redis" ]] || [[ ""${CONTAINER}"" == "redis-billionmail" ]]; then
+        CONTAINER_ID=$(${DOCKER_COMPOSE} ps -a --format "{{.ID}} {{.Image}}" |grep "redis:" | awk '{print $1}' )
+
+    elif [[ ""${CONTAINER}"" == "webmail" ]] || [[ ""${CONTAINER}"" == "roundcube" ]] || [[ ""${CONTAINER}"" == "webmail-billionmail" ]]; then
+        CONTAINER_ID=$(${DOCKER_COMPOSE} ps -a --format "{{.ID}} {{.Image}}" |grep "roundcubemail:" | awk '{print $1}' )
+    
+    else
+        echo "Please use: core|postfix|dovecot|rspamd|pgsql|redis|webmail"
+        Red_Error "ERROR: The ""${CONTAINER}"" container does not exist"
+    fi
+
+}
 
 
 Init_Email() {
@@ -428,6 +489,8 @@ Update_BillionMail() {
             chmod +x update.sh
             echo y | ./update.sh
         fi
+    else
+        Red_Error "Error: update.sh script does not exist!"
     fi
 }
 
@@ -535,7 +598,9 @@ MODIFY_HTTP_SSL_PORT() {
 
     sleep 3
     # Find the container ID of the core image in the current project and rebuild the container
-    CONTAINER_ID=$(${DOCKER_COMPOSE} ps -a --format "{{.ID}} {{.Image}}" |grep "/core:" | awk '{print $1}' )
+    # CONTAINER_ID=$(${DOCKER_COMPOSE} ps -a --format "{{.ID}} {{.Image}}" |grep "/core:" | awk '{print $1}' )
+    CONTAINER="core"
+    GET_CONTAINER_ID ${CONTAINER}
     if [ "${CONTAINER_ID}" ]; then
         echo "Rebuilding Manage Container..."
         docker stop ${CONTAINER_ID}
@@ -594,7 +659,9 @@ MODIFY_HTTPS_PORT() {
     echo -e "The BillionMail management port has been modified to: ${NEW_PORT} \n Rebuild the container, please wait..."
     sleep 3
     # Find the container ID of the core image in the current project and rebuild the container
-    CONTAINER_ID=$(${DOCKER_COMPOSE} ps -a --format "{{.ID}} {{.Image}}" |grep "/core:" | awk '{print $1}' )
+    # CONTAINER_ID=$(${DOCKER_COMPOSE} ps -a --format "{{.ID}} {{.Image}}" |grep "/core:" | awk '{print $1}' )
+    CONTAINER="core"
+    GET_CONTAINER_ID ${CONTAINER}
     if [ "${CONTAINER_ID}" ]; then
         echo "Rebuilding Manage Container..."
         docker stop ${CONTAINER_ID}
@@ -689,7 +756,9 @@ MODIFY_ADMIN_USERNAME() {
     echo -e "BillionMail administrator username has been updated. Restarting container, please wait..."
     sleep 3
     # Find the container ID of the core image in the current project and rebuild the container
-    CONTAINER_ID=$(${DOCKER_COMPOSE} ps -a --format "{{.ID}} {{.Image}}" |grep "/core:" | awk '{print $1}' )
+    # CONTAINER_ID=$(${DOCKER_COMPOSE} ps -a --format "{{.ID}} {{.Image}}" |grep "/core:" | awk '{print $1}' )
+    CONTAINER="core"
+    GET_CONTAINER_ID ${CONTAINER}
     if [ "${CONTAINER_ID}" ]; then
         echo "Restarting Manage Container..."
         docker restart ${CONTAINER_ID}
@@ -731,7 +800,9 @@ MODIFY_ADMIN_PASSWORD() {
     echo -e "BillionMail administrator password has been updated. Restarting container, please wait..."
     sleep 3
     # Find the container ID of the core image in the current project and rebuild the container
-    CONTAINER_ID=$(${DOCKER_COMPOSE} ps -a --format "{{.ID}} {{.Image}}" |grep "/core:" | awk '{print $1}' )
+    #CONTAINER_ID=$(${DOCKER_COMPOSE} ps -a --format "{{.ID}} {{.Image}}" |grep "/core:" | awk '{print $1}' )
+    CONTAINER="core"
+    GET_CONTAINER_ID ${CONTAINER}
     if [ "${CONTAINER_ID}" ]; then
         echo "Restarting Manage Container..."
         docker restart ${CONTAINER_ID}
@@ -774,7 +845,9 @@ MODIFY_SAFE_ENTRANCE() {
     echo -e "BillionMail security entrance path has been updated. Restarting container, please wait..."
     sleep 3
     # Find the container ID of the core image in the current project and rebuild the container
-    CONTAINER_ID=$(${DOCKER_COMPOSE} ps -a --format "{{.ID}} {{.Image}}" |grep "/core:" | awk '{print $1}' )
+    # CONTAINER_ID=$(${DOCKER_COMPOSE} ps -a --format "{{.ID}} {{.Image}}" |grep "/core:" | awk '{print $1}' )
+    CONTAINER="core"
+    GET_CONTAINER_ID ${CONTAINER}
     if [ "${CONTAINER_ID}" ]; then
         echo "Restarting Manage Container..."
         docker restart ${CONTAINER_ID}
@@ -787,9 +860,289 @@ MODIFY_SAFE_ENTRANCE() {
     bash bm.sh default
 }
 
+# Rebuild the BillionMail project
+ REBUILD_PROJECT() {
+    echo "Rebuilding BillionMail..."
+    echo -e "\033[31mWarning: This operation will rebuild all containers, service will be unavailable during the rebuild process. \033[0m"
+    read -p "Are you sure you want to continue? (yes/no): " NEW_REBUILD
+    if [[ "$NEW_REBUILD" =~ ^(yes|y|Y)$ ]]; then
+        sleep 3
+        ${DOCKER_COMPOSE} down
+        ${DOCKER_COMPOSE} up -d
+        echo "Rebuild completed."
+    else
+        echo "Rebuild cancel."
+    fi
+ }
 
-case "$1" in
-    h | -h | help | --help | -help)
+# Restart the BillionMail project
+RESTART_PROJECT() {
+    echo "Restarting BillionMail..."
+    sleep 1
+    ${DOCKER_COMPOSE} restart
+}
+
+# Stop the BillionMail project
+STOP_PROJECT() {
+    echo "Stop BillionMail..."
+    sleep 1
+    ${DOCKER_COMPOSE} stop
+}
+
+START_PROJECT() {
+    echo "Start BillionMail..."
+    sleep 1
+    ${DOCKER_COMPOSE} up -d
+}
+
+DOWN_PROJECT() {
+    echo "Stop all BillionMail services and delete all BillionMail containers..."
+    sleep 3
+    ${DOCKER_COMPOSE} down
+}
+
+# Restart the specified service
+RESTART_SERVICE() { 
+    SERVICE="$2"
+    if [ -z "${SERVICE}" ]; then
+        echo ""
+        echo "Support input: postfix|core|dovecot|rspamd|redis|webmail|pgsql"
+        read -p "Please enter service: " SERVICE
+    fi
+
+    GET_SERVICE_NAME ${SERVICE}
+    echo "Restarting ${SERVICE} service..."
+    sleep 3
+    ${DOCKER_COMPOSE} restart ${SERVICE_NAME}
+}
+
+RESTART_SERVICE_ADMIN() { 
+    SERVICE="core"
+    GET_SERVICE_NAME ${SERVICE}
+    echo "Restarting ${SERVICE} service..."
+    sleep 3
+    ${DOCKER_COMPOSE} restart ${SERVICE_NAME}
+}
+
+# Get container log 
+GET_CONTAINER_LOG() { 
+    CONTAINER="$2"
+    if [ -z "${CONTAINER}" ]; then
+        echo ""
+        echo "Support input: postfix|core|dovecot|rspamd|redis|webmail|pgsql"
+        read -p "Please enter container: " CONTAINER
+    fi
+
+    log_num="$3"
+    follow=""
+
+    if [ "$log_num" == "-f" ]; then
+        follow="-f"
+        log_num="$4"
+    elif [ "$4" == "-f" ]; then
+        follow="-f"
+    fi
+
+    if [[ "$log_num" =~ ^[0-9]+$ ]]; then
+        log_num="${log_num}"
+    else
+        log_num=25
+    fi
+
+    GET_CONTAINER_ID ${CONTAINER}
+    if [ -z "${CONTAINER_ID}" ]; then
+        Red_Error "ERROR: The "${CONTAINER}" container does not exist, Please execute '${DOCKER_COMPOSE} up -d' to start BillionMail"
+    fi
+    docker logs ${follow} --tail="${log_num}" ${CONTAINER_ID}
+}
+
+# Get file log
+GET_FILE_LOG() {
+    NAME_FILE="$2"
+    
+    if [ -z "${NAME_FILE}" ]; then
+        echo ""
+        echo "Support input: postfix|core|core-access|core-error|dovecot|rspamd|fail2ban"
+        read -p "Please enter name: " NAME_FILE
+    fi
+
+    log_num="$3"
+    follow=""
+
+    if [ "$log_num" == "-f" ]; then
+        follow="-f"
+        log_num="$4"
+    elif [ "$4" == "-f" ]; then
+        follow="-f"
+    fi
+
+    if [[ "$log_num" =~ ^[0-9]+$ ]]; then
+        log_num="${log_num}"
+    else
+        log_num=25
+    fi
+
+    # Define log files
+    declare -A LOG_FILES=(
+        ["core"]="$(date +%Y-%m-%d).log"
+        ["core-access"]="access-$(date +%Y%m%d).log"
+        ["core-error"]="error-$(date +%Y%m%d).log"
+        ["postfix"]="mail.log"
+        ["dovecot"]="mail.log"
+        ["rspamd"]="rspamd.log"
+        ["fail2ban"]="fail2ban.log"
+    )
+
+    # Define log directory mapping 
+    declare -A LOG_DIRS=(
+        ["core"]="core"
+        ["core-access"]="core"
+        ["core-error"]="core"
+        ["postfix"]="postfix"
+        ["dovecot"]="dovecot"
+        ["rspamd"]="rspamd"
+        ["fail2ban"]="fail2ban"
+    )
+
+    # Check whether the service name is valid
+    if [[ ! " ${!LOG_FILES[@]} " =~ " ${NAME_FILE} " ]]; then
+        echo "How to use: $0 log_file core 100"
+        Red_Error "Error: Invalid name. Please enter name: (postfix|core|core-access|core-error|dovecot|rspamd|fail2ban) "
+    fi
+
+    # Get log file name and directory
+    LOG_FILE="${LOG_FILES[$NAME_FILE]}"
+    LOG_DIR="${LOG_DIRS[$NAME_FILE]}"
+    
+    # Check and display log files
+    if [ -f "logs/${LOG_DIR}/${LOG_FILE}" ]; then
+        tail ${follow} -n ${log_num} "logs/${LOG_DIR}/${LOG_FILE}"
+    elif [ -f "data/logs/${LOG_DIR}/${LOG_FILE}" ]; then
+        tail ${follow} -n ${log_num} "data/logs/${LOG_DIR}/${LOG_FILE}"
+    else
+        Red_Error "logs file does not exist!"
+    fi
+}
+
+# Get service TOP 
+GET_SERVICE_TOP() {
+
+    SERVICE="$2"
+    if [ -z "${SERVICE}" ]; then
+        read -p "Please enter service: " SERVICE
+    fi
+
+    GET_SERVICE_NAME ${SERVICE}
+    ${DOCKER_COMPOSE} top ${SERVICE_NAME}
+}
+
+GET_SERVICE_TOP_ALL() {
+
+    ${DOCKER_COMPOSE} top
+
+}
+
+GET_SERVICE_PS() {
+
+    ${DOCKER_COMPOSE} ps
+
+}
+
+# Get containers status
+GET_CONTAINER_STATUS() {
+    CONTAINERS=("core" "postfix" "dovecot" "rspamd" "pgsql" "redis" "webmail")
+        
+    for cc in "${CONTAINERS[@]}"; do
+        
+        CONTAINER="${cc}"
+        GET_CONTAINER_ID "${CONTAINER}"
+                
+        status=$(docker inspect --format='{{.State.Status}}' "${CONTAINER_ID}" 2>/dev/null)
+        if [ "$status" = "running" ]; then
+            echo -e "\033[32m ${CONTAINER} container is running\033[0m"
+        else
+            echo -e "\033[31m ${CONTAINER} container is not running. Status: ${status} \033[0m"
+        fi
+        
+    done
+}
+
+CLEAR_OLD_IMAGE() {
+    # Remove only outdated versions of images defined in docker-compose.yml
+
+    # Check if docker-compose.yml exists
+    if [ ! -f "docker-compose.yml" ]; then
+        Red_Error "Error: docker-compose.yml file not found"      
+    fi
+
+    # Extract complete image names (including tags) defined in compose file
+    # echo "Extracting billionmail images from docker-compose.yml..."
+    # COMPOSE_IMAGES=$(grep -oP 'image:\s*\K[^"\s]+' docker-compose.yml | sort -u)
+    COMPOSE_IMAGES=$(grep -oP 'image:\s*\K(?:billionmail|ghcr\.io/aapanel)[^"\s]+' docker-compose.yml | sort -u)
+
+    # Check if any images were found
+    if [ -z "${COMPOSE_IMAGES}" ]; then
+        echo "Warning: No image definitions found in docker-compose.yml"
+        exit 1
+    fi
+
+    # Get all local Docker images (excluding <none> images)
+    # echo "Getting all local Docker images..."
+    ALL_IMAGES=$(docker images --format "{{.Repository}}:{{.Tag}}" | grep -v "<none>:<none>")
+
+    # Find outdated images to remove
+    IMAGES_TO_REMOVE=""
+
+    while IFS= read -r compose_image; do
+        # Extract image name (without tag)
+        image_name=$(echo "${compose_image}" | awk -F: '{print $1}')
+        
+        # Extract tag defined in compose file
+        compose_tag=$(echo "${compose_image}" | awk -F: '{print $2}')
+        
+        # Find all local images with the same name
+        local_images=$(echo "${ALL_IMAGES}" | grep "^${image_name}:")
+        
+        # Filter images with different tags
+        for local_image in ${local_images}; do
+            local_tag=$(echo "${local_image}" | awk -F: '{print $2}')
+            
+            # If local tag differs from compose tag, add to removal list
+            if [ "${local_tag}" != "${compose_tag}" ]; then
+                IMAGES_TO_REMOVE="${IMAGES_TO_REMOVE} ${local_image}"
+            fi
+        done
+    done <<< "${COMPOSE_IMAGES}"
+
+    # Display results
+    if [ -z "${IMAGES_TO_REMOVE}" ]; then
+        echo ""
+        echo "No outdated images found to remove"
+        exit 0
+    fi
+
+    echo -e "\n--- Outdated images to remove ---"
+    echo "${IMAGES_TO_REMOVE}" | tr ' ' '\n' | grep -v '^$'
+    IMAGE_COUNT=$(echo "${IMAGES_TO_REMOVE}" | wc -w)
+    echo -e "\nTotal: ${IMAGE_COUNT} outdated images to remove"
+
+    # Ask for confirmation
+    read -p "Remove these outdated images? (y/n): " confirm
+    if [ "${confirm}" = "y" ] || [ "${confirm}" = "Y" ]; then
+        sleep 5
+        for image in ${IMAGES_TO_REMOVE}; do
+            echo "Removing image: ${image}"
+            docker rmi "${image}" || echo "Warning: Failed to remove ${image}"
+        done
+        echo "Outdated images removed successfully"
+        echo -e "For deeper Docker system cleanup, ensure all containers to keep are running before executing:\n docker system prune"
+    else
+        echo "Operation cancelled"
+    fi
+}
+
+
+SHOW_HELP() {
         echo "Help Information:"
         echo "  default                   - Show BillionMail login default info: $0 default"
         echo "  update                    - Update BillionMail: $0 update"
@@ -799,13 +1152,34 @@ case "$1" in
         echo "  change-password           - Modify BillionMail Administrator password: $0 change-password"
         echo "  change-safe-path          - Modify BillionMail security entrance path: $0 change-safe-path"
         echo "  change-apply-ssl-port     - Modify BillionMail apply ssl port: $0 change-apply-ssl-port"
-        echo "  add-domain <domain>       - Add domain. Example: $0 add-domain example.com"
-        echo "  del-domain <domain>       - Delete domain. Example: $0 del-domain example.com"
-        echo "  add-email <email>         - Add email. Example: $0 add-email user@example.com"
-        echo "  del-email <email>         - Delete email. Example: $0 del-email user@example.com"
+        echo "  start                     - Start BillionMail: $0 start"
+        echo "  stop                      - Stop BillionMail: $0 stop"
+        echo "  restart                   - Restart BillionMail: $0 restart"
+        echo "  status                    - Show BillionMail containers running status : $0 status"
+        echo "  down                      - Stop and remove containers, networks: $0 down"
+        echo "  rebuild                   - Rebuild all BillionMail containers: $0 rebuild"
+        echo "  top                       - Show all BillionMail processes: $0 top"
+        echo "  ps                        - Show all BillionMail containers: $0 ps"
+        echo "  service-top               - Show processes of a specific BillionMail service: $0 s-t postfix"
+        echo "  log-file <service>            - View logs of a specific service: $0 l-f postfix"
+        echo "  log-container <container>     - View logs of a specific container: $0 l-c postfix"
+        echo "  restart-service <service>     - Restart a specific service and its container: $0 r-s postfix"
+        echo "  clear                     - Clear BillionMail old images: $0 clear"
+        # echo "  add-domain <domain>       - Add domain. Example: $0 add-domain example.com"
+        # echo "  del-domain <domain>       - Delete domain. Example: $0 del-domain example.com"
+        # echo "  add-email <email>         - Add email. Example: $0 add-email user@example.com"
+        # echo "  del-email <email>         - Delete email. Example: $0 del-email user@example.com"
         echo "  show-domain               - Show domain data."
         echo "  show-email                - Show email data."
-        echo "  show-record               - Show domain DNS record."
+        # echo "  show-record               - Show domain DNS record."
+        
+        exit
+}
+
+
+case "$1" in
+    h | -h | help | --help | -help)
+        SHOW_HELP
         ;;
     default | info)
         Default_info
@@ -857,8 +1231,110 @@ case "$1" in
     MODIFY_SAFE_ENTRANCE|modify_safe_path|change-safe-path)
         MODIFY_SAFE_ENTRANCE
         ;;
+    REBUILD_PROJECT|rebuild_project|rebuild)
+        REBUILD_PROJECT
+        ;;
+    RESTART_PROJECT|restart_project|restart)
+        RESTART_PROJECT
+        ;;
+    START_PROJECT|start_project|start)
+        START_PROJECT
+        ;;
+    STOP_PROJECT|stop_project|stop)
+        STOP_PROJECT
+        ;;
+    GET_CONTAINER_STATUS|get_container_status|status)
+        GET_CONTAINER_STATUS
+        ;;
+    DOWN_PROJECT|down_project|down)
+        DOWN_PROJECT
+        ;;
+    RESTART_SERVICE|restart_service|restart-service|r-s)
+        RESTART_SERVICE "$@"
+        ;;
+    GET_CONTAINER_LOG|log_container|log-container|l-c)
+        GET_CONTAINER_LOG "$@"
+        ;;
+    GET_FILE_LOG|log_file|log-file|l-f)
+        GET_FILE_LOG "$@"
+        ;;
+    GET_SERVICE_TOP|service_top|service-top|s-t)
+        GET_SERVICE_TOP "$@"
+        ;;
+    GET_SERVICE_TOP_ALL|service_top_all|service-top-all|top)
+        GET_SERVICE_TOP_ALL
+        ;;    
+    GET_SERVICE_PS|service-ps|ps)
+        GET_SERVICE_PS
+        ;;  
+    RESTART_SERVICE_ADMIN|restart_service_admin|restart-service-admin|restart-admin)
+        RESTART_SERVICE_ADMIN
+        ;;
+    clear)
+    CLEAR_OLD_IMAGE
+    ;;    
+
     *)
-        echo "Usage: $0 {default|update|change-port|change-tz|show-record|help}"
-        exit 1
+        echo "=============== BillionMail CLI =================="
+        echo "1) Restart BillionMail          2) View login info"
+        echo ""
+        echo "3) View running status          4) Stop BillionMail"
+        echo ""
+        echo "5) Start BillionMail            6) Restart manage only (mail unaffected)"
+        echo ""
+        echo "7) Change manage password       8) Change manage username"
+        echo ""
+        echo "9) Change secure entry          10) Change manage access port"
+        echo ""
+        echo "11) View all processes          12) Update BillionMail"
+        echo ""
+        echo "0) Exit      For more commands: help"
+        echo "=================================================="
+        read -p "Enter number to execute command [0-12]: " input  
+        case ${input} in
+        1)
+            RESTART_PROJECT
+            ;;
+        2)
+            Default_info
+            ;;
+        3)
+            GET_CONTAINER_STATUS
+            ;;
+        4)
+            STOP_PROJECT
+            ;;
+        5)
+            START_PROJECT
+            ;;
+        6)
+            RESTART_SERVICE_ADMIN
+            ;;
+        7)
+            MODIFY_ADMIN_PASSWORD
+            ;;
+        8)
+            MODIFY_ADMIN_USERNAME
+            ;;
+        9)
+            MODIFY_SAFE_ENTRANCE
+            ;;
+        10)
+            MODIFY_HTTPS_PORT
+            ;;
+        11)
+            GET_SERVICE_TOP_ALL
+            ;;
+        12)
+            Update_BillionMail
+            ;;
+        help)
+            SHOW_HELP
+            ;;
+        0 | * )
+            echo "Cancelled!"
+            exit
+            ;;
+        esac
         ;;
 esac

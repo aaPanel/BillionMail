@@ -11,80 +11,69 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
-	"github.com/gogf/gf/v2/errors/gerror"
 	"os"
 	"path/filepath"
 	"strconv"
-	"strings"
 	"time"
 )
 
 var (
-	//envPath    = "../.env"
 	envPath     = public.AbsPath("../.env")
 	projectPath = public.AbsPath("../")
 )
 
-// loadEnvFile .env
-func loadEnvFile() (map[string]string, error) {
-	content, err := os.ReadFile(envPath)
-	if err != nil {
-		return nil, err
-	}
-
-	envMap := make(map[string]string)
-	lines := strings.Split(string(content), "\n")
-
-	for _, line := range lines {
-		line = strings.TrimSpace(line)
-		if line == "" || strings.HasPrefix(line, "#") {
-			continue
-		}
-
-		parts := strings.SplitN(line, "=", 2)
-		if len(parts) != 2 {
-			continue
-		}
-
-		key := strings.TrimSpace(parts[0])
-		value := strings.Trim(strings.TrimSpace(parts[1]), `"'`)
-		envMap[key] = value
-	}
-
-	return envMap, nil
-}
-
 // loadSSLInfo
 func loadSSLInfo() (*v1.SSLConfig, error) {
-
 	certPath := public.AbsPath(filepath.Join(consts.SSL_PATH, "cert.pem"))
 	keyPath := public.AbsPath(filepath.Join(consts.SSL_PATH, "key.pem"))
 
 	if _, err := os.Stat(certPath); os.IsNotExist(err) {
-		return nil, gerror.Newf("certificate file %s does not exist", certPath)
+		return &v1.SSLConfig{Status: false}, nil
 	}
 	if _, err := os.Stat(keyPath); os.IsNotExist(err) {
-		return nil, gerror.Newf("private key file %s does not exist", keyPath)
+		return &v1.SSLConfig{Status: false}, nil
 	}
 
 	certData, err := os.ReadFile(certPath)
 	if err != nil {
-		return nil, gerror.Wrapf(err, "failed to read certificate file %s", certPath)
+		return &v1.SSLConfig{Status: false}, nil
 	}
 
 	keyData, err := os.ReadFile(keyPath)
 	if err != nil {
-		return nil, gerror.Wrapf(err, "failed to read private key file %s", keyPath)
+		return &v1.SSLConfig{Status: false}, nil
 	}
 
 	block, _ := pem.Decode(certData)
 	if block == nil {
-		return nil, gerror.New("failed to decode PEM block containing certificate")
+		return &v1.SSLConfig{Status: false}, nil
 	}
 
 	cert, err := x509.ParseCertificate(block.Bytes)
 	if err != nil {
-		return nil, gerror.Wrap(err, "failed to parse certificate")
+		return &v1.SSLConfig{Status: false}, nil
+	}
+
+	// 检查证书是否过期
+	now := time.Now()
+	if now.Before(cert.NotBefore) || now.After(cert.NotAfter) {
+		return &v1.SSLConfig{
+			CertPath:          certPath,
+			KeyPath:           keyPath,
+			CertData:          string(certData),
+			KeyData:           string(keyData),
+			ValidUntil:        cert.NotAfter.Format(time.RFC3339),
+			ValidFrom:         cert.NotBefore.Format(time.RFC3339),
+			Issuer:            cert.Issuer.String(),
+			Subject:           cert.Subject.String(),
+			DNSNames:          cert.DNSNames,
+			SerialNumber:      cert.SerialNumber.String(),
+			IsCA:              cert.IsCA,
+			IssuerCommonName:  cert.Issuer.CommonName,
+			SubjectCommonName: cert.Subject.CommonName,
+			Version:           cert.Version,
+			Status:            false,
+		}, nil
 	}
 
 	// 返回SSL配置
@@ -99,10 +88,11 @@ func loadSSLInfo() (*v1.SSLConfig, error) {
 		Subject:           cert.Subject.String(),
 		DNSNames:          cert.DNSNames,
 		SerialNumber:      cert.SerialNumber.String(),
-		IsCA:              cert.IsCA, // CA Certificate
+		IsCA:              cert.IsCA,
 		IssuerCommonName:  cert.Issuer.CommonName,
 		SubjectCommonName: cert.Subject.CommonName,
 		Version:           cert.Version,
+		Status:            true,
 	}, nil
 }
 
@@ -175,4 +165,67 @@ func parseInt(s string, defaultValue int) int {
 		return v
 	}
 	return defaultValue
+}
+
+// validateConfigValue
+func validateConfigValue(key, value string) error {
+	// Basic length check
+	if len(value) > 1024 {
+		return fmt.Errorf("configuration value too long, maximum 1024 characters")
+	}
+
+	switch key {
+	case "ADMIN_USERNAME", "admin_username":
+		// Admin username: allowed letters, numbers, underscores, length 4-32
+		if len(value) < 4 || len(value) > 32 {
+			return fmt.Errorf("admin username length must be between 4-32")
+		}
+		if !public.IsValidUsername(value) {
+			return fmt.Errorf("admin username can only contain letters, numbers and underscores")
+		}
+
+	case "ADMIN_PASSWORD", "admin_password":
+		if len(value) < 4 {
+			return fmt.Errorf("password length must be at least 4 characters")
+		}
+
+	case "BILLIONMAIL_HOSTNAME", "billionmail_hostname":
+		// Hostname: allowed letters, numbers, dots, hyphens
+		if !public.IsValidHostname(value) {
+			return fmt.Errorf("hostname format is incorrect")
+		}
+
+	case "SMTP_PORT", "SMTPS_PORT", "SUBMISSION_PORT", "IMAP_PORT", "IMAPS_PORT", "POP_PORT", "POPS_PORT", "HTTP_PORT", "HTTPS_PORT", "REDIS_PORT",
+		"smtp", "smtps", "submission", "imap", "imaps", "pop", "pops", "http", "https", "redis_port":
+		// Port: 1-65535
+		port := public.ParseInt(value)
+		if port < 1 || port > 65535 {
+			return fmt.Errorf("port must be between 1-65535")
+		}
+
+	case "IPV4_NETWORK", "ipv4_network":
+		// IPv4 network: CIDR format
+		if !public.IsValidCIDR(value) {
+			return fmt.Errorf("IPv4 network format is incorrect, please use CIDR format (e.g. 192.168.1.0/24)")
+		}
+
+	case "TZ", "timezone":
+		// Timezone: check if it is a valid timezone
+		if !public.IsValidTimezone(value) {
+			return fmt.Errorf("invalid timezone")
+		}
+
+	case "FAIL2BAN_INIT", "fail2ban":
+		// fail2ban: only allowed y/n or 1/0
+		if value != "y" && value != "n" && value != "1" && value != "0" {
+			return fmt.Errorf("fail2ban value can only be y/n or 1/0")
+		}
+	}
+
+	// General character check: not allowed dangerous characters
+	if public.ContainsDangerousChars(value) {
+		return fmt.Errorf("configuration value contains illegal characters")
+	}
+
+	return nil
 }

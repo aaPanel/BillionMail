@@ -11,8 +11,9 @@ import (
 )
 
 var (
-	baseurl    = ""
-	baseurlMap = make(map[string]string)
+	baseurl      = ""
+	baseurlMap   = make(map[string]string)
+	baseurlMapMu sync.RWMutex
 )
 
 // GetBaseURL get baseurl of console panel
@@ -29,7 +30,10 @@ func GetBaseURLBySender(sender string) string {
 		return GetBaseURL()
 	}
 
-	if s, ok := baseurlMap[sender]; ok {
+	baseurlMapMu.RLock()
+	s, ok := baseurlMap[sender]
+	baseurlMapMu.RUnlock()
+	if ok {
 		return s
 	}
 
@@ -71,7 +75,10 @@ func UpdateBaseURL(ctx context.Context, domain ...string) {
 		go func(domain string) {
 			defer wg.Done()
 			g.Log().Debug(ctx, "UpdateBaseURL --> Updating base URL for domain:", domain)
-			baseurlMap[domain] = buildBaseURL(domain)
+			url := buildBaseURL(domain)
+			baseurlMapMu.Lock()
+			baseurlMap[domain] = url
+			baseurlMapMu.Unlock()
 		}(d)
 	}
 

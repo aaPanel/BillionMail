@@ -1,699 +1,776 @@
 {
-	"common": {
-		"all": {
-			"text": "All",
-			"domain": "All Domains"
-		},
-		"time": {
-			"today": "Today",
-			"yesterday": "Yesterday",
-			"last7days": "Last 7 Days",
-			"custom": "Custom"
-		},
-		"columns": {
-			"actions": "Operator"
-		},
-		"actions": {
-			"view": "View",
-			"edit": "Edit",
-			"delete": "Delete",
-			"add": "Add",
-			"create": "Create",
-			"update": "Update",
-			"save": "Save",
-			"cancel": "Cancel",
-			"confirm": "Confirm",
-			"back": "Back",
-			"search": "Search",
-			"reset": "Reset",
-			"more": "More",
-			"refresh": "Refresh",
-			"copy": "Copy",
-			"restart": "Restart",
-			"import": "Import",
-			"export": "Export",
-			"download": "Download",
-			"upload": "Upload",
-			"apply": "Apply",
-			"test": "Test",
-			"rename": "Rename",
-			"preview": "Preview",
-			"modify": "Modify",
-			"config": "Config",
-			"help": "Help"
-		},
-		"useCopy": {
-			"noText": "No text to copy",
-			"success": "Copy successful",
-			"failed": "Copy failed"
-		}
-	},
-	"components": {
-		"tableHelp": {
-			"text1": "Submit {issues} for questions or suggestions, and light up a {star} on Github to support the project.",
-			"text2": "We highly value your active participation. Thank you."
-		},
-		"upload": {
-			"error": {
-				"fileSizeExceeded": "The size of file [{fileName}] cannot exceed {maxSize}MB",
-				"uploadFailed": "File upload failed. Please try again"
-			},
-			"prompt": {
-				"dragText": "Click or drag files to this area",
-				"supportedFiles": "Only {suffix} files are supported"
-			}
-		}
-	},
-	"layout": {
-		"header": {
-			"submit": "Submit a Request"
-		},
-		"menu": {
-			"overview": "Overview",
-			"market": "Email Marketing",
-			"task": "Task",
-			"template": "Template",
-			"contacts": "Contacts",
-			"subscribers": "Subscribers",
-			"group": "Group",
-			"domain": "Domain",
-			"mailboxes": "Mailboxes",
-			"settings": "Settings",
-			"common": "Common Settings",
-			"bcc": "BCC",
-			"forward": "Mail Forward",
-			"logout": "Logout"
-		}
-	},
-	"login": {
-		"title": "BillionMail",
-		"form": {
-			"usernamePlaceholder": "Username",
-			"passwordPlaceholder": "Password",
-			"loginButton": "Login",
-			"captchaPlaceholder": "Verification code",
-			"changeCaptcha": "Click to change",
-			"captcha": "Verification code"
-		},
-		"validation": {
-			"usernameRequired": "Username cannot be empty!",
-			"passwordRequired": "Password cannot be empty!",
-			"captchaRequired": "Please enter the verification code"
-		},
-		"messages": {
-			"loginSuccess": "Login successful",
-			"loginFailed": "Login failed",
-			"networkError": "Network error, please try again later"
-		}
-	},
-	"user": {
-		"logout": {
-			"title": "Tips",
-			"content": "Are you sure you want to logout?"
-		},
-		"api": {
-			"loading": {
-				"logout": "Logging out, please wait..."
-			}
-		}
-	},
-	"overview": {
-		"delivered": "Delivered",
-		"opened": "Opened",
-		"clicked": "Clicked",
-		"bounced": "Bounced",
-		"mailProviders": "Mail Providers",
-		"sendStats": "Send Statistics",
-		"provider": {
-			"mailProvider": "Mail Provider",
-			"delivered": "Delivered",
-			"open": "Open",
-			"click": "Click",
-			"bounce": "Bounce"
-		},
-		"send": {
-			"successRate": "Success Rate",
-			"success": "Success",
-			"fail": "Failed",
-			"sendSuccess": "Send Success",
-			"sendFail": "Send Failed"
-		},
-		"rate": {
-			"openRate": "Open Rate",
-			"clickRate": "Click Rate",
-			"bounceRate": "Bounce Rate"
-		},
-		"sendFailDetails": {
-			"title": "Send Failed Details",
-			"columns": {
-				"recipient": "Recipient",
-				"dsn": "Dsn",
-				"delay": "Delay",
-				"delays": "Delays",
-				"status": "Status",
-				"relay": "Relay",
-				"details": "Details"
-			}
-		}
-	},
-	"market": {
-		"task": {
-			"title": "Task",
-			"actions": {
-				"add": "Add Task",
-				"detail": "View",
-				"export": "Export",
-				"send": "Send",
-				"pause": "Pause"
-			},
-			"columns": {
-				"time": "Time",
-				"subject": "Subject",
-				"sender": "Sender",
-				"recipients": "To",
-				"success": "Success",
-				"failed": "Failed",
-				"status": "Status",
-				"remark": "Remark",
-				"progress": "Progress",
-				"email": "Email",
-				"errorMsg": "Error Message"
-			},
-			"status": {
-				"pending": "Pending",
-				"processing": "Processing",
-				"done": "Done"
-			},
-			"search": {
-				"subjectPlaceholder": "Search by subject"
-			},
-			"changeStatus": {
-				"title": "Change Task Status [{subject}]",
-				"startConfirm": "Start sending task now?",
-				"pauseConfirm": "After pausing the task, you can continue sending it!"
-			},
-			"delete": {
-				"title": "Delete Task",
-				"confirm": "Are you sure you want to delete the task \"{subject}\"?"
-			},
-			"detail": {
-				"title": "Task Details",
-				"displayName": "Display Name",
-				"sender": "Sender",
-				"subject": "Mail Subject",
-				"groups": "Groups",
-				"sendTime": "Send Time",
-				"unsubscribeLink": "Unsubscribe Link",
-				"threads": "Threads Num",
-				"remark": "Remark",
-				"yes": "Yes",
-				"no": "No",
-				"auto": "Auto"
-			},
-			"edit": {
-				"addTitle": "Add Task",
-				"from": "From",
-				"to": "To",
-				"displayName": "Display Name",
-				"displayNamePlaceholder": "Please enter display name",
-				"subject": "Subject",
-				"subjectPlaceholder": "Please enter mail subject",
-				"recipients": "Recipients",
-				"recipientsPlaceholder": "Please select recipient groups",
-				"recipientsCount": "Send emails ({count} recipients)",
-				"template": "Email template",
-				"saveOutbox": "Save to outbox",
-				"unsubscribeLink": "Unsubscribe link",
-				"threads": "Threads",
-				"threadsAuto": "Auto",
-				"threadsCustom": "Custom",
-				"sendTime": "Send time",
-				"sendTimeNow": "Send now",
-				"sendTimeSchedule": "Schedule",
-				"remark": "Remark",
-				"remarkPlaceholder": "Please enter remark",
-				"testEmail": "Test email",
-				"testEmailPlaceholder": "Please enter test email",
-				"sendTest": "Send test mail",
-				"viewCase": "View case",
-				"preview": {
-					"empty": "Please select an email template to preview"
-				},
-				"validation": {
-					"displayNameRequired": "Please enter display name",
-					"subjectRequired": "Please enter mail subject",
-					"recipientsRequired": "Please select contact person",
-					"sendTimeRequired": "Please select send time",
-					"testEmailRequired": "Please enter test email",
-					"templateRequired": "Please select email template"
-				},
-				"discard": {
-					"title": "Tips",
-					"content": "Do you want to discard your current edits?"
-				}
-			},
-			"createGroup": {
-				"title": "Create Group",
-				"groupName": "Group Name",
-				"email": "Email",
-				"groupNamePlaceholder": "Please enter group name",
-				"validation": {
-					"groupNameRequired": "Please enter group name"
-				}
-			}
-		},
-		"template": {
-			"title": "Template",
-			"name": "Template Name",
-			"content": "Template Content",
-			"uploadHtml": "Upload HTML File",
-			"file": "Template File",
-			"actions": {
-				"add": "Add Template",
-				"preview": "Preview",
-				"duplicate": "Duplicate",
-				"export": "Export",
-				"import": "Import"
-			},
-			"columns": {
-				"name": "Template Name",
-				"type": "Type",
-				"createdAt": "Created At"
-			},
-			"search": {
-				"namePlaceholder": "Search template name"
-			},
-			"delete": {
-				"title": "Delete Template",
-				"confirm": "Are you sure to delete template {name}?"
-			},
-			"form": {
-				"name": "Template Name",
-				"type": "Template Type",
-				"content": "Template Content"
-			},
-			"add": {
-				"title": "Add Template",
-				"namePlaceholder": "Please enter template name",
-				"validation": {
-					"nameRequired": "Please enter template name",
-					"uploadRequired": "Please upload HTML file"
-				}
-			},
-			"preview": {
-				"title": "Template Preview"
-			}
-		}
-	},
-	"contacts": {
-		"subscribers": {
-			"search": {
-				"emailPlaceholder": "Enter an email address to search"
-			},
-			"columns": {
-				"email": "Email",
-				"name": "Group Name",
-				"createdAt": "Creation Time"
-			},
-			"status": {
-				"subscribed": "Subscribed",
-				"unsubscribed": "Unsubscribed"
-			},
-			"actions": {
-				"changeGroup": "Change Group"
-			},
-			"delete": {
-				"title": "Delete Subscriber",
-				"confirm": "Are you sure you want to delete the subscriber {email}?"
-			},
-			"select": {
-				"prefix": "Group: "
-			},
-			"edit": {
-				"title": "Change Group",
-				"email": "Email",
-				"group": "Group",
-				"validation": {
-					"emailRequired": "Please enter email",
-					"groupRequired": "Please select group"
-				}
-			},
-			"import": {
-				"title": "Import Contacts",
-				"group": "Group",
-				"data": "Data",
-				"pasteData": "Paste Data",
-				"uploadFile": "Upload File",
-				"pastePlaceholder": "Please paste data, one email per line",
-				"fileTypeHint": "File type: txt, one email per line, not exceeding 5 MB",
-				"validation": {
-					"groupRequired": "Please select group",
-					"dataRequired": "Please paste data, one email per line",
-					"fileRequired": "Please upload file"
-				}
-			},
-			"loading": {
-				"importSubscribers": "Importing contacts, please wait...",
-				"updateSubscriberGroup": "Updating group, please wait...",
-				"deleteSubscriber": "Deleting contacts, please wait..."
-			}
-		},
-		"group": {
-			"search": {
-				"namePlaceholder": "Search by group name"
-			},
-			"columns": {
-				"name": "Group Name",
-				"subscribers": "Subscribers",
-				"unsubscribe": "Unsubscribed",
-				"createdAt": "Created At"
-			},
-			"form": {
-				"name": "Group Name",
-				"file": "File",
-				"nameRequired": "Please enter group name"
-			},
-			"add": {
-				"title": "Add Group"
-			},
-			"rename": {
-				"title": "Rename Group"
-			},
-			"delete": {
-				"title": "Delete Group",
-				"confirm": "Are you sure to delete group {name}?"
-			},
-			"fileUpload": {
-				"hint": "File type: txt, one email per line, not exceeding 5 MB",
-				"emptyHint": "An empty group will be created when no file is uploaded"
-			},
-			"loading": {
-				"createGroup": "Creating group, please wait...",
-				"updateGroup": "Updating group, please wait...",
-				"deleteGroup": "Deleting group, please wait..."
-			}
-		}
-	},
-	"domain": {
-		"title": "MailDomain",
-		"addDomain": "Add Domain",
-		"help": "Add the domain you want to use to send emails",
-		"columns": {
-			"domain": "Domain",
-			"quota": "Quota",
-			"mailboxes": "Mailboxes",
-			"defaultMailboxSize": "Default Mailbox Size",
-			"actions": "Actions"
-		},
-		"actions": {
-			"dnsRecord": "DNS Records"
-		},
-		"delete": {
-			"title": "Delete Domain",
-			"confirm": "Are you sure you want to delete domain [{domain}]?"
-		},
-		"form": {
-			"addTitle": "Add Domain",
-			"editTitle": "Edit Domain",
-			"domain": "Domain",
-			"domainPlaceholder": "Please enter domain, e.g.: aapanel.com",
-			"aRecord": "A Record",
-			"aRecordPlaceholder": "Please enter A record, e.g.: mail.aapanel.com",
-			"quota": "Domain Quota",
-			"mailboxCount": "Mailbox Count",
-			"globalCatch": "Global Catch",
-			"globalCatchPlaceholder": "Forward non-existent emails to this address",
-			"validation": {
-				"domainRequired": "Domain name cannot be empty!"
-			},
-			"tips": {
-				"aRecordFailed": "A record resolution failed. Please check if the A record domain is resolved to the server IP",
-				"dnsSetup": "You need to add an A record in your DNS provider's console",
-				"cloudflare": "If using CloudFlare, please select [DNS only] when adding records"
-			}
-		},
-		"dns": {
-			"title": "DNS Records",
-			"verify": "Records set, verify DNS resolution",
-			"status": {
-				"ok": "OK",
-				"notSet": "Not Set"
-			},
-			"columns": {
-				"domain": "Domain"
-			},
-			"table": {
-				"recordType": "Record Type",
-				"host": "Host",
-				"value": "Value",
-				"mxPriority": "MX Priority"
-			},
-			"step1": {
-				"title": "Step 1: Add A Record"
-			},
-			"step2": {
-				"title": "Step 2: Add MX Record",
-				"description": "Login to your domain service provider and add an MX record for email service (please copy the following parameters directly)"
-			},
-			"step3": {
-				"title": "Step 3: Add TXT Record",
-				"description": "Add TXT records for email anti-spam (please copy the following parameters directly)"
-			},
-			"step4": {
-				"title": "Step 4: Add PTR Record",
-				"description1": "(Optional) PTR record is used for reverse DNS lookup",
-				"description2": "Contact your IP provider to create PTR record"
-			}
-		},
-		"ssl": {
-			"expired": "Expired",
-			"daysLeft": "{days} days",
-			"notSet": "Not Set",
-			"title": "Domain SSL",
-			"tabs": {
-				"otherCertificate": "Other Certificate"
-			},
-			"cert": {
-				"brand": "Brand",
-				"domains": "Certificate Domains",
-				"privateKey": "Private Key (KEY)",
-				"certificate": "Certificate (CRT/PEM)",
-				"keyPlaceholder": "Enter private key content",
-				"certPlaceholder": "Enter certificate content"
-			},
-			"actions": {
-				"applyFree": "Apply Free Certificate"
-			},
-			"tips": {
-				"paste": "Paste your KEY and CRT content, then save",
-				"chainCheck": "If the browser prompts that the certificate chain is incomplete, please check if the PEM certificate is correctly concatenated",
-				"pemFormat": "PEM format certificate = Domain certificate .crt + Root certificate (root_bundle).crt",
-				"defaultSite": "When no SSL default site is specified, sites without SSL configuration will use HTTPS to access sites with SSL enabled"
-			}
-		},
-		"api": {
-			"loading": {
-				"creating": "Creating Domain, please wait...",
-				"updating": "Updating Domain, please wait...",
-				"deleting": "Deleting Domain, please wait...",
-				"settingSSL": "Setting SSL, please wait...",
-				"applyingCert": "Applying SSL Certificate, please wait...",
-				"refreshingDns": "Refreshing DNS records, please wait..."
-			}
-		}
-	},
-	"mailbox": {
-		"title": "Mailbox Management",
-		"actions": {
-			"add": "Add Mailbox"
-		},
-		"search": {
-			"usernamePlaceholder": "Search username"
-		},
-		"domain": {
-			"selectPlaceholder": "Select domain"
-		},
-		"columns": {
-			"username": "Username",
-			"password": "Password",
-			"loginInfo": "Login Info",
-			"quota": "Quota",
-			"type": "Type",
-			"status": "Status"
-		},
-		"userType": {
-			"admin": "Admin",
-			"general": "General User"
-		},
-		"form": {
-			"addTitle": "Add Mailbox",
-			"editTitle": "Edit Mailbox",
-			"emailAddress": "Email Address",
-			"password": "Password",
-			"passwordPlaceholder": "Enter your mailbox password",
-			"quota": "Quota",
-			"userType": "User Type",
-			"status": "Status"
-		},
-		"validation": {
-			"emailRequired": "Please enter email address",
-			"passwordLength": "Password must be at least 8 characters",
-			"passwordFormat": "Password must contain at least one uppercase letter, one lowercase letter and one number"
-		},
-		"delete": {
-			"title": "Delete Mailbox",
-			"confirm": "Are you sure you want to delete mailbox [{name}]?"
-		},
-		"loginInfo": {
-			"template": "WebMail: {webmail}\nUsername: {username}\nPassword: {password}\nPOP service [ Address: {mx} Port: 110/995 ]\nIMAP service [ Address: {mx} Port: 143/993 ]\nSMTP service [ Address: {mx} Port: 25/465/587 ]"
-		},
-		"api": {
-			"loading": {
-				"creating": "Creating Mailbox, please wait...",
-				"updating": "Updating Mailbox, please wait...",
-				"deleting": "Deleting Mailbox, please wait..."
-			}
-		}
-	},
-	"smtp": {
-		"title": "SMTP Relay Service Management",
-		"description": "Manage your SMTP relay services with support for multiple service providers",
-		"empty": "No SMTP relay services available",
-		"providers": {
-			"gmail": "Gmail",
-			"mailgun": "Mailgun",
-			"aws": "AWS SES",
-			"sendgrid": "SendGrid",
-			"custom": "Custom SMTP"
-		},
-		"delete": {
-			"title": "Delete Relay",
-			"confirm": "Are you sure you want to delete this relay service [{name}]?"
-		},
-		"card": {
-			"domain": "Bound Domain",
-			"server": "Server",
-			"port": "Port",
-			"username": "Username"
-		},
-		"form": {
-			"addTitle": "Add SMTP",
-			"editTitle": "Edit SMTP",
-			"remark": "Remark",
-			"domain": "Bound Domain",
-			"server": "SMTP Server",
-			"port": "SMTP Port",
-			"username": "Username",
-			"password": "Password",
-			"testConnection": "Test Connection",
-			"bind": " [Bound]",
-			"validation": {
-				"nameRequired": "Please enter a relay name",
-				"domainRequired": "Please select a bound domain",
-				"serverRequired": "Please enter an SMTP server",
-				"portRequired": "Please enter an SMTP port",
-				"usernameRequired": "Please enter a username",
-				"passwordRequired": "Please enter a password"
-			}
-		},
-		"status": {
-			"online": "Online",
-			"offline": "Offline"
-		},
-		"api": {
-			"loading": {
-				"adding": "Adding SMTP, please wait...",
-				"editing": "Editing SMTP, please wait...",
-				"testing": "Testing SMTP connection, please wait...",
-				"deleting": "Deleting SMTP, please wait..."
-			}
-		}
-	},
-	"settings": {
-		"title": "Settings",
-		"service": {
-			"title": "Service Status",
-			"tips": "Tips: Ctrl+F Search keywords, Ctrl+S Save, Ctrl+H Search and replace",
-			"editTitle": "Online Edit {name}",
-			"columns": {
-				"name": "Service Name",
-				"status": "Status"
-			},
-			"status": {
-				"running": "Running",
-				"stopped": "Stopped"
-			},
-			"actions": {
-				"restart": "Restart"
-			},
-			"restart": {
-				"title": "Restart Service",
-				"confirm": "Are you sure you want to restart [{name}]?"
-			}
-		},
-		"bcc": {
-			"title": "BCC Management",
-			"add": "Add BCC",
-			"edit": "Edit BCC",
-			"needCopy": "Need Copy",
-			"copyTo": "Copy to",
-			"domain": "Domain",
-			"type": "BCC Type",
-			"status": "Status",
-			"active": "Active",
-			"types": {
-				"sender": "When sending",
-				"recipient": "When receiving"
-			},
-			"delete": {
-				"title": "Delete BCC [{address}]",
-				"content": "Whether to delete the BCC setting?"
-			},
-			"placeholders": {
-				"needCopy": "Enter the users you need to BCC",
-				"copyTo": "Enter the email you need to receive the BCC"
-			},
-			"loading": {
-				"adding": "Adding BCC, please wait...",
-				"saving": "Saving BCC, please wait...",
-				"deleting": "Deleting BCC, please wait..."
-			}
-		},
-		"forward": {
-			"add": "Add Forward",
-			"edit": "Edit Forward",
-			"columns": {
-				"address": "Address",
-				"goto": "Goto",
-				"domain": "Domain",
-				"created": "Created",
-				"modified": "Modified",
-				"status": "Status"
-			},
-			"form": {
-				"status": "Status",
-				"forwardedUsers": "Forwarded users",
-				"forwardedUsersPlaceholder": "Enter the mailbox that needs to be forwarded",
-				"domain": "Domain",
-				"domainPlaceholder": "Domain name of the Forwarded users",
-				"receivingUser": "Receiving user",
-				"receivingUserPlaceholder": "Users who need to accept forwarded mail. If there are multiple, please separate them with newlines"
-			},
-			"delete": {
-				"title": "Delete mail forward",
-				"content": "Are you sure you want to delete mail forward [{address}]?"
-			},
-			"loading": {
-				"adding": "Adding mail forward, please wait...",
-				"editing": "Editing mail forward, please wait...",
-				"deleting": "Deleting mail forward, please wait..."
-			}
-		},
-		"api": {
-			"loading": {
-				"restarting": "Restarting service, please wait...",
-				"saving": "Saving configuration, please wait..."
-			}
-		}
-	}
+  "common": {
+    "all": {
+      "text": "All",
+      "domain": "All Domains"
+    },
+    "time": {
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "last7days": "Last 7 Days",
+      "custom": "Custom"
+    },
+    "columns": {
+      "actions": "Operator"
+    },
+    "actions": {
+      "view": "View",
+      "edit": "Edit",
+      "delete": "Delete",
+      "add": "Add",
+      "create": "Create",
+      "update": "Update",
+      "save": "Save",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "back": "Back",
+      "search": "Search",
+      "reset": "Reset",
+      "more": "More",
+      "refresh": "Refresh",
+      "copy": "Copy",
+      "restart": "Restart",
+      "import": "Import",
+      "export": "Export",
+      "download": "Download",
+      "upload": "Upload",
+      "apply": "Apply",
+      "test": "Test",
+      "rename": "Rename",
+      "preview": "Preview",
+      "modify": "Modify",
+      "config": "Config",
+      "help": "Help"
+    },
+    "useCopy": {
+      "noText": "No text to copy",
+      "success": "Copy successful",
+      "failed": "Copy failed"
+    }
+  },
+  "components": {
+    "tableHelp": {
+      "text1": "Submit {issues} for questions or suggestions, and light up a {star} on Github to support the project.",
+      "text2": "We highly value your active participation. Thank you."
+    },
+    "upload": {
+      "error": {
+        "fileSizeExceeded": "The size of file [{fileName}] cannot exceed {maxSize}MB",
+        "uploadFailed": "File upload failed. Please try again"
+      },
+      "prompt": {
+        "dragText": "Click or drag files to this area",
+        "supportedFiles": "Only {suffix} files are supported"
+      }
+    }
+  },
+  "layout": {
+    "header": {
+      "submit": "Submit a Request"
+    },
+    "menu": {
+      "overview": "Overview",
+      "market": "Email Marketing",
+      "task": "Task",
+      "template": "Template",
+      "contacts": "Contacts",
+      "subscribers": "Subscribers",
+      "group": "Group",
+      "domain": "Domain",
+      "mailboxes": "Mailboxes",
+      "settings": "Settings",
+      "common": "Common Settings",
+      "bcc": "BCC",
+      "forward": "Mail Forward",
+      "logout": "Logout"
+    }
+  },
+  "login": {
+    "title": "BillionMail",
+    "form": {
+      "usernamePlaceholder": "Username",
+      "passwordPlaceholder": "Password",
+      "loginButton": "Login",
+      "captchaPlaceholder": "Verification code",
+      "changeCaptcha": "Click to change",
+      "captcha": "Verification code"
+    },
+    "validation": {
+      "usernameRequired": "Username cannot be empty!",
+      "passwordRequired": "Password cannot be empty!",
+      "captchaRequired": "Please enter the verification code"
+    },
+    "messages": {
+      "loginSuccess": "Login successful",
+      "loginFailed": "Login failed",
+      "networkError": "Network error, please try again later"
+    }
+  },
+  "user": {
+    "logout": {
+      "title": "Tips",
+      "content": "Are you sure you want to logout?"
+    },
+    "api": {
+      "loading": {
+        "logout": "Logging out, please wait..."
+      }
+    }
+  },
+  "overview": {
+    "delivered": "Delivered",
+    "opened": "Opened",
+    "clicked": "Clicked",
+    "bounced": "Bounced",
+    "mailProviders": "Mail Providers",
+    "sendStats": "Send Statistics",
+    "provider": {
+      "mailProvider": "Mail Provider",
+      "delivered": "Delivered",
+      "open": "Open",
+      "click": "Click",
+      "bounce": "Bounce"
+    },
+    "send": {
+      "successRate": "Success Rate",
+      "success": "Success",
+      "fail": "Failed",
+      "sendSuccess": "Send Success",
+      "sendFail": "Send Failed"
+    },
+    "rate": {
+      "openRate": "Open Rate",
+      "clickRate": "Click Rate",
+      "bounceRate": "Bounce Rate"
+    },
+    "sendFailDetails": {
+      "title": "Send Failed Details",
+      "columns": {
+        "recipient": "Recipient",
+        "dsn": "Dsn",
+        "delay": "Delay",
+        "delays": "Delays",
+        "status": "Status",
+        "relay": "Relay",
+        "details": "Details"
+      }
+    }
+  },
+  "market": {
+    "task": {
+      "title": "Task",
+      "actions": {
+        "add": "Add Task",
+        "detail": "View",
+        "export": "Export",
+        "send": "Send",
+        "pause": "Pause"
+      },
+      "columns": {
+        "time": "Time",
+        "subject": "Subject",
+        "sender": "Sender",
+        "recipients": "To",
+        "success": "Success",
+        "failed": "Failed",
+        "status": "Status",
+        "remark": "Remark",
+        "progress": "Progress",
+        "email": "Email",
+        "errorMsg": "Error Message"
+      },
+      "status": {
+        "pending": "Pending",
+        "processing": "Processing",
+        "done": "Done"
+      },
+      "search": {
+        "subjectPlaceholder": "Search by subject"
+      },
+      "changeStatus": {
+        "title": "Change Task Status [{subject}]",
+        "startConfirm": "Start sending task now?",
+        "pauseConfirm": "After pausing the task, you can continue sending it!"
+      },
+      "delete": {
+        "title": "Delete Task",
+        "confirm": "Are you sure you want to delete the task \"{subject}\"?"
+      },
+      "detail": {
+        "title": "Task Details",
+        "displayName": "Display Name",
+        "sender": "Sender",
+        "subject": "Mail Subject",
+        "groups": "Groups",
+        "sendTime": "Send Time",
+        "unsubscribeLink": "Unsubscribe Link",
+        "threads": "Threads Num",
+        "remark": "Remark",
+        "yes": "Yes",
+        "no": "No",
+        "auto": "Auto"
+      },
+      "edit": {
+        "addTitle": "Add Task",
+        "from": "From",
+        "to": "To",
+        "displayName": "Display Name",
+        "displayNamePlaceholder": "Please enter display name",
+        "subject": "Subject",
+        "subjectPlaceholder": "Please enter mail subject",
+        "recipients": "Recipients",
+        "recipientsPlaceholder": "Please select recipient groups",
+        "recipientsCount": "Send emails ({count} recipients)",
+        "template": "Email template",
+        "saveOutbox": "Save to outbox",
+        "unsubscribeLink": "Unsubscribe link",
+        "threads": "Threads",
+        "threadsAuto": "Auto",
+        "threadsCustom": "Custom",
+        "sendTime": "Send time",
+        "sendTimeNow": "Send now",
+        "sendTimeSchedule": "Schedule",
+        "remark": "Remark",
+        "remarkPlaceholder": "Please enter remark",
+        "testEmail": "Test email",
+        "testEmailPlaceholder": "Please enter test email",
+        "sendTest": "Send test mail",
+        "viewCase": "View case",
+        "preview": {
+          "empty": "Please select an email template to preview"
+        },
+        "validation": {
+          "displayNameRequired": "Please enter display name",
+          "subjectRequired": "Please enter mail subject",
+          "recipientsRequired": "Please select contact person",
+          "sendTimeRequired": "Please select send time",
+          "testEmailRequired": "Please enter test email",
+          "templateRequired": "Please select email template"
+        },
+        "discard": {
+          "title": "Tips",
+          "content": "Do you want to discard your current edits?"
+        }
+      },
+      "createGroup": {
+        "title": "Create Group",
+        "groupName": "Group Name",
+        "email": "Email",
+        "groupNamePlaceholder": "Please enter group name",
+        "validation": {
+          "groupNameRequired": "Please enter group name"
+        }
+      }
+    },
+    "template": {
+      "title": "Template",
+      "name": "Template Name",
+      "content": "Template Content",
+      "uploadHtml": "Upload HTML File",
+      "file": "Template File",
+      "actions": {
+        "add": "Add Template",
+        "preview": "Preview",
+        "duplicate": "Duplicate",
+        "export": "Export",
+        "import": "Import"
+      },
+      "columns": {
+        "name": "Template Name",
+        "type": "Type",
+        "createdAt": "Created At"
+      },
+      "search": {
+        "namePlaceholder": "Search template name"
+      },
+      "delete": {
+        "title": "Delete Template",
+        "confirm": "Are you sure to delete template {name}?"
+      },
+      "form": {
+        "name": "Template Name",
+        "type": "Template Type",
+        "content": "Template Content"
+      },
+      "add": {
+        "title": "Add Template",
+        "namePlaceholder": "Please enter template name",
+        "validation": {
+          "nameRequired": "Please enter template name",
+          "uploadRequired": "Please upload HTML file"
+        }
+      },
+      "preview": {
+        "title": "Template Preview"
+      }
+    }
+  },
+  "contacts": {
+    "subscribers": {
+      "search": {
+        "emailPlaceholder": "Enter an email address to search"
+      },
+      "columns": {
+        "email": "Email",
+        "name": "Group Name",
+        "createdAt": "Creation Time"
+      },
+      "status": {
+        "subscribed": "Subscribed",
+        "unsubscribed": "Unsubscribed"
+      },
+      "actions": {
+        "changeGroup": "Change Group"
+      },
+      "delete": {
+        "title": "Delete Subscriber",
+        "confirm": "Are you sure you want to delete the subscriber {email}?"
+      },
+      "select": {
+        "prefix": "Group: "
+      },
+      "edit": {
+        "title": "Change Group",
+        "email": "Email",
+        "group": "Group",
+        "validation": {
+          "emailRequired": "Please enter email",
+          "groupRequired": "Please select group"
+        }
+      },
+      "import": {
+        "title": "Import Contacts",
+        "group": "Group",
+        "data": "Data",
+        "pasteData": "Paste Data",
+        "uploadFile": "Upload File",
+        "pastePlaceholder": "Please paste data, one email, attributes(can be empty) per line\ne.g., example1@example.com\nexample1@example.com,\"{\"\"age\"\": \"\"13\"\", \"\"Gender\"\": \"\"XXX\"\"}\"",
+        "fileTypeHint": "File type: csv, not exceeding 5 MB",
+        "overwriteLabel": "Overwrite Existing Users",
+        "overwriteDescription": "Whether to overwrite existing customer information in the list according to imported data during import",
+        "subscriptionStatus": "Subscription Status",
+        "status": "Status",
+        "exampleCsvLabel": "Example CSV",
+        "overwriteOptions": {
+          "no": "No",
+          "yes": "Yes"
+        },
+        "subscriptionOptions": {
+          "subscribe": "Subscribe",
+          "unsubscribe": "Unsubscribe"
+        },
+        "statusOptions": {
+          "confirmed": "Confirmed",
+          "unconfirmed": "Unconfirmed"
+        },
+        "validation": {
+          "groupRequired": "Please select group",
+          "dataRequired": "Please paste data, one email per line",
+          "fileRequired": "Please upload file"
+        }
+      },
+      "loading": {
+        "importSubscribers": "Importing contacts, please wait...",
+        "updateSubscriberGroup": "Updating group, please wait...",
+        "deleteSubscriber": "Deleting contacts, please wait..."
+      }
+    },
+    "group": {
+      "search": {
+        "namePlaceholder": "Search by group name"
+      },
+      "columns": {
+        "name": "Group Name",
+        "subscribers": "Subscribers",
+        "unsubscribe": "Unsubscribed",
+        "createdAt": "Created At"
+      },
+      "form": {
+        "name": "Group Name",
+        "file": "File",
+        "nameRequired": "Please enter group name"
+      },
+      "add": {
+        "title": "Add Group"
+      },
+      "rename": {
+        "title": "Rename Group"
+      },
+      "delete": {
+        "title": "Delete Group",
+        "confirm": "Are you sure to delete group {name}?"
+      },
+      "fileUpload": {
+        "hint": "File type: csv, not exceeding 5 MB",
+        "emptyHint": "An empty group will be created when no file is uploaded"
+      },
+      "loading": {
+        "createGroup": "Creating group, please wait...",
+        "updateGroup": "Updating group, please wait...",
+        "deleteGroup": "Deleting group, please wait..."
+      }
+    }
+  },
+  "domain": {
+    "title": "MailDomain",
+    "addDomain": "Add Domain",
+    "help": "Add the domain you want to use to send emails",
+    "columns": {
+      "domain": "Domain",
+      "quota": "Quota",
+      "mailboxes": "Mailboxes",
+      "defaultMailboxSize": "Default Mailbox Size",
+      "actions": "Actions"
+    },
+    "actions": {
+      "dnsRecord": "DNS Records"
+    },
+    "delete": {
+      "title": "Delete Domain",
+      "confirm": "Are you sure you want to delete domain [{domain}]?"
+    },
+    "form": {
+      "addTitle": "Add Domain",
+      "editTitle": "Edit Domain",
+      "domain": "Domain",
+      "domainPlaceholder": "Please enter domain, e.g.: aapanel.com",
+      "aRecord": "A Record",
+      "aRecordPlaceholder": "Please enter A record, e.g.: mail.aapanel.com",
+      "quota": "Domain Quota",
+      "mailboxCount": "Mailbox Count",
+      "globalCatch": "Global Catch",
+      "globalCatchPlaceholder": "Forward non-existent emails to this address",
+      "validation": {
+        "domainRequired": "Domain name cannot be empty!"
+      },
+      "tips": {
+        "aRecordFailed": "A record resolution failed. Please check if the A record domain is resolved to the server IP",
+        "dnsSetup": "You need to add an A record in your DNS provider's console",
+        "cloudflare": "If using CloudFlare, please select [DNS only] when adding records"
+      }
+    },
+    "dns": {
+      "title": "DNS Records",
+      "verify": "Records set, verify DNS resolution",
+      "status": {
+        "ok": "OK",
+        "notSet": "Not Set"
+      },
+      "columns": {
+        "domain": "Domain"
+      },
+      "table": {
+        "recordType": "Record Type",
+        "host": "Host",
+        "value": "Value",
+        "mxPriority": "MX Priority"
+      },
+      "step1": {
+        "title": "Step 1: Add A Record"
+      },
+      "step2": {
+        "title": "Step 2: Add MX Record",
+        "description": "Login to your domain service provider and add an MX record for email service (please copy the following parameters directly)"
+      },
+      "step3": {
+        "title": "Step 3: Add TXT Record",
+        "description": "Add TXT records for email anti-spam (please copy the following parameters directly)"
+      },
+      "step4": {
+        "title": "Step 4: Add PTR Record",
+        "description1": "(Optional) PTR record is used for reverse DNS lookup",
+        "description2": "Contact your IP provider to create PTR record"
+      }
+    },
+    "ssl": {
+      "expired": "Expired",
+      "daysLeft": "{days} days",
+      "notSet": "Not Set",
+      "title": "Domain SSL",
+      "tabs": {
+        "otherCertificate": "Other Certificate"
+      },
+      "cert": {
+        "brand": "Brand",
+        "domains": "Certificate Domains",
+        "privateKey": "Private Key (KEY)",
+        "certificate": "Certificate (CRT/PEM)",
+        "keyPlaceholder": "Enter private key content",
+        "certPlaceholder": "Enter certificate content"
+      },
+      "actions": {
+        "applyFree": "Apply Free Certificate"
+      },
+      "tips": {
+        "paste": "Paste your KEY and CRT content, then save",
+        "chainCheck": "If the browser prompts that the certificate chain is incomplete, please check if the PEM certificate is correctly concatenated",
+        "pemFormat": "PEM format certificate = Domain certificate .crt + Root certificate (root_bundle).crt",
+        "defaultSite": "When no SSL default site is specified, sites without SSL configuration will use HTTPS to access sites with SSL enabled"
+      }
+    },
+    "api": {
+      "loading": {
+        "creating": "Creating Domain, please wait...",
+        "updating": "Updating Domain, please wait...",
+        "deleting": "Deleting Domain, please wait...",
+        "settingSSL": "Setting SSL, please wait...",
+        "applyingCert": "Applying SSL Certificate, please wait...",
+        "refreshingDns": "Refreshing DNS records, please wait..."
+      }
+    }
+  },
+  "mailbox": {
+    "title": "Mailbox Management",
+    "actions": {
+      "add": "Add Mailbox"
+    },
+    "search": {
+      "usernamePlaceholder": "Search username"
+    },
+    "domain": {
+      "selectPlaceholder": "Select domain"
+    },
+    "columns": {
+      "username": "Username",
+      "password": "Password",
+      "loginInfo": "Login Info",
+      "quota": "Quota",
+      "type": "Type",
+      "status": "Status"
+    },
+    "userType": {
+      "admin": "Admin",
+      "general": "General User"
+    },
+    "form": {
+      "addTitle": "Add Mailbox",
+      "editTitle": "Edit Mailbox",
+      "emailAddress": "Email Address",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your mailbox password",
+      "quota": "Quota",
+      "userType": "User Type",
+      "status": "Status"
+    },
+    "validation": {
+      "emailRequired": "Please enter email address",
+      "passwordLength": "Password must be at least 8 characters",
+      "passwordFormat": "Password must contain at least one uppercase letter, one lowercase letter and one number"
+    },
+    "delete": {
+      "title": "Delete Mailbox",
+      "confirm": "Are you sure you want to delete mailbox [{name}]?"
+    },
+    "loginInfo": {
+      "template": "WebMail: {webmail}\nUsername: {username}\nPassword: {password}\nPOP service [ Address: {mx} Port: 110/995 ]\nIMAP service [ Address: {mx} Port: 143/993 ]\nSMTP service [ Address: {mx} Port: 25/465/587 ]"
+    },
+    "api": {
+      "loading": {
+        "creating": "Creating Mailbox, please wait...",
+        "updating": "Updating Mailbox, please wait...",
+        "deleting": "Deleting Mailbox, please wait..."
+      }
+    }
+  },
+  "smtp": {
+    "title": "SMTP Relay Service Management",
+    "description": "Manage your SMTP relay services with support for multiple service providers",
+    "empty": "No SMTP relay services available",
+    "providers": {
+      "gmail": "Gmail",
+      "mailgun": "Mailgun",
+      "aws": "AWS SES",
+      "sendgrid": "SendGrid",
+      "custom": "Custom SMTP"
+    },
+    "delete": {
+      "title": "Delete Relay",
+      "confirm": "Are you sure you want to delete this relay service [{name}]?"
+    },
+    "card": {
+      "domain": "Bound Domain",
+      "server": "Server",
+      "port": "Port",
+      "username": "Username"
+    },
+    "form": {
+      "addTitle": "Add SMTP",
+      "editTitle": "Edit SMTP",
+      "remark": "Remark",
+      "domain": "Bound Domain",
+      "server": "SMTP Server",
+      "port": "SMTP Port",
+      "username": "Username",
+      "password": "Password",
+      "testConnection": "Test Connection",
+      "bind": " [Bound]",
+      "validation": {
+        "nameRequired": "Please enter a relay name",
+        "domainRequired": "Please select a bound domain",
+        "serverRequired": "Please enter an SMTP server",
+        "portRequired": "Please enter an SMTP port",
+        "usernameRequired": "Please enter a username",
+        "passwordRequired": "Please enter a password"
+      }
+    },
+    "status": {
+      "online": "Online",
+      "offline": "Offline"
+    },
+    "api": {
+      "loading": {
+        "adding": "Adding SMTP, please wait...",
+        "editing": "Editing SMTP, please wait...",
+        "testing": "Testing SMTP connection, please wait...",
+        "deleting": "Deleting SMTP, please wait..."
+      }
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "service": {
+      "title": "Service Status",
+      "tips": "Tips: Ctrl+F Search keywords, Ctrl+S Save, Ctrl+H Search and replace",
+      "editTitle": "Online Edit {name}",
+      "columns": {
+        "name": "Service Name",
+        "status": "Status"
+      },
+      "status": {
+        "running": "Running",
+        "stopped": "Stopped"
+      },
+      "actions": {
+        "restart": "Restart"
+      },
+      "restart": {
+        "title": "Restart Service",
+        "confirm": "Are you sure you want to restart [{name}]?"
+      }
+    },
+    "bcc": {
+      "title": "BCC Management",
+      "add": "Add BCC",
+      "edit": "Edit BCC",
+      "needCopy": "Need Copy",
+      "copyTo": "Copy to",
+      "domain": "Domain",
+      "type": "BCC Type",
+      "status": "Status",
+      "active": "Active",
+      "types": {
+        "sender": "When sending",
+        "recipient": "When receiving"
+      },
+      "delete": {
+        "title": "Delete BCC [{address}]",
+        "content": "Whether to delete the BCC setting?"
+      },
+      "placeholders": {
+        "needCopy": "Enter the users you need to BCC",
+        "copyTo": "Enter the email you need to receive the BCC"
+      },
+      "loading": {
+        "adding": "Adding BCC, please wait...",
+        "saving": "Saving BCC, please wait...",
+        "deleting": "Deleting BCC, please wait..."
+      }
+    },
+    "forward": {
+      "add": "Add Forward",
+      "edit": "Edit Forward",
+      "columns": {
+        "address": "Address",
+        "goto": "Goto",
+        "domain": "Domain",
+        "created": "Created",
+        "modified": "Modified",
+        "status": "Status"
+      },
+      "form": {
+        "status": "Status",
+        "forwardedUsers": "Forwarded users",
+        "forwardedUsersPlaceholder": "Enter the mailbox that needs to be forwarded",
+        "domain": "Domain",
+        "domainPlaceholder": "Domain name of the Forwarded users",
+        "receivingUser": "Receiving user",
+        "receivingUserPlaceholder": "Users who need to accept forwarded mail. If there are multiple, please separate them with newlines"
+      },
+      "delete": {
+        "title": "Delete mail forward",
+        "content": "Are you sure you want to delete mail forward [{address}]?"
+      },
+      "loading": {
+        "adding": "Adding mail forward, please wait...",
+        "editing": "Editing mail forward, please wait...",
+        "deleting": "Deleting mail forward, please wait..."
+      }
+    },
+    "common": {
+      "confirm": "Update",
+      "security": {
+        "title": "Security Settings",
+        "username": "Change Username",
+        "currentUsername": "Current Username",
+        "newUsernamePlaceholder": "Enter new username",
+        "usernameRule": "4-20 characters, letters and numbers",
+        "usernameExists": "Username already exists",
+        "changePassword": "Change Password",
+        "currentPassword": "Current Password",
+        "newPassword": "New Password",
+        "confirmPassword": "Confirm New Password",
+        "passwordStrength": "Password Strength",
+        "passwordMismatch": "Passwords do not match",
+        "strength": {
+          "weak": "Weak",
+          "medium": "Medium",
+          "strong": "Strong"
+        },
+        "securityPath": "Change Security Path",
+        "currentPath": "Current Path",
+        "newPathPlaceholder": "Enter new path, e.g. admin-abc123",
+        "pathRule": "Recommend using complex path for enhanced security",
+        "usernameValidation": {
+          "lengthError": "Username length must be between 4 and 20 characters",
+          "formatError": "Username must consist of letters, numbers or underscores",
+          "duplicateError": "Username cannot be the same as current username"
+        }
+      },
+      "network": {
+        "title": "Network Configuration",
+        "domain": "Domain Settings",
+        "currentDomain": "Current Domain",
+        "newDomainPlaceholder": "Enter new domain, e.g. admin.yourdomain.com",
+        "domainRule": "Please enter a valid domain",
+        "ssl": "SSL Certificate Configuration",
+        "sslEnabled": "SSL Enabled",
+        "certStatus": "Certificate Status",
+        "certValid": "({days} days remaining)",
+        "sslCert": "SSL Certificate (PEM format)",
+        "sslKey": "Private Key (PEM format)",
+        "certPlaceholder": "-----BEGIN CERTIFICATE-----\nMIIFazCCA1OgAwIBAgIURv...\n-----END CERTIFICATE-----",
+        "keyPlaceholder": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG...\n-----END PRIVATE KEY-----",
+        "updateSSL": "Update SSL Certificate",
+        "certValidStatus": "Certificate Valid",
+        "certExpiredStatus": "Certificate Expired",
+        "certExpireTime": "Certificate expires: {time}"
+      },
+      "system": {
+        "title": "System Configuration",
+        "port": "Port Settings",
+        "currentPort": "Current Port",
+        "terminalRequired": "This setting requires terminal operation",
+        "copyCommand": "Copy the above command and execute it in the server terminal",
+        "commandCopied": "Command copied to clipboard",
+        "timezone": "Timezone Settings",
+        "currentTime": "Current System Timezone"
+      }
+    },
+    "api": {
+      "loading": {
+        "restarting": "Restarting service, please wait...",
+        "saving": "Saving configuration, please wait..."
+      }
+    }
+  }
 }

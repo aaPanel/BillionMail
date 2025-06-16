@@ -2,6 +2,8 @@ package settings
 
 import (
 	"context"
+	"github.com/gogf/gf/os/gtimer"
+	"time"
 
 	"billionmail-core/api/settings/v1"
 	"billionmail-core/internal/service/public"
@@ -13,8 +15,14 @@ import (
 func (c *ControllerV1) SetSystemConfigKey(ctx context.Context, req *v1.SetSystemConfigKeyReq) (res *v1.SetSystemConfigKeyRes, err error) {
 	res = &v1.SetSystemConfigKeyRes{}
 
+	// Parameter validation
+	if err := validateConfigValue(req.Key, req.Value); err != nil {
+		res.SetError(gerror.New(public.LangCtx(ctx, "Parameter validation failed: {}", err)))
+		return res, nil
+	}
+
 	// 1. Read the current .env file content
-	envMap, err := loadEnvFile()
+	envMap, err := public.LoadEnvFile()
 	if err != nil {
 		res.SetError(gerror.New(public.LangCtx(ctx, "Failed to read environment variable file: {}", err)))
 		return res, nil
@@ -34,12 +42,14 @@ func (c *ControllerV1) SetSystemConfigKey(ctx context.Context, req *v1.SetSystem
 	}
 
 	// 4. Restart the container
-	g.Log().Info(ctx, public.LangCtx(ctx, "Configuration updated, preparing to restart container"))
-	err = public.DockerApiFromCtx(ctx).RestartContainerByName(ctx, "billionmail-core-billionmail-1")
-	if err != nil {
-		res.SetError(gerror.New(public.LangCtx(ctx, "Failed to restart container: {}", err)))
-		return res, nil
-	}
+	gtimer.AddOnce(500*time.Millisecond, func() {
+		err = public.DockerApiFromCtx(ctx).RestartContainerByName(ctx, "billionmail-core-billionmail-1")
+		if err != nil {
+			g.Log().Error(ctx, "Failed to restart container: {}", err)
+			return
+		}
+
+	})
 
 	res.SetSuccess(public.LangCtx(ctx, "Configuration updated successfully"))
 	return res, nil

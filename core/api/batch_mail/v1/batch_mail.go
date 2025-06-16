@@ -45,6 +45,12 @@ type TaskDetail struct {
 	TemplateName string       `json:"template_name"  dc:"template name"`
 	SuccessCount int          `json:"success_count"  dc:"success count"`
 	ErrorCount   int          `json:"error_count"    dc:"error count"`
+	Opened       int          `json:"opened"        dc:"opened count"`
+	Clicked      int          `json:"clicked"       dc:"clicked count"`
+	DeliveryRate float64      `json:"delivery_rate" dc:"delivery rate"`
+	BounceRate   float64      `json:"bounce_rate"  dc:"bounce rate"`
+	OpenRate     float64      `json:"open_rate"    dc:"open rate"`
+	ClickRate    float64      `json:"click_rate"   dc:"click rate"`
 }
 
 type ListTasksReq struct {
@@ -177,4 +183,25 @@ type SendTestEmailReq struct {
 
 type SendTestEmailRes struct {
 	api_v1.StandardRes
+}
+
+type TaskStatChartReq struct {
+	g.Meta        `path:"/batch_mail/task/stat_chart" method:"get" tags:"BatchMail" summary:"get task stat chart"`
+	Authorization string `json:"authorization" dc:"Authorization" in:"header"`
+	TaskId        int64  `json:"task_id" v:"required" dc:"task id"`
+	Domain        string `json:"domain" v:"domain" dc:"domain"`
+	StartTime     int64  `json:"start_time" v:"required" dc:"start time"`
+	EndTime       int64  `json:"end_time" v:"required" dc:"end time"`
+}
+
+type TaskStatChartRes struct {
+	api_v1.StandardRes
+	Data struct {
+		Dashboard       interface{} `json:"dashboard" dc:"dashboard"`
+		MailProviders   interface{} `json:"mail_providers" dc:"mail providers"`
+		SendMailChart   interface{} `json:"send_mail_chart" dc:"send mail chart"`
+		BounceRateChart interface{} `json:"bounce_rate_chart" dc:"bounce rate chart"`
+		OpenRateChart   interface{} `json:"open_rate_chart" dc:"open rate chart"`
+		ClickRateChart  interface{} `json:"click_rate_chart" dc:"click rate chart"`
+	} `json:"data"`
 }

@@ -62,8 +62,12 @@ func (s *roleService) GetById(ctx context.Context, roleId int64) (*model.Role, e
 
 // Create creates a new role
 func (s *roleService) Create(ctx context.Context, name, description string, status int) (int64, error) {
-	result, err := g.DB().Model("role").Insert(model.Role{
-		RoleName: name,
+	result, err := g.DB().Model("role").Insert(g.Map{
+		"role_name":   name,
+		"description": description,
+		"status":      status,
+		"create_time": time.Now().Unix(),
+		"update_time": time.Now().Unix(),
 	})
 	if err != nil {
 		return 0, err

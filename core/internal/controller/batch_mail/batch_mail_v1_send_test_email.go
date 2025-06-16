@@ -39,11 +39,11 @@ func (c *ControllerV1) SendTestEmail(ctx context.Context, req *v1.SendTestEmailR
 		return
 	}
 
-	if !strings.Contains(template.Content, "{{ UnsubscribeURL }}") {
+	if !strings.Contains(template.Content, "{{ UnsubscribeURL . }}") {
 		template.Content = public.AddUnsubscribeButton(template.Content)
 	}
 
-	content := strings.ReplaceAll(template.Content, "__UNSUBSCRIBE_URL__", "{{ UnsubscribeURL }}")
+	content := strings.ReplaceAll(template.Content, "__UNSUBSCRIBE_URL__", "{{ UnsubscribeURL . }}")
 
 	jwtToken, _ := batch_mail.GenerateUnsubscribeJWT(req.Recipient, req.TemplateId, 0)
 	domain := domains.GetBaseURL()

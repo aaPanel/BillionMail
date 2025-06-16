@@ -21,10 +21,12 @@ type SSLConfig struct {
 	IssuerCommonName  string   `json:"issuer_common_name" dc:"issuer common name"`
 	SubjectCommonName string   `json:"subject_common_name" dc:"subject common name"`
 	Version           int      `json:"version" dc:"version"`
+	Status            bool     `json:"status" dc:"ssl certificate status"`
 }
 
 // SystemConfig
 type SystemConfig struct {
+	ServerIP string `json:"server_ip" dc:"server ip"`
 	// Basic configuration
 	AdminUsername string `json:"admin_username" dc:"admin username"`
 	AdminPassword string `json:"admin_password" dc:"admin password"`
@@ -132,4 +134,12 @@ type SetSSLConfigReq struct {
 
 type SetSSLConfigRes struct {
 	api_v1.StandardRes
+}
+
+type GetTimeZoneListReq struct {
+	g.Meta `path:"/settings/get_timezone_list" tags:"Settings" method:"get" summary:"Get available time zones"`
+}
+type GetTimeZoneListRes struct {
+	api_v1.StandardRes
+	Data map[string][]string `json:"data" dc:"available time zones"`
 }

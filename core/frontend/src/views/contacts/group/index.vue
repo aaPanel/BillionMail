@@ -15,11 +15,21 @@
 				</bt-search>
 			</template>
 			<template #table>
-				<n-data-table :loading="loading" :columns="columns" :data="tableList">
+				<n-data-table
+					v-model:checked-row-keys="checkedKeys"
+					:row-key="row => row.id"
+					:loading="loading"
+					:columns="columns"
+					:data="tableList">
 					<template #empty>
 						<bt-table-help> </bt-table-help>
 					</template>
 				</n-data-table>
+			</template>
+			<template #pageLeft>
+				<n-button :disabled="checkedKeys.length === 0" @click="handleExport">
+					{{ $t('common.actions.export') }}
+				</n-button>
 			</template>
 			<template #pageRight>
 				<bt-table-page
@@ -41,16 +51,19 @@
 import { DataTableColumns, NButton, NFlex } from 'naive-ui'
 import { useModal } from '@/hooks/modal/useModal'
 import { useTableData } from '@/hooks/useTableData'
-import { confirm, formatTime } from '@/utils'
-import { getGroupList, deleteGroup } from '@/api/modules/contacts/group'
+import { confirm, formatTime, isObject } from '@/utils'
+import { getGroupList, deleteGroup, exportGroup } from '@/api/modules/contacts/group'
 import type { Group, GroupParams } from './interface'
 
 import GroupAdd from './components/GroupAdd.vue'
 import GroupRename from './components/GroupRename.vue'
+import { downloadFile } from '@/api/modules/public'
 
 const { t } = useI18n()
 
 const router = useRouter()
+
+const checkedKeys = ref<number[]>([])
 
 const { tableParams, tableList, loading, tableTotal, getTableData } = useTableData<
 	Group,
@@ -68,6 +81,9 @@ const { tableParams, tableList, loading, tableTotal, getTableData } = useTableDa
 
 // Table columns
 const columns = ref<DataTableColumns<Group>>([
+	{
+		type: 'selection',
+	},
 	{
 		key: 'name',
 		title: t('contacts.group.columns.name'),
@@ -167,6 +183,24 @@ const handleDelete = (row: Group) => {
 		onConfirm: async () => {
 			await deleteGroup({ group_ids: [row.id] })
 			getTableData()
+		},
+	})
+}
+
+const handleExport = () => {
+	confirm({
+		title: 'Export group',
+		content: `Export ${checkedKeys.value.length} group(s)?`,
+		onConfirm: async () => {
+			const res = await exportGroup({
+				format: 'csv',
+				include_unsubscribe: true,
+				group_ids: checkedKeys.value,
+				export_type: 1,
+			})
+			if (isObject<{ file_url: string }>(res)) {
+				downloadFile({ file_path: res.file_url })
+			}
 		},
 	})
 }

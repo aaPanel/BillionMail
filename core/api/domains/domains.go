@@ -21,4 +21,5 @@ type IDomainsV1 interface {
 	GetSSL(ctx context.Context, req *v1.GetSSLReq) (res *v1.GetSSLRes, err error)
 	ApplyCert(ctx context.Context, req *v1.ApplyCertReq) (res *v1.ApplyCertRes, err error)
 	GetCertList(ctx context.Context, req *v1.GetCertListReq) (res *v1.GetCertListRes, err error)
+	ConsoleApplyCert(ctx context.Context, req *v1.ConsoleApplyCertReq) (res *v1.ConsoleApplyCertRes, err error)
 }
