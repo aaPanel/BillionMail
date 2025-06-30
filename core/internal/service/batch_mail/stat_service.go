@@ -74,13 +74,11 @@ func (s *TaskStatService) filterAndPrepareTimeSection(startTime, endTime int64) 
 func (s *TaskStatService) prepareChartData(startTime, endTime int64) (string, string) {
 	columnType := "daily"
 	secs := endTime - startTime
-	// xAxisField := "to_char(to_timestamp(sm.log_time_millis / 1000), 'YYYY-MM-DD') as x"
-	xAxisField := "EXTRACT(EPOCH FROM to_timestamp(sm.log_time_millis / 1000))::bigint as x"
 
+	xAxisField := "EXTRACT(EPOCH FROM date_trunc('day', to_timestamp(sm.log_time_millis / 1000)))::bigint as x"
 	if secs < 86400 {
 		columnType = "hourly"
-		// xAxisField = "to_char(to_timestamp(sm.log_time_millis / 1000), 'HH24')::integer as x"
-		xAxisField = "EXTRACT(EPOCH FROM date_trunc('hour', to_timestamp(sm.log_time_millis / 1000)))::bigint as x"
+		xAxisField = "to_char(to_timestamp(sm.log_time_millis / 1000), 'HH24')::integer as x"
 	}
 
 	return columnType, xAxisField
@@ -158,7 +156,25 @@ func (s *TaskStatService) fillChartDataHourly(data []map[string]interface{}, fil
 	dataMap := make(map[int]map[string]interface{})
 
 	for _, item := range data {
-		hour := item[fillKey].(int)
+
+		var hour int
+		switch v := item[fillKey].(type) {
+		case int:
+			hour = v
+		case int32:
+			hour = int(v)
+		case int64:
+			hour = int(v)
+		case float64:
+			hour = int(v)
+		case string:
+			if h, err := strconv.Atoi(v); err == nil {
+				hour = h
+			}
+		default:
+			g.Log().Warningf(context.Background(), "Unexpected type for hour: %T, value: %v", item[fillKey], item[fillKey])
+			continue
+		}
 		dataMap[hour] = item
 	}
 

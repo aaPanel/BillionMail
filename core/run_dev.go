@@ -31,6 +31,8 @@ type FileWatcher struct {
 	debounceMap map[string]int64  // Debounce map, recording last modification time of each file
 	debounceMs  int64             // Debounce time interval (milliseconds)
 	logger      *log.Logger       // Logger
+	delay       time.Duration     // Delay before executing the script
+	timer       *time.Timer       // Timer for debouncing
 }
 
 // NewFileWatcher creates a new file watcher
@@ -48,6 +50,8 @@ func NewFileWatcher(rootPath string, scriptPath string, extensions []string) (*F
 		debounceMap: make(map[string]int64),
 		debounceMs:  500, // Default debounce time: 500 milliseconds
 		logger:      log.New(os.Stdout, "[FileWatcher] ", log.LstdFlags),
+		delay:       time.Second,
+		timer:       time.NewTimer(time.Second),
 	}, nil
 }
 
@@ -133,6 +137,8 @@ func (fw *FileWatcher) watchLoop(ctx context.Context) {
 				continue
 			}
 
+			fw.timer.Reset(fw.delay)
+
 			// Execute script
 			fw.logger.Printf("Detected file change: %s", event.Name)
 			go fw.executeScript(ctx)
@@ -178,6 +184,8 @@ func (fw *FileWatcher) shouldDebounce(filename string) bool {
 
 // executeScript executes the script
 func (fw *FileWatcher) executeScript(ctx context.Context) {
+	<-fw.timer.C
+
 	fw.mu.Lock()
 	if fw.isExecuting {
 		fw.mu.Unlock()
@@ -304,7 +312,7 @@ func main() {
 	}
 
 	// Create file watcher
-	watcher, err := NewFileWatcher(AbsPath(rootPath), AbsPath(scriptPath), []string{".go"})
+	watcher, err := NewFileWatcher(AbsPath(rootPath), AbsPath(scriptPath), []string{".go", ".html"})
 	if err != nil {
 		logger.Fatalf("Failed to create file watcher: %v", err)
 	}

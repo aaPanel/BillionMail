@@ -41,14 +41,19 @@ const addTab = (route: RouteLocationNormalized) => {
 	if (existTab) return
 
 	if (route.matched[1].children) {
-		tabs.value = route.matched[1].children.map(routeItem => {
-			const key = get(routeItem, 'meta.titleKey', '')
-			const title = get(routeItem, 'meta.title', '')
-			return {
-				title: `${key ? t(String(key)) : title}`,
-				name: String(routeItem.name),
-			}
-		})
+		tabs.value = route.matched[1].children
+			.filter(routeItem => {
+				const isHidden = get(routeItem, 'meta.hidden', false)
+				return !isHidden
+			})
+			.map(routeItem => {
+				const key = get(routeItem, 'meta.titleKey', '')
+				const title = get(routeItem, 'meta.title', '')
+				return {
+					title: `${key ? t(String(key)) : title}`,
+					name: String(routeItem.name),
+				}
+			})
 	}
 }
 

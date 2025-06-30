@@ -45,6 +45,7 @@ type Domain struct {
 	Active       int        `json:"active"        dc:"Status: 1-enabled, 0-disabled"`
 	DNSRecords   DNSRecords `json:"dns_records" dc:"DNS records"`
 	CertInfo     CertInfo   `json:"cert_info" dc:"Certificate information"`
+	Catchall     string     `json:"email"      dc:"Cache all DNS records, used for domain verification"`
 }
 
 type AddDomainReq struct {
@@ -55,6 +56,7 @@ type AddDomainReq struct {
 	MailboxQuota  int    `json:"mailboxQuota" v:"min:1" dc:"MailboxQuota" d:"5242880"`
 	Quota         int    `json:"quota" v:"required" dc:"Quota" d:"10485760"`
 	RateLimit     int    `json:"rateLimit" v:"min:1" dc:"RateLimit" d:"12"`
+	Catchall      string `json:"email" v:"email" dc:"Catch all email address, used for domain verification"`
 }
 
 type AddDomainRes struct {
@@ -70,6 +72,7 @@ type UpdateDomainReq struct {
 	Quota         int    `json:"quota" v:"required" dc:"Quota" d:"10485760"`
 	RateLimit     int    `json:"rateLimit" v:"min:1" dc:"RateLimit" d:"12"`
 	Active        int    `json:"active" v:"required" dc:"Active" d:"1"`
+	Catchall      string `json:"email" v:"email" dc:"Catch all email address, used for domain verification"`
 }
 
 type UpdateDomainRes struct {

@@ -95,6 +95,15 @@ func init() {
 				active smallint NOT NULL DEFAULT 1,
 				PRIMARY KEY (alias_domain)
 			)`,
+			`--  bm_console_ip_whitelist
+			CREATE TABLE IF NOT EXISTS bm_console_ip_whitelist (
+    				id SERIAL PRIMARY KEY,
+    				ip varchar(45) NOT NULL, -- IPv4 or IPv6
+    				ip_type smallint NOT NULL DEFAULT 1, -- 'IPv4:1 ,IPv6:2'	
+    				create_time int NOT NULL default 0,
+    				UNIQUE (ip)
+    			
+			)`,
 		}
 
 		for _, sql := range sqlList {

@@ -1,32 +1,34 @@
 package v1
 
 import (
+	"billionmail-core/internal/model/entity"
 	"billionmail-core/utility/types/api_v1"
 	"github.com/gogf/gf/v2/frame/g"
 )
 
 type EmailTask struct {
-	Id             int    `json:"id"              dc:"task id"`
-	TaskName       string `json:"task_name"       dc:"task name"`
-	Addresser      string `json:"addresser"       dc:"addresser"`
-	Subject        string `json:"subject"         dc:"subject"`
-	FullName       string `json:"full_name"       dc:"full name"`
-	RecipientCount int    `json:"recipient_count" dc:"recipient count"`
-	TaskProcess    int    `json:"task_process"    dc:"task process"`
-	Pause          int    `json:"pause"           dc:"pause"`
-	TemplateId     int    `json:"template_id"     dc:"template id"`
-	IsRecord       int    `json:"is_record"       dc:"is record"`
-	Unsubscribe    int    `json:"unsubscribe"     dc:"unsubscribe"`
-	Threads        int    `json:"threads"         dc:"threads"`
-	Etypes         string `json:"etypes"          dc:"etypes"`
-	TrackOpen      int    `json:"track_open"      dc:"track open"`
-	TrackClick     int    `json:"track_click"     dc:"track click"`
-	StartTime      int    `json:"start_time"      dc:"start time"`
-	CreateTime     int    `json:"create_time"     dc:"create time"`
-	UpdateTime     int    `json:"update_time"     dc:"update time"`
-	Remark         string `json:"remark"          dc:"remark"`
-	Active         int    `json:"active"          dc:"status"`
-	AddType        int    `json:"add_type"        dc:"add type"`
+	Id                      int    `json:"id"              dc:"task id"`
+	TaskName                string `json:"task_name"       dc:"task name"`
+	Addresser               string `json:"addresser"       dc:"addresser"`
+	Subject                 string `json:"subject"         dc:"subject"`
+	FullName                string `json:"full_name"       dc:"full name"`
+	RecipientCount          int    `json:"recipient_count" dc:"recipient count"`
+	TaskProcess             int    `json:"task_process"    dc:"task process"`
+	Pause                   int    `json:"pause"           dc:"pause"`
+	TemplateId              int    `json:"template_id"     dc:"template id"`
+	IsRecord                int    `json:"is_record"       dc:"is record"`
+	Unsubscribe             int    `json:"unsubscribe"     dc:"unsubscribe"`
+	Threads                 int    `json:"threads"         dc:"threads"`
+	Etypes                  string `json:"etypes"          dc:"etypes"`
+	TrackOpen               int    `json:"track_open"      dc:"track open"`
+	TrackClick              int    `json:"track_click"     dc:"track click"`
+	StartTime               int    `json:"start_time"      dc:"start time"`
+	CreateTime              int    `json:"create_time"     dc:"create time"`
+	UpdateTime              int    `json:"update_time"     dc:"update time"`
+	Remark                  string `json:"remark"          dc:"remark"`
+	Active                  int    `json:"active"          dc:"status"`
+	AddType                 int    `json:"add_type"        dc:"add type"`
+	EstimatedTimeWithWarmup int64  `json:"estimated_time_with_warmup" dc:"estimated time for warmup (if applicable)"`
 }
 
 type GroupInfo struct {
@@ -45,12 +47,13 @@ type TaskDetail struct {
 	TemplateName string       `json:"template_name"  dc:"template name"`
 	SuccessCount int          `json:"success_count"  dc:"success count"`
 	ErrorCount   int          `json:"error_count"    dc:"error count"`
-	Opened       int          `json:"opened"        dc:"opened count"`
-	Clicked      int          `json:"clicked"       dc:"clicked count"`
-	DeliveryRate float64      `json:"delivery_rate" dc:"delivery rate"`
-	BounceRate   float64      `json:"bounce_rate"  dc:"bounce rate"`
-	OpenRate     float64      `json:"open_rate"    dc:"open rate"`
-	ClickRate    float64      `json:"click_rate"   dc:"click rate"`
+	Deferred     int          `json:"deferred"       dc:"deferred count"`
+	//Opened       int          `json:"opened"        dc:"opened count"`
+	//Clicked      int          `json:"clicked"       dc:"clicked count"`
+	//DeliveryRate float64      `json:"delivery_rate" dc:"delivery rate"`
+	//BounceRate   float64      `json:"bounce_rate"  dc:"bounce rate"`
+	//OpenRate     float64      `json:"open_rate"    dc:"open rate"`
+	//ClickRate    float64      `json:"click_rate"   dc:"click rate"`
 }
 
 type ListTasksReq struct {
@@ -68,6 +71,41 @@ type ListTasksRes struct {
 		Total int           `json:"total" dc:"total"`
 		List  []*TaskDetail `json:"list"  dc:"task list"`
 	} `json:"data"`
+}
+
+type TaskInfoReq struct {
+	g.Meta        `path:"/batch_mail/task/find" method:"get" tags:"BatchMail" summary:"get task info by id"`
+	Authorization string `json:"authorization" dc:"Authorization" in:"header"`
+	Id            int    `json:"id" v:"required" dc:"task id"`
+}
+
+type TaskInfoRes struct {
+	api_v1.StandardRes
+	Data *entity.EmailTask `json:"data"`
+}
+
+type TaskSummaryStats struct {
+	Sends        int     `json:"sends"`
+	Delivered    int     `json:"delivered"`
+	Bounced      int     `json:"bounced"`
+	Opened       int     `json:"opened"`
+	Clicked      int     `json:"clicked"`
+	DeliveryRate float64 `json:"delivery_rate"`
+	BounceRate   float64 `json:"bounce_rate"`
+	OpenRate     float64 `json:"open_rate"`
+	ClickRate    float64 `json:"click_rate"`
+}
+
+type TaskOverviewReq struct {
+	g.Meta        `path:"/batch_mail/task/overview" method:"get" tags:"BatchMail" summary:"get task overview"`
+	Authorization string `json:"authorization" dc:"Authorization" in:"header"`
+	StartTime     int    `json:"start_time" dc:"start time"`
+	EndTime       int    `json:"end_time" dc:"end time"`
+}
+
+type TaskOverviewRes struct {
+	api_v1.StandardRes
+	Data TaskSummaryStats `json:"data"`
 }
 
 type DeleteTaskReq struct {
@@ -94,6 +132,7 @@ type CreateTaskReq struct {
 	TrackOpen     int    `json:"track_open" v:"in:0,1" dc:"track open" default:"1"`
 	TrackClick    int    `json:"track_click" v:"in:0,1" dc:"track click" default:"1"`
 	StartTime     int    `json:"start_time" v:"required" dc:"start time"`
+	Warmup        int    `json:"warmup" v:"in:0,1" dc:"warmup" default:"0"`
 	Remark        string `json:"remark" dc:"remark"`
 }
 

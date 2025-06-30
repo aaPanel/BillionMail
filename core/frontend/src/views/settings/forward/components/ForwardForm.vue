@@ -11,7 +11,7 @@
 					:placeholder="t('settings.forward.form.forwardedUsersPlaceholder')">
 				</n-input>
 			</n-form-item>
-			<n-form-item v-if="!isEdit" :label="t('settings.forward.form.domain')" path="domain">
+			<n-form-item v-if="false" :label="t('settings.forward.form.domain')" path="domain">
 				<n-input
 					v-model:value="form.domain"
 					:placeholder="t('settings.forward.form.domainPlaceholder')">

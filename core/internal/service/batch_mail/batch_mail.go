@@ -4,6 +4,7 @@ import (
 	"billionmail-core/api/batch_mail/v1"
 	"billionmail-core/internal/model/entity"
 	"billionmail-core/internal/service/public"
+	"billionmail-core/internal/service/warmup"
 	"context"
 	"fmt"
 	"github.com/gogf/gf/v2/database/gdb"
@@ -13,6 +14,23 @@ import (
 	"strings"
 	"time"
 )
+
+type CreateTaskArgs struct {
+	Addresser   string `json:"addresser"`   // Sender email address
+	Subject     string `json:"subject"`     // Email subject
+	FullName    string `json:"full_name"`   // FullName of Sender
+	TemplateId  int    `json:"template_id"` // Template ID
+	IsRecord    int    `json:"is_record"`   // Landing to outbox
+	Unsubscribe int    `json:"unsubscribe"` // Enable unsubscribe link
+	Threads     int    `json:"threads"`     // Number of threads to use
+	TrackOpen   int    `json:"track_open"`  // Track email opens
+	TrackClick  int    `json:"track_click"` // Track email clicks
+	Etypes      string `json:"etypes"`      // Email types (e.g., group IDs)
+	Remark      string `json:"remark"`      // Task remark
+	StartTime   int    `json:"start_time"`  // Scheduled start time
+	Warmup      int    `json:"warmup"`      // Warmup campaign association
+	AddType     int    `json:"add_type"`    // Add type (0: normal)
+}
 
 // ============= task related operations =============
 
@@ -49,6 +67,29 @@ func GetTasksWithPage(ctx context.Context, page, pageSize int, keyword string, s
 		Order("create_time DESC").
 		Scan(&list)
 
+	if err == nil {
+		serverIP, _ := public.GetServerIP()
+
+		if serverIP != "" {
+			// Filter associated warmup campaigns
+			ids := make([]int, 0)
+			m := make(map[int]*v1.EmailTask)
+			for _, v := range list {
+				// Calculate estimated time for warmup
+				ids = append(ids, v.Id)
+				v.EstimatedTimeWithWarmup = -1 // default -1 means no warmup
+				m[v.Id] = v
+			}
+
+			var vals []gdb.Value
+			vals, _ = g.DB().Ctx(ctx).Model("bm_campaign_warmup").WhereIn("task_id", ids).Array("task_id")
+
+			for _, val := range vals {
+				m[val.Int()].EstimatedTimeWithWarmup, _ = warmup.WarmupCampaign().CalculateEstimatedTime(ctx, val.Int64(), serverIP)
+			}
+		}
+	}
+
 	return total, list, err
 }
 
@@ -64,39 +105,56 @@ func DeleteTask(ctx context.Context, id int) error {
 }
 
 // CreateTask create task
-func CreateTask(ctx context.Context, addresser, subject, fullName string, templateId int,
-	isRecord, unsubscribe, threads, trackOpen, trackClick int, etypes string, remark string, startTime int, add_type int) (int, error) {
+func CreateTask(ctx context.Context, args CreateTaskArgs) (int, error) {
 
 	now := time.Now().Unix()
 	// generate task name
 	taskName := "task_" + gconv.String(now)
 	result, err := g.DB().Model("email_tasks").Insert(g.Map{
 		"task_name":       taskName,
-		"addresser":       addresser,
-		"subject":         subject,
-		"full_name":       fullName,
+		"addresser":       args.Addresser,
+		"subject":         args.Subject,
+		"full_name":       args.FullName,
 		"recipient_count": 0, // initial 0, update later
 		"task_process":    0,
 		"pause":           0,
-		"template_id":     templateId,
-		"is_record":       isRecord,
-		"unsubscribe":     unsubscribe,
-		"threads":         threads,
-		"etypes":          etypes,
-		"track_open":      trackOpen,
-		"track_click":     trackClick,
-		"start_time":      startTime,
+		"template_id":     args.TemplateId,
+		"is_record":       args.IsRecord,
+		"unsubscribe":     args.Unsubscribe,
+		"threads":         args.Threads,
+		"etypes":          args.Etypes,
+		"track_open":      args.TrackOpen,
+		"track_click":     args.TrackClick,
+		"start_time":      args.StartTime,
 		"create_time":     now,
 		"update_time":     now,
 		"active":          1,
-		"remark":          remark,
-		"add_type":        add_type,
+		"remark":          args.Remark,
+		"add_type":        args.AddType,
 	})
 	if err != nil {
+		g.Log().Warning(ctx, "Failed to create campaign:", err.Error())
 		return 0, err
 	}
 
 	id, err := result.LastInsertId()
+
+	if err == nil && args.Warmup == 1 {
+		// link to sender ip warmup
+		serverIP, _ := public.GetServerIP()
+
+		if serverIP != "" {
+			_, err = warmup.WarmupCampaign().AssociateCampaignWithWarmup(ctx, id, serverIP)
+
+			if err != nil {
+				g.Log().Warning(ctx, "Failed to associate campaign with warmup for task ID %d: %v", id, err)
+				err = nil
+			}
+		}
+	}
+
+	g.Log().Debugf(ctx, "CreateTask: Task ID %d is created.", id)
+
 	return int(id), err
 }
 
@@ -227,22 +285,22 @@ func CreateTaskWithRecipients(ctx context.Context, req *v1.CreateTaskReq, addTyp
 	err = g.DB().Transaction(ctx, func(ctx context.Context, tx gdb.TX) error {
 		etype := strings.Join(gconv.SliceStr(req.GroupIds), ",")
 
-		taskId, err = CreateTask(
-			ctx,
-			req.Addresser,
-			req.Subject,
-			req.FullName,
-			req.TemplateId,
-			req.IsRecord,
-			req.Unsubscribe,
-			req.Threads,
-			req.TrackOpen,
-			req.TrackClick,
-			etype,
-			req.Remark,
-			req.StartTime,
-			addType,
-		)
+		taskId, err = CreateTask(ctx, CreateTaskArgs{
+			Addresser:   req.Addresser,
+			Subject:     req.Subject,
+			FullName:    req.FullName,
+			TemplateId:  req.TemplateId,
+			IsRecord:    req.IsRecord,
+			Unsubscribe: req.Unsubscribe,
+			Threads:     req.Threads,
+			TrackOpen:   req.TrackOpen,
+			TrackClick:  req.TrackClick,
+			Etypes:      etype,
+			Remark:      req.Remark,
+			StartTime:   req.StartTime,
+			Warmup:      req.Warmup,
+			AddType:     addType,
+		})
 		if err != nil {
 			return gerror.New(public.LangCtx(ctx, "Failed to create task {}", err.Error()))
 		}

@@ -1,6 +1,19 @@
-import { get } from 'lodash-es'
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import { is, isDev } from '@/utils'
+
+// Routes reflect list
+const routesReflectList = [
+	'Overview',
+	'Email Marketing',
+	'template',
+	'Send API',
+	'Contacts',
+	'MailDomain',
+	'MailBoxes',
+	'SMTP',
+	'Settings',
+	'Automation',
+]
 
 // Import routes from modules
 const modules = import.meta.webpackContext('./modules', {
@@ -10,7 +23,7 @@ const modules = import.meta.webpackContext('./modules', {
 })
 
 // Module routes
-export const menuList: RouteRecordRaw[] = []
+export let menuList: RouteRecordRaw[] = []
 
 // Iterate through the module list to generate module routes
 for (const path of modules.keys()) {
@@ -21,11 +34,11 @@ for (const path of modules.keys()) {
 }
 
 // Sort module routes
-menuList.sort((a, b) => {
-	const aSort = get(a, 'meta.sort', 0) as number
-	const bSort = get(b, 'meta.sort', 0) as number
-	return aSort - bSort
-})
+menuList = menuList.reduce((p: RouteRecordRaw[], v: RouteRecordRaw) => {
+	const routeIndex = routesReflectList.findIndex(item => item == v.meta!.title)
+	p[routeIndex] = v
+	return p
+}, [] as RouteRecordRaw[])
 
 const otherArray: RouteRecordRaw[] = []
 

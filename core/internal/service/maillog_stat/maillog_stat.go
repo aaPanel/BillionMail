@@ -268,34 +268,7 @@ func (ms *MaillogStat) initIgnoreMailAddresses() {
 
 // getMailProvider gets mail service provider
 func (ms *MaillogStat) getMailProvider(email string) string {
-	hostname := strings.Split(email, "@")[1]
-
-	switch {
-	case strings.Contains(hostname, "gmail.com") || strings.Contains(hostname, "googlemail.com"):
-		return "google"
-	case strings.Contains(hostname, "outlook.com") || strings.Contains(hostname, "hotmail.com") ||
-		strings.Contains(hostname, "live.com") || strings.Contains(hostname, "msn.com") ||
-		strings.HasPrefix(hostname, "outlook."):
-		return "outlook"
-	case strings.Contains(hostname, "yahoo.com") || strings.Contains(hostname, "ymail.com") ||
-		strings.Contains(hostname, "rocketmail.com") || strings.HasPrefix(hostname, "yahoo."):
-		return "yahoo"
-	case strings.Contains(hostname, "icloud.com") || strings.Contains(hostname, "me.com") ||
-		strings.Contains(hostname, "mac.com") || strings.Contains(hostname, "apple.com"):
-		return "apple"
-	case strings.Contains(hostname, "protonmail.com") || strings.Contains(hostname, "proton.me") ||
-		strings.Contains(hostname, "pm.me"):
-		return "proton"
-	case strings.Contains(hostname, "zoho.com") || strings.Contains(hostname, "zohomail.com") ||
-		strings.Contains(hostname, "zohocorp.com") || strings.Contains(hostname, "zmail.com") ||
-		strings.HasPrefix(hostname, "zoho."):
-		return "zoho"
-	case strings.Contains(hostname, "kindle.com") || strings.Contains(hostname, "amazon.com") ||
-		strings.Contains(hostname, "awsapps.com"):
-		return "amazon"
-	default:
-		return "other"
-	}
+	return public.GetMailProviderGroup(email)
 }
 
 // parseLogTimeMillis parses log time (millisecond timestamp)
@@ -849,16 +822,12 @@ func (handler *MallogEventHandler) Start() {
 	for {
 		select {
 		case <-handler.timer.C:
-			func() {
-				defer func() {
-					handler.isHanding = false
-				}()
-				g.Log().Debug(context.Background(), "MallogEventHandler: timer event")
-				handler.maillogStat.startTime = GetLastMaillogTimeMillis()
-				if err = handler.maillogStat.AnalysisAndSaveToDatabase(context.Background()); err != nil {
-					g.Log().Error(context.Background(), "MallogEventHandler: error analysing maillog", err)
-				}
-			}()
+			handler.isHanding = false
+			g.Log().Debug(context.Background(), "MallogEventHandler: timer event")
+			handler.maillogStat.startTime = GetLastMaillogTimeMillis()
+			if err = handler.maillogStat.AnalysisAndSaveToDatabase(context.Background()); err != nil {
+				g.Log().Error(context.Background(), "MallogEventHandler: error analysing maillog", err)
+			}
 		}
 	}
 }

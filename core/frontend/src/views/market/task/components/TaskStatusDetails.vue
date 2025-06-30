@@ -18,9 +18,6 @@
 					@refresh="getTableData">
 				</bt-table-page>
 			</template>
-			<template #modal>
-				<details-modal />
-			</template>
 		</bt-table-layout>
 	</modal>
 </template>

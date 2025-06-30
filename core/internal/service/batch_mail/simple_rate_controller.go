@@ -20,7 +20,7 @@ type SimpleRateController struct {
 	burstLimit   int       // allowed burst send limit
 }
 
-// NewSimpleRateController 创建简单速率控制器
+// NewSimpleRateController creates a new SimpleRateController with the specified max send rate per minute.
 func NewSimpleRateController(maxPerMinute int) *SimpleRateController {
 	// parameter validation
 	if maxPerMinute <= 0 {

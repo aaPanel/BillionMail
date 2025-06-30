@@ -11,6 +11,7 @@ import (
 	"billionmail-core/internal/service/public"
 	"billionmail-core/internal/service/rbac"
 	"context"
+	"database/sql"
 	"encoding/json"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
@@ -225,11 +226,11 @@ func ApplyConsoleCert(ctx context.Context) error {
 		Order("endtime desc").
 		Limit(1).Scan(crt)
 
-	if err != nil {
-		//g.Log().Warning(ctx, "letsencrypts query error:", err)
+	if err != nil && err != sql.ErrNoRows {
+		g.Log().Warning(ctx, "letsencrypts query error:", err)
 		return err
 	}
-	if crt == nil || crt.Certificate == "" {
+	if crt.CertId == 0 || crt.Certificate == "" {
 		g.Log().Debug(ctx, "No existing certificate found:", hostname)
 	} else {
 		if crt.Status == 1 && crt.EndTime > time.Now().Unix() {
@@ -318,7 +319,6 @@ func AutoRenewSSL(ctx context.Context) {
 	certInfo, err := GetConsoleSSLInfo()
 	if err == nil && certInfo.Endtime > 0 {
 		remain := certInfo.Endtime - int(time.Now().Unix())
-		g.Log().Debug(ctx, "Remaining time for console certificate: ", remain, " seconds")
 		if remain < 3*24*3600 {
 			err = ApplyConsoleCert(ctx)
 			if err != nil {
@@ -329,8 +329,18 @@ func AutoRenewSSL(ctx context.Context) {
 		}
 	}
 
+	// admin account
+	adminAccount := &model.Account{}
+	adminUsername, err := public.DockerEnv("ADMIN_USERNAME")
+	err = g.DB().Model("account").Where("username = ?", adminUsername).Scan(adminAccount)
+	if err != nil {
+		g.Log().Error(ctx, "Failed to get admin account for SSL renewal: ", err)
+		return
+	}
+
 	var domainList []string
-	rows, err := g.DB().Model("domains").Fields("domain").All()
+	rows, err := g.DB().Model("domain").Fields("domain").All()
+
 	if err == nil {
 		for _, row := range rows {
 			domain := row["domain"].String()
@@ -339,21 +349,20 @@ func AutoRenewSSL(ctx context.Context) {
 			}
 		}
 	}
-	g.Log().Debug(ctx, "List of domains that need renewal: ", domainList)
+
 	for _, domain := range domainList {
-		certInfo, err := mail_service.NewCertificate().GetSSLInfo(domain)
+		certInfo, err = mail_service.NewCertificate().GetSSLInfo(domain)
 		if err == nil && certInfo.Endtime > 0 {
 			remain := certInfo.Endtime - int(time.Now().Unix())
-			g.Log().Debug(ctx, "Remaining time for domain certificate: ", remain, " seconds", domain)
+			//g.Log().Warningf(ctx, "Remaining time for domain certificate: %d seconds, domain: %s", remain, domain)
 			if remain < 3*24*3600 {
-				g.Log().Info(ctx, "Domain certificate is about to expire, auto-renewing: ", domain)
-				accountInfo, accErr := rbac.GetCurrentAccount(ctx)
-				if accErr == nil {
-					certErr := ApplyLetsEncryptCertWithHttp(ctx, domain, accountInfo)
-					if certErr != nil {
-						g.Log().Warningf(ctx, "Domain name [%s] added successfully, but auto-request certificate failed: %v", domain, certErr)
-					}
+				//g.Log().Info(ctx, "Domain certificate is about to expire, auto-renewing: ", domain)
+
+				certErr := ApplyLetsEncryptCertWithHttp(ctx, domain, adminAccount)
+				if certErr != nil {
+					g.Log().Warningf(ctx, "Domain name [%s]  auto-request certificate failed: %v", domain, certErr)
 				}
+
 			}
 		}
 		// Skip if no certificate exists (endtime=0)

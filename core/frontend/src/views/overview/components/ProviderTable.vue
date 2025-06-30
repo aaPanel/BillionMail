@@ -1,6 +1,6 @@
 <template>
 	<div class="provider-table">
-		<n-data-table :columns="columns" :data="tableData"> </n-data-table>
+		<n-data-table :columns="columns" :data="tableData" :max-height="320"> </n-data-table>
 	</div>
 </template>
 

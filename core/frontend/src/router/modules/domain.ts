@@ -11,6 +11,11 @@ const route: RouteRecordRaw = {
 			name: 'Domain',
 			component: () => import('@/views/domain/index.vue'),
 		},
+		{
+			path: 'edit-domain',
+			name: 'EditDomain',
+			component: () => import('@/views/domain/pages/editDomain/index.vue'),
+		},
 	],
 }
 

@@ -1,5 +1,8 @@
+import i18n from '@/i18n'
 import { instance } from '@/api'
 import type { TemplateParams } from '@/views/market/template/interface'
+
+const { t } = i18n.global
 
 export function getTemplateList(params: TemplateParams) {
 	return instance.get('/email_template/list', { params })
@@ -23,7 +26,7 @@ interface TemplateForm {
 export function addTemplate(params: TemplateForm) {
 	return instance.post('/email_template/create', params, {
 		fetchOptions: {
-			loading: 'Creating template, please wait...',
+			loading: t('market.template.loading.creating'),
 			successMessage: true,
 		},
 	})
@@ -32,7 +35,7 @@ export function addTemplate(params: TemplateForm) {
 export function updateTemplate(params: TemplateForm & { id: number }) {
 	return instance.post('/email_template/update', params, {
 		fetchOptions: {
-			loading: 'Updating template, please wait...',
+			loading: t('market.template.loading.updating'),
 			successMessage: true,
 		},
 	})
@@ -41,7 +44,7 @@ export function updateTemplate(params: TemplateForm & { id: number }) {
 export function duplicateTemplate(params: { id: number }) {
 	return instance.post('/email_template/copy', params, {
 		fetchOptions: {
-			loading: 'Copying template, please wait...',
+			loading: t('market.template.loading.copying'),
 			successMessage: true,
 		},
 	})
@@ -50,7 +53,7 @@ export function duplicateTemplate(params: { id: number }) {
 export function deleteTemplate(params: { id: number }) {
 	return instance.post('/email_template/delete', params, {
 		fetchOptions: {
-			loading: 'Deleting template, please wait...',
+			loading: t('market.template.loading.deleting'),
 			successMessage: true,
 		},
 	})

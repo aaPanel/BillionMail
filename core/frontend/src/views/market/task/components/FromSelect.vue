@@ -31,7 +31,7 @@ const name = defineModel<string>('name')
 
 const loading = ref<boolean>(false)
 
-const domain = ref<string | null>(null)
+const domain = defineModel<string | null>('domain')
 
 const domainOptions = ref<SelectOption[]>([])
 
@@ -47,7 +47,8 @@ const senderOptions = computed(() => {
 		}))
 })
 
-const handleUpdateDomain = () => {
+const handleUpdateDomain = async () => {
+	await nextTick()
 	if (senderOptions.value.length > 0) {
 		sender.value = senderOptions.value[0].value
 		handleUpdateSender(sender.value, senderOptions.value[0])
@@ -80,7 +81,7 @@ const getDomainOptions = async () => {
 
 // 获取邮箱列表
 const getSenderOptions = async () => {
-	const res = await getMailboxList({ page: 1, page_size: 1000, domain: domain.value })
+	const res = await getMailboxList({ page: 1, page_size: 1000, domain: '' })
 	if (isObject<{ list: MailBox[] }>(res)) {
 		mailboxList.value = res.list
 	}
@@ -92,7 +93,9 @@ const initData = async () => {
 		await getSenderOptions()
 		await getDomainOptions()
 		await nextTick()
-		handleUpdateDomain()
+		if (sender.value === null) {
+			handleUpdateDomain()
+		}
 	} finally {
 		loading.value = false
 	}

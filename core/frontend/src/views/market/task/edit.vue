@@ -46,6 +46,11 @@
 								<n-switch v-model:value="form.is_record" :checked-value="1" :unchecked-value="0">
 								</n-switch>
 							</n-form-item>
+							<n-form-item :label="t('market.task.edit.ipWarmup')">
+								<n-switch v-model:value="form.warmup" :checked-value="1" :unchecked-value="0">
+								</n-switch>
+								<span class="ml-12px text-desc">{{ t('market.task.edit.ipWarmupTip') }}</span>
+							</n-form-item>
 							<n-form-item :label="$t('market.task.edit.unsubscribeLink')">
 								<n-switch v-model:value="form.unsubscribe" :checked-value="1" :unchecked-value="0">
 								</n-switch>
@@ -73,12 +78,12 @@
 							</n-form-item>
 						</n-card>
 						<n-card>
-							<n-form-item label="Send time" path="start_time">
+							<n-form-item :label="t('market.task.edit.sendTime')" path="start_time">
 								<n-radio-group
 									v-model:value="sendTimeType"
 									class="flex items-center"
 									@update:value="handleUpdateSend">
-									<n-radio :value="0">Send Now</n-radio>
+									<n-radio :value="0">{{ t('market.task.edit.sendTimeNow') }}</n-radio>
 									<n-radio class="items-center" :value="1"> </n-radio>
 									<n-date-picker
 										v-model:value="form.start_time"
@@ -177,6 +182,7 @@ const form = reactive({
 	template_id: null as null | number,
 	is_record: 1,
 	unsubscribe: 1,
+	warmup: 0,
 	threads: 0,
 	start_time: null as number | null,
 	remark: '',
@@ -319,6 +325,7 @@ const getParams = () => {
 		template_id: form.template_id || 0,
 		is_record: form.is_record,
 		unsubscribe: form.unsubscribe,
+		warmup: form.warmup,
 		threads: form.threads,
 		start_time: startTime / 1000,
 		remark: form.remark,

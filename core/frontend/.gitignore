@@ -13,3 +13,5 @@ dist/
 .idea
 
 deploy.js
+
+build/config.ts

@@ -36,6 +36,7 @@ import { useTableData } from '@/hooks/useTableData'
 import { useModal } from '@/hooks/modal/useModal'
 import { deleteForward, editForward, getForwardList } from '@/api/modules/settings/forward'
 import type { Forward, ForwardParams } from './types/base'
+
 import ForwardForm from './components/ForwardForm.vue'
 
 const { t } = useI18n()
@@ -70,13 +71,13 @@ const columns = ref<DataTableColumns<Forward>>([
 			tooltip: true,
 		},
 	},
-	{
-		key: 'domain',
-		title: t('settings.forward.columns.domain'),
-		ellipsis: {
-			tooltip: true,
-		},
-	},
+	// {
+	// 	key: 'domain',
+	// 	title: t('settings.forward.columns.domain'),
+	// 	ellipsis: {
+	// 		tooltip: true,
+	// 	},
+	// },
 	{
 		key: 'create_time',
 		title: t('settings.forward.columns.created'),
@@ -102,7 +103,8 @@ const columns = ref<DataTableColumns<Forward>>([
 				unchecked-value={0}
 				onUpdateValue={val => {
 					handleSetStatus(val, row)
-				}}></NSwitch>
+				}}
+			/>
 		),
 	},
 	{

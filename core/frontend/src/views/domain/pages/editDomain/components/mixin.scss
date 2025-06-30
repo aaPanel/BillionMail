@@ -1,0 +1,36 @@
+@use "@/styles/index" as base;
+
+@mixin content-wrapper {
+    width: 866px;
+    margin: 0 auto;
+    padding-top: 32px;
+}
+
+@mixin page-tit {
+    @include base.row-flex-start;
+    margin-bottom: 20px;
+    gap: 5px;
+
+    .back-tool {
+        color: var(--color-primary-1);
+        @include base.row-flex-start;
+        gap: 5px;
+        cursor: pointer;
+        @include base.transition-all;
+
+        .back-btn {
+            font-size: 18px;
+        }
+    }
+
+    .tit-content {
+        font-size: 16px;
+        color: var(--color-text-1);
+        font-weight: bold;
+    }
+}
+
+@mixin form-label {
+    font-size: 14px;
+    color: var(--color-text-2);
+}

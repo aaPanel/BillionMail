@@ -23,12 +23,12 @@
 
 <script lang="ts" setup>
 import { FormRules } from 'naive-ui'
+import { Message } from '@/utils'
 import { useModal } from '@/hooks/modal/useModal'
 import { editContact } from '@/api/modules/contacts/subscribers'
 import type { Subscriber } from '../interface'
 
 import GroupSelect from './GroupMultipleSelect.vue'
-import { Message } from '@/utils'
 
 const { t } = useI18n()
 

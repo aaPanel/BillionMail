@@ -20,7 +20,11 @@
 					class="w-3 h-3 rounded-full mr-2 animate-pulse"
 					:class="sslInfo.status ? 'bg-primary' : 'bg-error'"></div>
 				<span class="text-sm">
-					{{ sslInfo.status ? t('settings.common.network.certValidStatus') : t('settings.common.network.certExpiredStatus') }}，
+					{{
+						sslInfo.status
+							? t('settings.common.network.certValidStatus')
+							: t('settings.common.network.certExpiredStatus')
+					}}，
 				</span>
 				<span class="text-sm">
 					{{ t('settings.common.network.certExpireTime', { time: sslInfo.expireTime }) }}
@@ -61,17 +65,21 @@
 			<n-button type="primary" :disabled="updateBtnDisabled" @click="handleUpdateSSL">
 				{{ t('settings.common.network.updateSSL') }}
 			</n-button>
+			<n-button type="primary" class="ml-12px" ghost @click="handleApplySSL">
+				Apply Certificate
+			</n-button>
 		</div>
 	</div>
 </template>
 
-<script lang="ts" setup>
-import { setSslConfig } from '@/api/modules/settings/common'
+<script lang="tsx" setup>
+import { applyCert, setSslConfig } from '@/api/modules/settings/common'
 import { getSettingsStore } from '../store'
+import { confirm } from '@/utils'
 
 const { t } = useI18n()
 
-const { networkForm, sslInfo, getCommonConfig } = getSettingsStore()
+const { networkForm, sslInfo, currentDomain, serverIp, getCommonConfig } = getSettingsStore()
 
 const updateBtnDisabled = computed(() => {
 	return !networkForm.value.sslCert || !networkForm.value.sslKey
@@ -83,6 +91,33 @@ const handleUpdateSSL = async () => {
 		privateKey: networkForm.value.sslKey,
 	})
 	getCommonConfig()
+}
+
+const handleApplySSL = () => {
+	confirm({
+		title: 'Apply SSL',
+		width: 460,
+		content: () => (
+			<div style={{ lineHeight: '22px' }}>
+				<div class="mb-8px">Certificate Application Functionality:</div>
+				<div>- Implement certificate application using hostname</div>
+				<div>- Ensure the hostname has a valid A record configured with:</div>
+				<div>
+					- Record Type: <b>A</b>
+				</div>
+				<div>
+					- Host: <b>{currentDomain.value}</b>
+				</div>
+				<div>
+					- Value: <b>{serverIp.value}</b>
+				</div>
+			</div>
+		),
+		onConfirm: async () => {
+			await applyCert()
+			getCommonConfig()
+		},
+	})
 }
 </script>
 

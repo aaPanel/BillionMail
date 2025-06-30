@@ -15,6 +15,7 @@ type DomainParams = {
 	domain: string
 	quota: number
 	mailboxes: number
+	email: string
 }
 
 export const createDomain = (params: DomainParams) => {
@@ -70,6 +71,15 @@ export const applyCert = (params: { domain: string }) => {
 	return instance.post('/ssl/apply_cert', params, {
 		fetchOptions: {
 			loading: t('domain.api.loading.applyingCert'),
+			successMessage: true,
+		},
+	})
+}
+
+export const setDefaultDomain = (params: { domain: string }) => {
+	return instance.post('/domains/set_default_domain', params, {
+		fetchOptions: {
+			loading: 'Setting Default Domain, please wait...',
 			successMessage: true,
 		},
 	})

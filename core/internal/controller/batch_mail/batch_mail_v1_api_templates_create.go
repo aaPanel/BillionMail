@@ -8,6 +8,8 @@ import (
 	"encoding/hex"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
+	"net"
+	"strings"
 	"time"
 )
 
@@ -37,8 +39,18 @@ func (c *ControllerV1) ApiTemplatesCreate(ctx context.Context, req *v1.ApiTempla
 		return nil, err
 	}
 
+	tx, err := g.DB().Begin(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+		}
+	}()
+
 	// create API template
-	_, err = g.DB().Model("api_templates").Insert(g.Map{
+	result, err := tx.Model("api_templates").Insert(g.Map{
 		"api_key":              apiKey,
 		"api_name":             req.ApiName,
 		"template_id":          req.TemplateId,
@@ -49,11 +61,44 @@ func (c *ControllerV1) ApiTemplatesCreate(ctx context.Context, req *v1.ApiTempla
 		"track_open":           1,
 		"track_click":          1,
 		"active":               req.Active,
-		"expire_time":          req.ExpireTime, // 0 is a permanently valid unit of seconds
+		"expire_time":          0,
 		"last_key_update_time": time.Now().Unix(),
+		//"ip_whitelist_enabled": req.IpWhitelistEnabled,
 	})
 
 	if err != nil {
+		return nil, err
+	}
+
+	apiId, err := result.LastInsertId()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(req.IpWhitelist) > 0 {
+		now := time.Now().Unix()
+		for _, ip := range req.IpWhitelist {
+			ip = strings.TrimSpace(ip)
+			if ip == "" {
+				continue
+			}
+
+			if net.ParseIP(ip) == nil {
+				continue
+			}
+
+			_, err = tx.Model("api_ip_whitelist").Insert(g.Map{
+				"api_id":      apiId,
+				"ip":          strings.TrimSpace(ip),
+				"create_time": now,
+			})
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	if err = tx.Commit(); err != nil {
 		return nil, err
 	}
 

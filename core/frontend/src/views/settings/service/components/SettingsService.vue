@@ -15,6 +15,9 @@ import type { DockerService } from '../types/common'
 import ServiceConfig from './ServiceConfig.vue'
 
 const { t } = useI18n()
+
+const router = useRouter()
+
 const loading = ref(false)
 const serviceList = ref<DockerService[]>([])
 
@@ -49,14 +52,16 @@ const columns = ref<DataTableColumns<DockerService>>([
 		align: 'right',
 		render: row => (
 			<NFlex inline={true}>
-				<NButton
-					type="primary"
-					text
-					onClick={() => {
-						handleRestart(row)
-					}}>
-					{t('common.actions.restart')}
-				</NButton>
+				{row.Names[0].includes('rspamd') ? (
+					<NButton
+						type="primary"
+						text
+						onClick={() => {
+							router.push('/settings/rspamd')
+						}}>
+						GUI
+					</NButton>
+				) : null}
 				<NButton
 					type="primary"
 					text
@@ -65,6 +70,14 @@ const columns = ref<DataTableColumns<DockerService>>([
 						handleShowConfig(row)
 					}}>
 					{t('common.actions.config')}
+				</NButton>
+				<NButton
+					type="primary"
+					text
+					onClick={() => {
+						handleRestart(row)
+					}}>
+					{t('common.actions.restart')}
 				</NButton>
 			</NFlex>
 		),

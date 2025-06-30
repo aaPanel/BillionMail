@@ -23,7 +23,8 @@ const route: RouteRecordRaw = {
 				{
 					path: 'service',
 					name: 'SettingsService',
-					meta: { title: 'Service', titleKey: '' },
+					meta: { title: 'Service', titleKey: 'layout.menu.service' },
+
 					component: () => import('@/views/settings/service/index.vue'),
 				},
 				{
@@ -39,6 +40,12 @@ const route: RouteRecordRaw = {
 					component: () => import('@/views/settings/forward/index.vue'),
 				},
 			],
+		},
+		{
+			path: 'rspamd',
+			name: 'SettingsRspamd',
+			meta: { title: 'Rspamd', titleKey: '', hidden: true },
+			component: () => import('@/views/settings/rspamd/index.vue'),
 		},
 	],
 }

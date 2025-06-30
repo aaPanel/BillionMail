@@ -160,7 +160,7 @@ See the [LICENSE](LICENSE) file for more details.
 [docs-link]: https://www.billionmail.com/
 
 <!-- BillionMail Other link-->
-[license-link]: https://www.gnu.org/licenses/gpl-3.0.html
+[license-link]: https://www.gnu.org/licenses/agpl-3.0.html
 [github-release-link]: https://github.com/aaPanel/BillionMail/releases/latest
 [github-stars-link]: https://github.com/aaPanel/BillionMail
 [github-issues-link]: https://github.com/aaPanel/BillionMail/issues

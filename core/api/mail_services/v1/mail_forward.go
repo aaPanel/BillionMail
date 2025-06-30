@@ -34,7 +34,6 @@ type AddMailForwardReq struct {
 	g.Meta  `path:"/mail_forward/add" method:"post" summary:"add mail forward"`
 	Address string `json:"address" v:"required|email" desc:"forwarded email address, e.g. user@example.com"`
 	Goto    string `json:"goto" v:"required" desc:"forward target address, multiple addresses separated by newline"`
-	Domain  string `json:"domain" v:"required" desc:"domain"`
 	Active  int    `json:"active" v:"in:0,1" desc:"status: 1-enabled, 0-disabled" default:"1"`
 }
 

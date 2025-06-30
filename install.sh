@@ -212,27 +212,29 @@ PORT(){
     fi
 
     if [[ ! -z $command_port ]]; then
-        echo "Checking if the port is used"
+        
         
         #check_command=$($command_port -ltnp | grep -E ':(25|465|587|110|143|993|995)\s')
-        check_command=$($command_port -ltnp | grep -E ":(${SMTP_PORT}|${SMTPS_PORT}|${SUBMISSION_PORT}|${POP_PORT}|${IMAP_PORT}|${IMAPS_PORT}|${POPS_PORT}|${HTTP_PORT}|${HTTPS_PORT})\s")
+        check_command=$($command_port -ltnp | grep -E ":(${SMTP_PORT}|${SMTPS_PORT}|${SUBMISSION_PORT}|${POP_PORT}|${IMAP_PORT}|${IMAPS_PORT}|${POPS_PORT})\s")
         if [[ ! -z "$check_command" ]]; then
-            echo "$check_command"
-            echo -e "\033[31m Mail Server need use port ${SMTP_PORT}|${SMTPS_PORT}|${SUBMISSION_PORT}|${POP_PORT}|${IMAP_PORT}|${IMAPS_PORT}|${POPS_PORT}|${HTTP_PORT}|${HTTPS_PORT}. There are already services ports in the system, cannot be installed. \nRecommended use a new system. \033[0m"
-            exit 1
+            echo "Checking the port is used:"
+            echo "$check_command"|grep -v "docker-proxy"
+            echo -e "\033[1;31m BillionMail need use port ${SMTP_PORT}|${SMTPS_PORT}|${SUBMISSION_PORT}|${POP_PORT}|${IMAP_PORT}|${IMAPS_PORT}|${POPS_PORT}.\033[0m There are already services ports in the system. "
+            # exit 1
         fi
     fi
 }
 
 Check_Port(){
-    if ! Command_Exists docker; then
-        PORT
-    else
-        check=$(docker ps |grep -wE "${POSTFIX_CONTAINER_NAME}|${DOVECOT_CONTAINER_NAME}")
-        if [[ -z "$check" ]]; then
-            PORT
-        fi
-    fi
+    # if ! Command_Exists docker; then
+    #     PORT
+    # else
+    #     check=$(docker ps |grep -wE "${POSTFIX_CONTAINER_NAME}|${DOVECOT_CONTAINER_NAME}")
+    #     if [[ -z "$check" ]]; then
+    #         PORT
+    #     fi
+    # fi
+    PORT
 }
 
 
@@ -902,9 +904,9 @@ Set_Firewall() {
             ufw allow ${HTTP_PORT}/tcp >/dev/null 2>&1
             ufw allow ${HTTPS_PORT}/tcp >/dev/null 2>&1
             ufw allow ${sshPort}/tcp >/dev/null 2>&1
-            ufw_status=$(ufw status)
-            echo y | ufw enable
-            ufw default deny
+            # ufw_status=$(ufw status)
+            echo y | ufw enable >/dev/null 2>&1
+            ufw default deny >/dev/null 2>&1
             ufw reload
         fi
     else
@@ -1356,8 +1358,15 @@ EOF
     ${DOCKER_COMPOSE} up -d
     if [ $? -eq 0 ]; then
         echo -e "Billionmail installation completed successfully!"
-    # else
-    #     Red_Error "Billionmail installation failed, please try reinstalling!"
+    else
+        echo ""
+        echo -e "--------------------------------------------------"
+        Check_Port
+        echo -e "\e[1;31m Startup error,\e[0m please resolve it according to the prompts, otherwise it will affect the use!"
+        sleep 5
+        bash bm.sh status
+        echo -e "--------------------------------------------------"
+        echo ""
     fi
 
     # echo -e "Initialize the data..."
@@ -1413,9 +1422,9 @@ Install_Main(){
 Install_Main
 # Domain_record
 
-IPV4_ADDRESS=$(curl -sS -4 --connect-timeout 10 -m 20 https://ifconfig.me)
+IPV4_ADDRESS=$(curl -sSf -4 --connect-timeout 10 -m 20 https://ifconfig.me)
 if [ -z "${IPV4_ADDRESS}" ]; then
-    IPV4_ADDRESS=$(curl -sSk --connect-timeout 10 -m 20 https://www.aapanel.com/api/common/getClientIP)
+    IPV4_ADDRESS=$(curl -sSfk --connect-timeout 10 -m 20 https://www.aapanel.com/api/common/getClientIP)
 fi
 ipv4_regex="^([0-9]{1,3}\.){3}[0-9]{1,3}$"
 if [[ ${IPV4_ADDRESS} =~ ${ipv4_regex} ]]; then        
@@ -1423,7 +1432,8 @@ if [[ ${IPV4_ADDRESS} =~ ${ipv4_regex} ]]; then
 elif [ -z "${IPV4_ADDRESS}" ]; then
     IPV4_ADDRESS="YOUR_SERVER_IPV4_ADDRESS"
 fi
-echo -e "\e[31mPlease save the following information:\e[0m"
+intenal_ip=$(ip addr | grep -E -o '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | grep -E -v "^127\.|^255\.|^0\." | head -n 1)
+# echo -e "\e[31mPlease save the following information:\e[0m"
 # if [ ${HTTPS_PORT} = "443" ]; then
 #     echo -e "Webmail address: \e[1;33mhttps://${IPV4_ADDRESS}/roundcube/\e[0m"
 # else
@@ -1432,13 +1442,16 @@ echo -e "\e[31mPlease save the following information:\e[0m"
 # echo -e "Webmail Username(e-mail): \e[1;33m${mailbox}@${BILLIONMAIL_HOSTNAME}\e[0m Password: \e[1;33m${Generate_mailbox_password}\e[0m"
 # echo -e ""
 if [ ${HTTPS_PORT} = "443" ]; then
-    echo -e "BillionMail address: \e[1;33mhttps://${IPV4_ADDRESS}/${SafePath}\e[0m"
+    echo -e "BillionMail Internet address: \e[1;33mhttps://${IPV4_ADDRESS}/${SafePath}\e[0m"
+    echo -e "BillionMail Internal address: \e[1;33mhttps://${intenal_ip}/${SafePath}\e[0m"
 else
-    echo -e "BillionMail address: \e[1;33mhttps://${IPV4_ADDRESS}:${HTTPS_PORT}/${SafePath}\e[0m"
+    echo -e "BillionMail Internet address: \e[1;33mhttps://${IPV4_ADDRESS}:${HTTPS_PORT}/${SafePath}\e[0m"
+    echo -e "BillionMail Internal address: \e[1;33mhttps://${intenal_ip}:${HTTPS_PORT}/${SafePath}\e[0m"
 fi
-echo -e "BillionMail Username: \e[1;33m${ADMIN_USERNAME}\e[0m Password: \e[1;33m${ADMIN_PASSWORD}\e[0m"
+echo -e "Username: \e[1;33m${ADMIN_USERNAME}\e[0m"
+echo -e "Password: \e[1;33m${ADMIN_PASSWORD}\e[0m"
 echo -e ""
-echo -e "Tip: Use \e[33m bm \e[0m or \e[33mbash bm.sh\e[0m to Add Domain and login info etc."
+echo -e "Tip: Use \e[33m bm \e[0m or \e[33mbash bm.sh\e[0m to View login info etc."
 
 # Install
 curl -o /dev/null -fsSLk --connect-time 10 -X POST "https://www.aapanel.com/api/panel/panel_count_daily?name=billionmail" >/dev/null 2>&1

@@ -42,6 +42,11 @@ const getList = async () => {
 			if (templateId.value === null) {
 				templateId.value = res[0].id
 				content.value = res[0].html_content
+			} else {
+				const template = res.find(item => item.id === templateId.value)
+				if (template) {
+					content.value = template.html_content
+				}
 			}
 		}
 	} finally {

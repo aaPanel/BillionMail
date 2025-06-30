@@ -105,11 +105,14 @@ const renderLabel = (name: string, title: string) => {
 const iconMap: Record<string, VNodeChild> = {
 	overview: <i class="i-mdi-web"></i>,
 	market: <i class="i-mdi-email-fast-outline"></i>,
+	api: <i class="i-mdi-chart-line"></i>,
 	contacts: <i class="i-mdi-user-multiple-outline"></i>,
 	domain: <i class="i-mdi-web"></i>,
 	mailbox: <i class="i-custom:mailbox"></i>,
 	smtp: <i class="i-custom:smtp"></i>,
 	settings: <i class="i-mdi-settings-outline"></i>,
+	template: <i class="i-mdi-settings-outline"></i>,
+	rspamd: <i class="i-mdi-settings-outline"></i>,
 	logout: <i class="i-mdi-logout"></i>,
 }
 

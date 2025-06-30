@@ -1,5 +1,5 @@
 <template>
-	<modal :title="title" :width="520">
+	<modal :title="title" :width="540">
 		<div class="pt-16px">
 			<bt-form ref="formRef" :model="form" :rules="rules">
 				<n-form-item :label="t('domain.form.domain')" path="domain">
@@ -31,17 +31,17 @@
 						:show-button="false">
 					</n-input-number>
 				</n-form-item>
-				<n-form-item v-if="false" label="全局捕获">
-					<div class="w-320px">
-						<n-input v-model:value="form.email" placeholder="捕获不存在的邮件，转发至此邮件">
-						</n-input>
-					</div>
+				<n-form-item :label="t('domain.form.globalCatch')">
+					<n-input
+						v-model:value="form.email"
+						:placeholder="t('domain.form.globalCatchPlaceholder')">
+					</n-input>
 				</n-form-item>
 			</bt-form>
-			<bt-tips v-if="false">
-				<li class="text-error">提示A记录解析失败。请检查填写的A记录域名是否已解析到服务器 IP</li>
-				<li>需要在您的DNS服务提供商控制台添加A记录</li>
-				<li>如果使用CloudFlare，请在添加记录时选择【仅DNS】</li>
+			<bt-tips>
+				<li class="text-error">{{ t('domain.form.tips.aRecordFailed') }}</li>
+				<li>{{ t('domain.form.tips.dnsSetup') }}</li>
+				<li>{{ t('domain.form.tips.cloudflare') }}</li>
 			</bt-tips>
 		</div>
 	</modal>
@@ -52,7 +52,7 @@ import { FormRules } from 'naive-ui'
 import { getByteUnit, getNumber } from '@/utils'
 import { useModal } from '@/hooks/modal/useModal'
 import { createDomain, updateDomain } from '@/api/modules/domain'
-import { MailDomain } from '../interface'
+import type { MailDomain } from '../interface'
 
 const { t } = useI18n()
 
@@ -119,6 +119,7 @@ const [Modal, modalApi] = useModal({
 				form.quota = getNumber(quota.split(' ')[0])
 				form.quota_unit = quota.split(' ')[1]
 				form.mailboxes = row.mailboxes
+				form.email = row.email
 			}
 		} else {
 			form.domain = ''
@@ -126,6 +127,7 @@ const [Modal, modalApi] = useModal({
 			form.quota = 5
 			form.quota_unit = 'GB'
 			form.mailboxes = 50
+			form.email = ''
 		}
 	},
 	onConfirm: async () => {
@@ -135,12 +137,14 @@ const [Modal, modalApi] = useModal({
 				domain: form.domain,
 				quota: getQuotaByte(form.quota, form.quota_unit),
 				mailboxes: form.mailboxes,
+				email: form.email,
 			})
 		} else {
 			await createDomain({
 				domain: form.domain,
 				quota: getQuotaByte(form.quota, form.quota_unit),
 				mailboxes: form.mailboxes,
+				email: form.email,
 			})
 		}
 		const state = modalApi.getState<{ refresh: Function }>()

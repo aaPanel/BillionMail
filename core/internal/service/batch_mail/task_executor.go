@@ -6,9 +6,11 @@ import (
 	"billionmail-core/internal/service/mail_service"
 	"billionmail-core/internal/service/maillog_stat"
 	"billionmail-core/internal/service/public"
+	"billionmail-core/internal/service/warmup"
 	"context"
 	"errors"
 	"fmt"
+	"github.com/gogf/gf/util/grand"
 	"github.com/gogf/gf/v2/database/gdb"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gctx"
@@ -170,6 +172,11 @@ type SendResult struct {
 func NewTaskExecutor(ctx context.Context) *TaskExecutor {
 	taskCtx, cancel := context.WithCancel(ctx)
 
+	// Set server IP in context
+	serverIP, _ := public.GetServerIP()
+
+	taskCtx = context.WithValue(taskCtx, "serverIP", serverIP)
+
 	executor := &TaskExecutor{
 		ctx:            taskCtx,
 		cancel:         cancel,
@@ -237,6 +244,14 @@ func (e *TaskExecutor) ProcessTask(ctx context.Context) error {
 	if task.Pause == 1 {
 		e.isPaused.Store(true)
 	}
+
+	// check campaign warmup association
+	warmupAssociated := false
+	if warmupStat, _ := warmup.WarmupCampaign().GetWarmupStatusForCampaign(ctx, int64(taskId)); warmupStat != nil {
+		warmupAssociated = true
+	}
+
+	e.ctx = context.WithValue(e.ctx, "warmupAssociated", warmupAssociated)
 
 	// configure rate controller
 	e.configureRateController(task)
@@ -562,6 +577,7 @@ func (e *TaskExecutor) getNextRecipientBatch(ctx context.Context, taskId, lastId
 	err := g.DB().Model("recipient_info").
 		Where("task_id", taskId).
 		Where("is_sent", 0).
+		Where("sent_time = 0 OR sent_time < ?", time.Now().Unix()). // not sent yet
 		Where("id > ?", lastId).
 		Order("id ASC").
 		Limit(batchSize).
@@ -606,6 +622,8 @@ func (e *TaskExecutor) processRecipientBatch(ctx context.Context, task *entity.E
 		}
 	}
 
+	updates := make(map[int]int)
+
 	// submit send task for each recipient
 	for _, recipient := range recipients {
 		// check again if paused or canceled
@@ -637,6 +655,18 @@ func (e *TaskExecutor) processRecipientBatch(ctx context.Context, task *entity.E
 
 		}
 
+		// check if recipient is allowed to send with warmup
+		if warmupAssociated, ok := e.ctx.Value("warmupAssociated").(bool); ok && warmupAssociated {
+			if allow, waits, _ := warmup.RateLimiter().Allow(ctx, e.ctx.Value("serverIP").(string), public.GetMailProviderGroup(recipient.Recipient)); !allow {
+				if waits > 0 {
+					updates[recipient.Id] = waits * 2
+				}
+				// rate limit exceeded, skip this recipient
+				g.Log().Warningf(ctx, "Rate limit exceeded for recipient %d, wait for %d seconds after retry, skipping", recipient.Id, waits)
+				continue
+			}
+		}
+
 		// create recipient copy to avoid closure problem
 		recipientBak := recipient
 
@@ -656,6 +686,9 @@ func (e *TaskExecutor) processRecipientBatch(ctx context.Context, task *entity.E
 
 			// send email
 			result := e.sendEmail(ctx, task, recipientBak, personalized)
+
+			// use sendEmailMock (Don't use in production)
+			// result := e.sendEmailMock(ctx, task, recipientBak, personalized)
 
 			// record send
 			e.rateController.RecordSend()
@@ -685,6 +718,25 @@ func (e *TaskExecutor) processRecipientBatch(ctx context.Context, task *entity.E
 			// safe send result
 			safeSend(failResult)
 		}
+	}
+
+	if len(updates) > 0 {
+		curTime := int(time.Now().Unix())
+		data := make([]map[string]interface{}, 0, len(updates))
+		i := 0
+		for id, waits := range updates {
+			data = append(data, g.Map{
+				"id":         id,
+				"task_id":    0,
+				"recipient":  "",
+				"message_id": "",
+				"sent_time":  curTime + (waits * ((i % 10) + 1)),
+			})
+			i++
+		}
+		_, _ = g.DB().Ctx(ctx).Model("recipient_info").Data(data).OnConflict("id").OnDuplicate(g.Map{
+			"sent_time": gdb.Raw("excluded.sent_time"),
+		}).Save()
 	}
 
 	// all tasks submitted, start result processing and channel closure goroutine
@@ -995,6 +1047,149 @@ func (e *TaskExecutor) sendEmail(ctx context.Context, task *entity.EmailTask, re
 			RecipientID: recipient.Id,
 			Success:     false,
 			Error:       fmt.Errorf("send email failed: %w", err),
+		}
+	}
+
+	return &SendResult{
+		RecipientID: recipient.Id,
+		MessageID:   messageID,
+		Success:     true,
+		Error:       nil,
+	}
+}
+
+// sendEmailMock simulates sending an email and records it in the database.
+func (e *TaskExecutor) sendEmailMock(ctx context.Context, task *entity.EmailTask, recipient *entity.RecipientInfo, content string) *SendResult {
+	// Check if the context is canceled
+	select {
+	case <-ctx.Done():
+		return &SendResult{
+			RecipientID: recipient.Id,
+			Success:     false,
+			Error:       ctx.Err(),
+		}
+	default:
+		// Continue execution
+	}
+
+	// Get the rendered content and subject
+	renderedContent, renderedSubject := e.personalizeEmail(ctx, content, task, recipient)
+
+	sender, err := mail_service.NewEmailSenderWithLocal(task.Addresser)
+	if err != nil {
+		g.Log().Error(ctx, "Failed to create email sender: %v", err)
+		return &SendResult{
+			RecipientID: recipient.Id,
+			Success:     false,
+			Error:       fmt.Errorf("failed to create email sender: %w", err),
+		}
+	}
+	defer sender.Close()
+	// Set message ID
+	messageID := sender.GenerateMessageID()
+
+	// Track email
+	baseURL := domains.GetBaseURLBySender(task.Addresser)
+	mail_tracker := maillog_stat.NewMailTracker(renderedContent, task.Id, messageID, recipient.Recipient, baseURL)
+	mail_tracker.TrackLinks()
+	mail_tracker.AppendTrackingPixel()
+	renderedContent = mail_tracker.GetHTML()
+
+	// Create email message with rendered subject
+	message := mail_service.NewMessage(renderedSubject, renderedContent)
+	message.SetMessageID(messageID)
+
+	// Set sender display name
+	if task.FullName != "" {
+		message.SetRealName(task.FullName)
+	}
+
+	// We will create a log entry and save it, instead of sending.
+	// This simulates a successful send.
+	postfixMessageID := strings.ToUpper("TEST_" + grand.S(11))
+	nowMillis := time.Now().UnixMilli()
+
+	// 1. Create MailSender record
+	senderRecord := &maillog_stat.MailSender{
+		MailRecord: maillog_stat.MailRecord{
+			PostfixMessageID: postfixMessageID,
+			LogTimeMillis:    nowMillis,
+		},
+		Sender: task.Addresser,
+		Size:   int64(len(renderedContent)),
+	}
+	_, err = g.DB().Model("mailstat_senders").InsertIgnore(senderRecord)
+	if err != nil {
+		g.Log().Warningf(ctx, "sendEmailMock: failed to insert mailstat_senders: %v", err)
+	}
+
+	// 2. Create MailMessageID record
+	messageIDRecord := &maillog_stat.MailMessageID{
+		MailRecord: maillog_stat.MailRecord{
+			PostfixMessageID: postfixMessageID,
+			LogTimeMillis:    nowMillis,
+		},
+		MessageID: strings.Trim(messageID, "<>"),
+	}
+	_, err = g.DB().Model("mailstat_message_ids").InsertIgnore(messageIDRecord)
+	if err != nil {
+		g.Log().Warningf(ctx, "sendEmailMock: failed to insert mailstat_message_ids: %v", err)
+	}
+
+	// 3. Create MailSendRecord record
+	sendRecord := &maillog_stat.MailSendRecord{
+		MailRecord: maillog_stat.MailRecord{
+			PostfixMessageID: postfixMessageID,
+			LogTimeMillis:    nowMillis,
+		},
+		Recipient:    recipient.Recipient,
+		MailProvider: public.GetMailProviderGroup(recipient.Recipient),
+		Status:       "sent",
+		Delay:        0.1,              // Mock value
+		Delays:       "0/0/0.1/0",      // Mock value
+		Dsn:          "2.0.0",          // Mock value for successful send
+		Relay:        "mock.relay.com", // Mock value
+		Description:  "250 2.0.0 OK",   // Mock value
+	}
+
+	_, err = g.DB().Model("mailstat_send_mails").Data(sendRecord).Insert()
+	if err != nil {
+		g.Log().Errorf(ctx, "sendEmailMock: failed to insert mailstat_send_mails: %v", err)
+		return &SendResult{
+			RecipientID: recipient.Id,
+			Success:     false,
+			Error:       fmt.Errorf("sendEmailMock: failed to save record: %w", err),
+		}
+	}
+
+	// 4. Simulate email open and click
+	// Simulate a 50% open rate
+	if grand.Intn(100) < 50 {
+		openTimeMillis := nowMillis + int64(grand.Intn(3600*1000)) // Simulate opening within 1 hour of sending
+		_, err = g.DB().Model("mailstat_opened").Insert(g.Map{
+			"campaign_id":        task.Id,
+			"log_time_millis":    openTimeMillis,
+			"recipient":          recipient.Recipient,
+			"message_id":         strings.Trim(messageID, "<>"),
+			"postfix_message_id": postfixMessageID,
+		})
+		if err != nil {
+			g.Log().Warningf(ctx, "sendEmailMock: failed to insert mailstat_opened: %v", err)
+		}
+
+		// If opened, simulate a 20% click rate
+		if grand.Intn(100) < 20 {
+			clickTimeMillis := openTimeMillis + int64(grand.Intn(600*1000)) // Simulate clicking within 10 minutes of opening
+			_, err = g.DB().Model("mailstat_clicked").Insert(g.Map{
+				"campaign_id":        task.Id,
+				"log_time_millis":    clickTimeMillis,
+				"recipient":          recipient.Recipient,
+				"message_id":         strings.Trim(messageID, "<>"),
+				"postfix_message_id": postfixMessageID,
+			})
+			if err != nil {
+				g.Log().Warningf(ctx, "sendEmailMock: failed to insert mailstat_clicked: %v", err)
+			}
 		}
 	}
 

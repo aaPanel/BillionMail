@@ -1,5 +1,5 @@
 <template>
-	<modal :title="t('market.task.createGroup.title')" width="480">
+	<modal :title="t('market.task.createGroup.title')" width="500">
 		<div class="pt-12px">
 			<bt-form ref="formRef" :model="form" :rules="rules">
 				<n-form-item :label="t('market.task.createGroup.groupName')" path="name">
@@ -8,17 +8,23 @@
 						:placeholder="t('market.task.createGroup.groupNamePlaceholder')">
 					</n-input>
 				</n-form-item>
+				<n-form-item label="Status">
+					<n-select v-model:value="form.status" :options="statusOptions"></n-select>
+				</n-form-item>
 				<n-form-item :label="t('market.task.createGroup.email')" path="file_data">
 					<div class="flex-1">
-						<bt-file-upload :is-upload="false" :accept="['txt']" @change="handleChangeFile">
+						<bt-file-upload :is-upload="false" :accept="['csv']" @change="handleChangeFile">
 						</bt-file-upload>
-						<div class="mt-16px text-12px text-desc">
+						<div class="mt-8px text-12px text-desc">
 							{{ $t('contacts.subscribers.import.fileTypeHint') }}
 							<n-button text type="primary" @click="handleDownloadTemplate">
 								{{ $t('common.actions.download') }}
 							</n-button>
 						</div>
 					</div>
+				</n-form-item>
+				<n-form-item :label="$t('contacts.subscribers.import.exampleCsvLabel')">
+					<pre class="csv-example">{{ example }}</pre>
 				</n-form-item>
 			</bt-form>
 		</div>
@@ -42,6 +48,8 @@ const form = reactive({
 	name: '',
 	file_data: '',
 	file_type: '',
+	description: '',
+	status: 1,
 })
 
 const rules: FormRules = {
@@ -51,6 +59,16 @@ const rules: FormRules = {
 		trigger: ['blur', 'input'],
 	},
 }
+
+const statusOptions = [
+	{ label: 'Confirmed', value: 1 },
+	{ label: 'Unconfirmed', value: 0 },
+]
+
+const example = `email,attributes
+example1@example.com,"{""age"": ""13"", ""Gender"": ""XXX""}"
+example2@example.com,"{""age"": ""45"", ""city"": ""XXX""}"
+`
 
 const handleChangeFile = (file: UploadFileInfo) => {
 	const reader = new FileReader()
@@ -64,7 +82,7 @@ const handleChangeFile = (file: UploadFileInfo) => {
 }
 
 const handleDownloadTemplate = async () => {
-	await downloadFile({ file_path: './data/example_recipients.txt' })
+	await downloadFile({ file_path: './template/example_recipients.csv' })
 }
 
 const validateForm = async () => {
@@ -92,4 +110,16 @@ const [Modal, modalApi] = useModal({
 })
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.csv-example {
+	width: 100%;
+	margin: 0;
+	padding: 16px 24px;
+	background: none;
+	border: 1px solid var(--color-border-1);
+	border-radius: 4px;
+	overflow-x: auto;
+	white-space: pre;
+	word-wrap: normal;
+}
+</style>

@@ -26,7 +26,18 @@ func (c *ControllerV1) AddMailForward(ctx context.Context, req *v1.AddMailForwar
 		return res, nil
 	}
 
-	count, err = g.DB().Model("domain").Where("domain=?", req.Domain).Count()
+	domainParts := strings.Split(req.Address, "@")
+	if len(domainParts) != 2 {
+		res.SetError(gerror.New(public.LangCtx(ctx, "invalid email format: {}", req.Address)))
+		return
+	}
+	domain := domainParts[1]
+	if domain == "" {
+		res.SetError(gerror.New(public.LangCtx(ctx, "domain part is empty in address: {}", req.Address)))
+		return
+	}
+
+	count, err = g.DB().Model("domain").Where("domain=?", domain).Count()
 	if err != nil {
 		res.SetError(gerror.New(public.LangCtx(ctx, "check domain failed: {}", err.Error())))
 		return res, nil
@@ -49,7 +60,7 @@ func (c *ControllerV1) AddMailForward(ctx context.Context, req *v1.AddMailForwar
 	_, err = g.DB().Model("alias").Insert(g.Map{
 		"address":     req.Address,
 		"goto":        strings.Join(forwardUsers, ","),
-		"domain":      req.Domain,
+		"domain":      domain,
 		"create_time": now,
 		"update_time": now,
 		"active":      req.Active,

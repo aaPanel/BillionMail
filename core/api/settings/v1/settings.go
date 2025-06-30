@@ -70,12 +70,15 @@ type SystemConfig struct {
 	} `json:"manage_timezone" dc:"time zone configuration"`
 
 	// IPv4 network configuration
-	IPv4Network string   `json:"ipv4_network" dc:"ipv4 network"`
-	Fail2ban    bool     `json:"fail2ban" dc:"fail2ban"`
-	WhitelistIP []string `json:"whitelist_ip" dc:"whitelist ip"`
+	IPv4Network string `json:"ipv4_network" dc:"ipv4 network"`
+	Fail2ban    bool   `json:"fail2ban" dc:"fail2ban"`
 
 	// SSL certificate configuration
 	SSL SSLConfig `json:"ssl" dc:"ssl certificate configuration"`
+
+	// IP whitelist configuration
+	IPWhitelist        []string `json:"ip_whitelist" dc:"ip whitelist"`
+	IPWhitelistEnabled bool     `json:"ip_whitelist_enable" dc:"ip whitelist enabled"`
 }
 
 type GetVersionReq struct {
@@ -142,4 +145,13 @@ type GetTimeZoneListReq struct {
 type GetTimeZoneListRes struct {
 	api_v1.StandardRes
 	Data map[string][]string `json:"data" dc:"available time zones"`
+}
+
+type SetIPWhitelistReq struct {
+	g.Meta `path:"/settings/set_ip_whitelist" tags:"Settings" method:"post" summary:"Set IP whitelist"`
+	IPList []string `json:"ip_list" dc:"IP list"`
+}
+
+type SetIPWhitelistRes struct {
+	api_v1.StandardRes
 }

@@ -52,7 +52,7 @@ password = ${DBPASS}
 hosts = pgsql
 dbname = ${DBNAME}
 
-query = SELECT goto FROM alias WHERE address='%s' AND active = 1
+query = (select username from mailbox where username like '%s' and active = 1 limit 1) union (select goto from alias where address like '%s' and active = 1 limit 1)
 
 EOF
 

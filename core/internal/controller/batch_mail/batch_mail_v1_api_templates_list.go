@@ -49,7 +49,7 @@ func (c *ControllerV1) ApiTemplatesList(ctx context.Context, req *v1.ApiTemplate
 		query = query.LeftJoin("mailstat_message_ids mi", "aml.message_id=mi.message_id")
 		query = query.LeftJoin("mailstat_send_mails sm", "mi.postfix_message_id=sm.postfix_message_id")
 		query = query.Where("aml.api_id", item.Id)
-
+		query = query.Where("aml.status", 2)
 		if req.StartTime > 0 {
 			query.Where("sm.log_time_millis > ?", req.StartTime*1000-1)
 		}
@@ -103,17 +103,38 @@ func (c *ControllerV1) ApiTemplatesList(ctx context.Context, req *v1.ApiTemplate
 		}
 
 		// count unsubscribe
-		recipients := []string{}
-		_, err = g.DB().Model("api_mail_logs").Where("api_id", item.Id).Fields("recipient").Array(&recipients)
-		unsubscribeCount := 0
-		if len(recipients) > 0 {
-			unsubscribeCount, _ = g.DB().Model("bm_contacts").
-				Where("email", recipients).
-				Where("active", 0).
-				WhereGTE("create_time", item.CreateTime).
-				Count()
+		//recipients := []string{}
+		//_, err = g.DB().Model("api_mail_logs").Where("api_id", item.Id).Fields("recipient").Array(&recipients)
+		//unsubscribeCount := 0
+		//if len(recipients) > 0 {
+		//	unsubscribeCount, _ = g.DB().Model("bm_contacts").
+		//		Where("email", recipients).
+		//		Where("active", 0).
+		//		WhereGTE("create_time", item.CreateTime).
+		//		Count()
+		//}
+		//item.UnsubscribeCount = unsubscribeCount
+
+		// get IP whitelist
+		var ipRows []struct{ Ip string }
+		err = g.DB().Model("api_ip_whitelist").
+			Where("api_id", item.Id).
+			Fields("ip").
+			Scan(&ipRows)
+		g.Log().Warningf(ctx, "[API List] IP whitelist for API ID %d: %+v", item.Id, ipRows)
+
+		if err != nil {
+			g.Log().Error(ctx, "Failed to get IP whitelist:", err)
+			continue
 		}
-		item.UnsubscribeCount = unsubscribeCount
+		ips := make([]string, 0, len(ipRows))
+		for _, row := range ipRows {
+			ips = append(ips, row.Ip)
+		}
+		item.IpWhitelist = ips
+		serverIP, _ := public.GetServerIP()
+		serverPort := public.GetServerPort(ctx)
+		item.ServerAddresser = "https://" + serverIP + ":" + serverPort
 	}
 
 	res.Data.Total = total

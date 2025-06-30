@@ -94,6 +94,19 @@ var (
 
 			defer dk.Close()
 
+			containerName := "billionmail-core-billionmail-1"
+			container, err := dk.GetContainerByName(ctx, containerName)
+			if err == nil {
+				if container.Labels != nil {
+					workingDir, exists := container.Labels["com.docker.compose.project.working_dir"]
+					if exists {
+						if workingDir != "" {
+							public.HostWorkDir = workingDir
+						}
+					}
+				}
+			}
+
 			// Init Rspamd worker-controller
 			err = rspamd.InitWorkerController()
 
@@ -108,6 +121,9 @@ var (
 			// Use Redis for session storage
 			// s.SetSessionStorage(gsession.NewStorageRedis(g.Redis()))
 
+			// ip whitelist middleware
+			//s.Use(middleware.IPWhitelist)
+
 			// Define excluded URIs
 			excludesURIs := map[string]struct{}{
 				"/favicon.ico":                {},
@@ -115,6 +131,7 @@ var (
 				"/unsubscribe.html":           {},
 				"/api/unsubscribe/user_group": {},
 				"/api/unsubscribe":            {},
+				"/api/batch_mail/api/send":    {},
 			}
 
 			// Bind Server Hooks
@@ -346,6 +363,9 @@ var (
 			if httpsPort, err := public.DockerEnv("HTTPS_PORT"); err == nil && httpsPort != "" {
 				s.SetHTTPSPort(gconv.Int(httpsPort))
 			}
+
+			//s.SetHTTPSPort(82)
+			//s.SetPort(81)
 
 			s.SetSwaggerUITemplate(`<!doctype html>
 <html lang="en">

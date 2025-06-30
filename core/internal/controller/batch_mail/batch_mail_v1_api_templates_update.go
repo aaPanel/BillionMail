@@ -6,6 +6,8 @@ import (
 	"context"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
+	"net"
+	"strings"
 	"time"
 )
 
@@ -13,6 +15,7 @@ func (c *ControllerV1) ApiTemplatesUpdate(ctx context.Context, req *v1.ApiTempla
 	res = &v1.ApiTemplatesUpdateRes{}
 
 	// verify if API exists
+
 	count, err := g.DB().Model("api_templates").Where("id", req.ID).Count()
 	if err != nil {
 		return nil, err
@@ -29,6 +32,17 @@ func (c *ControllerV1) ApiTemplatesUpdate(ctx context.Context, req *v1.ApiTempla
 	if count == 0 {
 		return nil, gerror.New(public.LangCtx(ctx, "Email template does not exist"))
 	}
+
+	tx, err := g.DB().Begin(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+		}
+	}()
+
 	// current time
 	now := time.Now().Unix()
 
@@ -44,22 +58,50 @@ func (c *ControllerV1) ApiTemplatesUpdate(ctx context.Context, req *v1.ApiTempla
 		"active":      req.Active,
 		"expire_time": req.ExpireTime,
 		"update_time": now,
+		//"ip_whitelist_enabled": req.IpWhitelistEnabled,
 	}
 
-	if req.ResetKey {
-		apiKey, err := generateApiKey()
-		if err != nil {
-			return nil, err
-		}
-		updateMap["api_key"] = apiKey
-		updateMap["last_key_update_time"] = now
-	}
-
-	_, err = g.DB().Model("api_templates").
+	_, err = tx.Model("api_templates").
 		Where("id", req.ID).
 		Update(updateMap)
 
 	if err != nil {
+		return nil, err
+	}
+
+	// ip
+	_, err = tx.Model("api_ip_whitelist").
+		Where("api_id", req.ID).
+		Delete()
+	if err != nil {
+		g.Log().Errorf(ctx, "[API Update] Failed to delete IP whitelist: %v", err)
+		return nil, err
+	}
+
+	if len(req.IpWhitelist) > 0 {
+		for _, ip := range req.IpWhitelist {
+			ip = strings.TrimSpace(ip)
+			if ip == "" {
+				g.Log().Errorf(ctx, "[API Templates Update] Empty IP address")
+				continue
+			}
+
+			if net.ParseIP(ip) == nil {
+				g.Log().Errorf(ctx, "[API Templates Update] Invalid IP address: %s", ip)
+				continue
+			}
+			_, err = tx.Model("api_ip_whitelist").Insert(g.Map{
+				"api_id":      req.ID,
+				"ip":          strings.TrimSpace(ip),
+				"create_time": now,
+			})
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	if err = tx.Commit(); err != nil {
 		return nil, err
 	}
 

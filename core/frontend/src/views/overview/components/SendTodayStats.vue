@@ -18,7 +18,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="h-180px">
+		<div class="flex-1 min-h-180px">
 			<bar-chart :date-type="data.column_type" :chart-data="barChartData" />
 		</div>
 	</div>
@@ -99,6 +99,12 @@ const barChartData = computed(() => {
 </script>
 
 <style lang="scss" scoped>
+.send-today-stats {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
 .stats-header {
 	display: flex;
 	justify-content: space-around;

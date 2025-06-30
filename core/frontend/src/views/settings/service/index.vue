@@ -1,7 +1,5 @@
 <template>
-	<n-card :bordered="false">
-		<settings-service />
-	</n-card>
+	<settings-service />
 </template>
 
 <script lang="ts" setup>

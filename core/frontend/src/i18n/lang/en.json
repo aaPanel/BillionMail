@@ -10,6 +10,12 @@
       "last7days": "Last 7 Days",
       "custom": "Custom"
     },
+    "unit": {
+      "days": "Days",
+      "hours": "Hours",
+      "minutes": "Minutes",
+      "seconds": "Seconds"
+    },
     "columns": {
       "actions": "Operator"
     },
@@ -73,6 +79,7 @@
       "market": "Email Marketing",
       "task": "Task",
       "template": "Template",
+      "sendApi": "Send API",
       "contacts": "Contacts",
       "subscribers": "Subscribers",
       "group": "Group",
@@ -82,7 +89,8 @@
       "common": "Common Settings",
       "bcc": "BCC",
       "forward": "Mail Forward",
-      "logout": "Logout"
+      "logout": "Logout",
+      "service": "Service"
     }
   },
   "login": {
@@ -164,7 +172,8 @@
         "detail": "View",
         "export": "Export",
         "send": "Send",
-        "pause": "Pause"
+        "pause": "Pause",
+        "analytics": "Analytics"
       },
       "columns": {
         "time": "Time",
@@ -175,6 +184,7 @@
         "failed": "Failed",
         "status": "Status",
         "remark": "Remark",
+        "estimatedTime": "Estimated Complet Time",
         "progress": "Progress",
         "email": "Email",
         "errorMsg": "Error Message"
@@ -182,7 +192,8 @@
       "status": {
         "pending": "Pending",
         "processing": "Processing",
-        "done": "Done"
+        "done": "Done",
+        "noIpWarmup": "No IP Warmup"
       },
       "search": {
         "subjectPlaceholder": "Search by subject"
@@ -223,6 +234,8 @@
         "recipientsCount": "Send emails ({count} recipients)",
         "template": "Email template",
         "saveOutbox": "Save to outbox",
+        "ipWarmup": "Associate IP Warmup System",
+        "ipWarmupTip": "Enabling this will limit the sending rate",
         "unsubscribeLink": "Unsubscribe link",
         "threads": "Threads",
         "threadsAuto": "Auto",
@@ -260,6 +273,13 @@
         "validation": {
           "groupNameRequired": "Please enter group name"
         }
+      },
+      "loading": {
+        "creating": "Creating task, please wait...",
+        "deleting": "Deleting task, please wait...",
+        "pausing": "Pausing task, please wait...",
+        "resuming": "Resuming task, please wait...",
+        "sendingTest": "Sending test email, please wait..."
       }
     },
     "template": {
@@ -302,6 +322,12 @@
       },
       "preview": {
         "title": "Template Preview"
+      },
+      "loading": {
+        "creating": "Creating template, please wait...",
+        "updating": "Updating template, please wait...",
+        "copying": "Copying template, please wait...",
+        "deleting": "Deleting template, please wait..."
       }
     }
   },
@@ -344,7 +370,11 @@
         "data": "Data",
         "pasteData": "Paste Data",
         "uploadFile": "Upload File",
-        "pastePlaceholder": "Please paste data, one email, attributes(can be empty) per line\ne.g., example1@example.com\nexample1@example.com,\"{\"\"age\"\": \"\"13\"\", \"\"Gender\"\": \"\"XXX\"\"}\"",
+        "pastePlaceholder": [
+          "Please paste data, one email, attributes(can be empty) per line",
+          "e.g., example1@example.com",
+          "example1@example.com,\"{\"\"age\"\": \"\"13\"\", \"\"Gender\"\": \"\"XXX\"\"}\""
+        ],
         "fileTypeHint": "File type: csv, not exceeding 5 MB",
         "overwriteLabel": "Overwrite Existing Users",
         "overwriteDescription": "Whether to overwrite existing customer information in the list according to imported data during import",
@@ -433,12 +463,12 @@
       "addTitle": "Add Domain",
       "editTitle": "Edit Domain",
       "domain": "Domain",
-      "domainPlaceholder": "Please enter domain, e.g.: aapanel.com",
+      "domainPlaceholder": "Please enter domain, e.g.: billionmail.com",
       "aRecord": "A Record",
       "aRecordPlaceholder": "Please enter A record, e.g.: mail.aapanel.com",
       "quota": "Domain Quota",
       "mailboxCount": "Mailbox Count",
-      "globalCatch": "Global Catch",
+      "globalCatch": "Catch All",
       "globalCatchPlaceholder": "Forward non-existent emails to this address",
       "validation": {
         "domainRequired": "Domain name cannot be empty!"
@@ -739,7 +769,7 @@
       "network": {
         "title": "Network Configuration",
         "domain": "Domain Settings",
-        "currentDomain": "Current Domain",
+        "currentDomain": "The access domain name of the console",
         "newDomainPlaceholder": "Enter new domain, e.g. admin.yourdomain.com",
         "domainRule": "Please enter a valid domain",
         "ssl": "SSL Certificate Configuration",
@@ -764,13 +794,100 @@
         "commandCopied": "Command copied to clipboard",
         "timezone": "Timezone Settings",
         "currentTime": "Current System Timezone"
+      },
+      "ipWhitelist": {
+        "title": "IP Whitelist",
+        "enable": "Enable",
+        "disable": "Disable",
+        "add": "Add",
+        "clear": "Clear",
+        "description": "Only allow IPs in the list to access, terminal command to disable: bm.sh cancel-ip-limit",
+        "placeholder": "Please enter IP address",
+        "validation": {
+          "ipRequired": "Please enter IP address"
+        },
+        "confirm": {
+          "deleteTitle": "Delete IP Whitelist",
+          "deleteContent": "Confirm to delete IP whitelist: {ip}",
+          "enableTitle": "Enable IP Whitelist",
+          "disableTitle": "Disable IP Whitelist",
+          "enableContent": "Confirm to enable IP whitelist, only whitelisted IP addresses can access after enabling",
+          "disableContent": "Confirm to disable IP whitelist, all IP addresses can access after disabling",
+          "clearTitle": "Clear IP Whitelist",
+          "clearContent": "Confirm to clear IP whitelist, all IP addresses can access after clearing"
+        }
       }
     },
     "api": {
       "loading": {
         "restarting": "Restarting service, please wait...",
-        "saving": "Saving configuration, please wait..."
+        "saving": "Saving configuration, please wait...",
+        "setting": "Setting, please wait...",
+        "settingSSL": "Setting SSL, please wait...",
+        "applyingCert": "Applying certificate, please wait...",
+        "adding": "Adding, please wait...",
+        "deleting": "Deleting, please wait...",
+        "clearing": "Clearing, please wait..."
       }
+    }
+  },
+  "api": {
+    "title": "Send API",
+    "timeRange": "Time Range: ",
+    "status": "Status: ",
+    "search": "Search: ",
+    "searchPlaceholder": "Please enter API name",
+    "refreshData": "Refresh Data",
+    "createNew": "Create API",
+    "statusOptions": {
+      "all": "All",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "columns": {
+      "apiName": "API Name",
+      "apiKey": "API Key",
+      "sendCount": "Send Count",
+      "openRate": "Open Rate",
+      "clickRate": "Click Rate",
+      "bounceRate": "Bounce Rate",
+      "status": "Status"
+    },
+    "statusLabels": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "confirmDelete": {
+      "title": "Delete API [{apiName}]",
+      "content": "Are you sure you want to delete this API?"
+    },
+    "overview": {
+      "totalSend": "Total Sent",
+      "avgOpenRate": "Avg Open Rate",
+      "avgClickRate": "Avg Click Rate",
+      "avgBounceRate": "Avg Bounce Rate"
+    },
+    "form": {
+      "apiName": "API Name",
+      "status": "Status",
+      "ipWhitelist": "IP Whitelist",
+      "apiNamePlaceholder": "Please enter API name",
+      "ipWhitelistPlaceholder": "Multiple IPs separated by commas, empty means no restriction",
+      "validation": {
+        "apiNameRequired": "Please enter API name",
+        "addresserRequired": "Please select sender",
+        "templateRequired": "Please select template"
+      },
+      "title": {
+        "edit": "Edit API",
+        "add": "Add API"
+      }
+    },
+    "loading": {
+      "creating": "Creating, please wait...",
+      "updating": "Updating, please wait...",
+      "deleting": "Deleting, please wait...",
+      "testing": "Testing, please wait..."
     }
   }
 }

@@ -63,12 +63,12 @@ Command_Exists() {
 
 Docker_Compose_Check(){
 
-    if Command_Exists docker-compose; then
+    if Command_Exists docker-compose ; then
         DOCKER_COMPOSE="docker-compose"
     else 
         if Command_Exists docker; then
             Docker_compose="docker compose version"
-            if $Docker_compose; then
+            if $Docker_compose >/dev/null 2>&1; then
                 DOCKER_COMPOSE="docker compose"
             fi
         else
@@ -501,11 +501,11 @@ Default_info() {
     ipv6_address=""
     if [ "$address" = "" ];then
             
-        ipv4_address=$(curl -4 -sS --connect-timeout 10 -m 15 https://ifconfig.me 2>&1)
+        ipv4_address=$(curl -4 -sSf --connect-timeout 10 -m 15 https://ifconfig.me 2>&1)
         if [ -z "${ipv4_address}" ];then
-                ipv4_address=$(curl -4 -sS --connect-timeout 10 -m 15 https://www.aapanel.com/api/common/getClientIP 2>&1)
+                ipv4_address=$(curl -4 -sSf --connect-timeout 10 -m 15 https://www.aapanel.com/api/common/getClientIP 2>&1)
                 if [ -z "${ipv4_address}" ];then
-                    ipv4_address=$(curl -4 -sS --connect-timeout 10 -m 15 https://www.bt.cn/Api/getIpAddress 2>&1)
+                    ipv4_address=$(curl -4 -sSf --connect-timeout 10 -m 15 https://www.bt.cn/Api/getIpAddress 2>&1)
                 fi
         fi
         IPV4_REGEX="^([0-9]{1,3}\.){3}[0-9]{1,3}$"
@@ -513,7 +513,7 @@ Default_info() {
                 ipv4_address=""
         fi
         
-        ipv6_address=$(curl -6 -sS --connect-timeout 10 -m 15 https://ifconfig.me 2>&1)
+        ipv6_address=$(curl -6 -sSf --connect-timeout 10 -m 15 https://ifconfig.me 2>&1)
         IPV6_REGEX="^([0-9a-fA-F]{0,4}:){1,7}[0-9a-fA-F]{0,4}$"
         if ! [[ $ipv6_address =~ $IPV6_REGEX ]]; then
                 ipv6_address=""
@@ -1141,6 +1141,28 @@ CLEAR_OLD_IMAGE() {
     fi
 }
 
+# Turn off IP access whitelist restrictions
+CANCEL_IP_WHITELIST_LIMIT() { 
+
+    # Perform modification
+    sed -i 's/^IP_WHITELIST_ENABLE=.*/IP_WHITELIST_ENABLE=false/' .env
+    
+    echo -e "The BillionMail IP access whitelist Restrictions: Closed \n Restart the container, please wait..."
+    sleep 3
+    CONTAINER="core"
+    GET_CONTAINER_ID ${CONTAINER}
+    if [ "${CONTAINER_ID}" ]; then
+        echo "Rebuilding Manage Container..."
+        docker stop ${CONTAINER_ID}
+        docker rm -f ${CONTAINER_ID}
+        ${DOCKER_COMPOSE} up -d
+    else
+        echo "The "core" container does not exist"
+        echo "Starting BillionMail..."
+        ${DOCKER_COMPOSE} up -d
+    fi
+}
+
 
 SHOW_HELP() {
         echo "Help Information:"
@@ -1165,6 +1187,7 @@ SHOW_HELP() {
         echo "  log-container <container>     - View logs of a specific container: $0 l-c postfix"
         echo "  restart-service <service>     - Restart a specific service and its container: $0 r-s postfix"
         echo "  clear                     - Clear BillionMail old images: $0 clear"
+        echo "  cancel-ip-limit           - Cancel IP access limit : $0 c-i-l"
         # echo "  add-domain <domain>       - Add domain. Example: $0 add-domain example.com"
         # echo "  del-domain <domain>       - Delete domain. Example: $0 del-domain example.com"
         # echo "  add-email <email>         - Add email. Example: $0 add-email user@example.com"
@@ -1273,7 +1296,10 @@ case "$1" in
     clear)
     CLEAR_OLD_IMAGE
     ;;    
-
+    cancel-ip-limit|c-i-l)
+    CANCEL_IP_WHITELIST_LIMIT
+    ;;  
+    
     *)
         echo "=============== BillionMail CLI =================="
         echo "1) Restart BillionMail          2) View login info"
@@ -1287,6 +1313,8 @@ case "$1" in
         echo "9) Change secure entry          10) Change manage access port"
         echo ""
         echo "11) View all processes          12) Update BillionMail"
+        echo ""
+        echo "13) Cancel IP access limit          "
         echo ""
         echo "0) Exit      For more commands: help"
         echo "=================================================="
@@ -1328,6 +1356,9 @@ case "$1" in
         12)
             Update_BillionMail
             ;;
+        13)
+            CANCEL_IP_WHITELIST_LIMIT
+            ;;            
         help)
             SHOW_HELP
             ;;

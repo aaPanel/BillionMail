@@ -29,7 +29,7 @@ func (c *ControllerV1) GetMailbox(ctx context.Context, req *v1.GetMailboxReq) (r
 		return nil, err
 	}
 
-	// 转换为带 MxRecord 的结构体
+	// transform mailbox list to include MX records
 	mailboxListWithMx := make([]v1.MailboxWithMxRecord, len(mailboxList))
 	for i, mailbox := range mailboxList {
 		mailboxListWithMx[i] = v1.MailboxWithMxRecord{

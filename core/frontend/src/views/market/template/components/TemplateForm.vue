@@ -47,10 +47,10 @@
 </template>
 
 <script lang="ts" setup>
+import { UploadFileInfo } from 'naive-ui'
 import { useModal } from '@/hooks/modal/useModal'
 import { addTemplate, updateTemplate } from '@/api/modules/market/template'
 import type { Template } from '../interface'
-import { UploadFileInfo } from 'naive-ui'
 
 const EmailEditor = defineAsyncComponent(() => import('@/features/EmailEditor/index.vue'))
 

@@ -7,11 +7,17 @@
     "time": {
       "today": "今天",
       "yesterday": "昨天",
-      "last7days": "过去7天",
+      "last7days": "近7天",
       "custom": "自定义"
     },
     "columns": {
       "actions": "操作"
+    },
+    "unit": {
+      "days": "天",
+      "hours": "小时",
+      "minutes": "分钟",
+      "seconds": "秒"
     },
     "actions": {
       "view": "查看",
@@ -73,6 +79,7 @@
       "market": "邮件营销",
       "task": "任务",
       "template": "模板",
+      "sendApi": "发件API",
       "contacts": "联系人",
       "subscribers": "订阅",
       "group": "分组",
@@ -82,7 +89,8 @@
       "common": "常用设置",
       "bcc": "BCC",
       "forward": "邮件转发",
-      "logout": "退出"
+      "logout": "退出",
+      "service": "服务"
     }
   },
   "login": {
@@ -166,7 +174,8 @@
         "detail": "查看详情",
         "export": "导出",
         "send": "发送",
-        "pause": "暂停"
+        "pause": "暂停",
+        "analytics": "分析"
       },
       "columns": {
         "time": "时间",
@@ -177,6 +186,7 @@
         "failed": "失败",
         "status": "状态",
         "remark": "备注",
+        "estimatedTime": "预计完成时间",
         "progress": "进度",
         "email": "邮箱",
         "errorMsg": "错误信息"
@@ -184,7 +194,8 @@
       "status": {
         "pending": "等待中",
         "processing": "处理中",
-        "done": "已完成"
+        "done": "已完成",
+        "noIpWarmup": "未关联IP预热"
       },
       "search": {
         "subjectPlaceholder": "搜索邮件主题"
@@ -225,6 +236,8 @@
         "recipientsCount": "发送邮件 ({count} 收件人)",
         "template": "邮件模板",
         "saveOutbox": "保存到发件箱",
+        "ipWarmup": "关联IP预热系统",
+        "ipWarmupTip": "开启后将会限制发件速率",
         "unsubscribeLink": "退订链接",
         "threads": "线程数",
         "threadsAuto": "自动",
@@ -262,6 +275,13 @@
         "validation": {
           "groupNameRequired": "请输入分组名称"
         }
+      },
+      "loading": {
+        "creating": "正在创建任务，请稍候...",
+        "deleting": "正在删除任务，请稍候...",
+        "pausing": "正在暂停任务，请稍候...",
+        "resuming": "正在恢复任务，请稍候...",
+        "sendingTest": "正在发送测试邮件，请稍候..."
       }
     },
     "template": {
@@ -306,6 +326,12 @@
       },
       "preview": {
         "title": "预览模板"
+      },
+      "loading": {
+        "creating": "正在创建模板，请稍候...",
+        "updating": "正在更新模板，请稍候...",
+        "copying": "正在复制模板，请稍候...",
+        "deleting": "正在删除模板，请稍候..."
       }
     }
   },
@@ -348,7 +374,11 @@
         "data": "数据",
         "pasteData": "粘贴数据",
         "uploadFile": "上传文件",
-        "pastePlaceholder": "请粘贴数据，每行一个邮箱，属性（可为空）\n例如：example1@example.com\nexample1@example.com,\"{\"\"age\"\": \"\"13\"\", \"\"Gender\"\": \"\"XXX\"\"}\"",
+        "pastePlaceholder": [
+          "请粘贴数据，每行一个邮箱，属性（可为空）",
+          "例如：example1@example.com",
+          "example1@example.com,\"{\"\"age\"\": \"\"13\"\", \"\"Gender\"\": \"\"XXX\"\"}\""
+        ],
         "fileTypeHint": "文件类型：csv，不超过5 MB",
         "overwriteLabel": "覆盖现有用户",
         "overwriteDescription": "在导入时是否按照导入数据来覆盖列表中存在的客户信息",
@@ -436,12 +466,12 @@
       "addTitle": "添加域名",
       "editTitle": "编辑域名",
       "domain": "域名",
-      "domainPlaceholder": "请输入域名，例如：aapanelCom",
+      "domainPlaceholder": "请输入域名，例如：billionmail.com",
       "aRecord": "A记录",
       "aRecordPlaceholder": "请输入A记录，例如：mailAapanelCom",
       "quota": "域名配额",
       "mailboxCount": "邮箱数量",
-      "globalCatch": "全局捕获",
+      "globalCatch": "Catch All",
       "globalCatchPlaceholder": "捕获不存在的邮件，转发至此邮件",
       "validation": {
         "domainRequired": "邮箱域名不能为空!"
@@ -736,7 +766,7 @@
       "network": {
         "title": "网络配置",
         "domain": "域名设置",
-        "currentDomain": "当前域名",
+        "currentDomain": "控制台的访问域名",
         "newDomainPlaceholder": "输入新域名，如admin.yourdomain.com",
         "domainRule": "请输入有效的域名",
         "ssl": "SSL证书配置",
@@ -761,13 +791,100 @@
         "commandCopied": "命令已复制到剪贴板",
         "timezone": "时区设置",
         "currentTime": "当前系统时区"
+      },
+      "ipWhitelist": {
+        "title": "IP白名单",
+        "enable": "启用",
+        "disable": "关闭",
+        "add": "添加",
+        "clear": "清空",
+        "description": "仅允许列表中的IP访问，终端命令关闭: bm.sh cancel-ip-limit",
+        "placeholder": "请输入IP地址",
+        "validation": {
+          "ipRequired": "请输入IP地址"
+        },
+        "confirm": {
+          "deleteTitle": "删除IP白名单",
+          "deleteContent": "确认删除IP白名单: {ip}",
+          "enableTitle": "开启IP白名单",
+          "disableTitle": "关闭IP白名单",
+          "enableContent": "确认开启IP白名单, 开启后只有白名单中的IP地址可以访问",
+          "disableContent": "确认关闭IP白名单, 关闭后所有IP地址都可以访问",
+          "clearTitle": "清空IP白名单",
+          "clearContent": "确认清空IP白名单, 清空后所有IP地址都可以访问"
+        }
       }
     },
     "api": {
       "loading": {
         "restarting": "正在重启服务，请稍候...",
-        "saving": "正在保存配置，请稍候..."
+        "saving": "正在保存配置，请稍候...",
+        "setting": "正在设置，请稍候...",
+        "settingSSL": "正在设置SSL，请稍候...",
+        "applyingCert": "正在申请证书，请稍候...",
+        "adding": "正在添加，请稍候...",
+        "deleting": "正在删除，请稍候...",
+        "clearing": "正在清空，请稍候..."
       }
+    }
+  },
+  "api": {
+    "title": "发件API",
+    "timeRange": "时间范围：",
+    "status": "状态：",
+    "search": "搜索：",
+    "searchPlaceholder": "请输入API名称",
+    "refreshData": "刷新数据",
+    "createNew": "新建API",
+    "statusOptions": {
+      "all": "全部",
+      "active": "可用",
+      "inactive": "停用"
+    },
+    "columns": {
+      "apiName": "API名称",
+      "apiKey": "API密钥",
+      "sendCount": "发送量",
+      "openRate": "打开率",
+      "clickRate": "点击率",
+      "bounceRate": "退信率",
+      "status": "状态"
+    },
+    "statusLabels": {
+      "active": "可用",
+      "inactive": "停用"
+    },
+    "confirmDelete": {
+      "title": "删除API【{apiName}】",
+      "content": "确认删除该API吗？"
+    },
+    "overview": {
+      "totalSend": "发送总量",
+      "avgOpenRate": "平均打开率",
+      "avgClickRate": "平均点击率",
+      "avgBounceRate": "平均退信率"
+    },
+    "form": {
+      "apiName": "API名称",
+      "status": "状态",
+      "ipWhitelist": "IP白名单",
+      "apiNamePlaceholder": "请输入API名称",
+      "ipWhitelistPlaceholder": "多个IP用逗号分隔，为空则不限制",
+      "validation": {
+        "apiNameRequired": "请输入API名称",
+        "addresserRequired": "请选择发送者",
+        "templateRequired": "请选择模板"
+      },
+      "title": {
+        "edit": "编辑API",
+        "add": "新建API"
+      }
+    },
+    "loading": {
+      "creating": "正在创建，请稍候...",
+      "updating": "正在编辑，请稍候...",
+      "deleting": "正在删除，请稍候...",
+      "testing": "正在测试，请稍候..."
     }
   }
 }

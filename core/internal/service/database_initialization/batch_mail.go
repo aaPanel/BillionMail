@@ -126,8 +126,20 @@ func init() {
                 recipient VARCHAR(320) NOT NULL,
                 message_id TEXT NOT NULL,
                 addresser VARCHAR(320) NOT NULL,
-                send_time INTEGER NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW())
+                status SMALLINT NOT NULL DEFAULT 0, -- 0:to send, 2:send, 3:send failed
+                error_message TEXT, 
+                send_time INTEGER NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW()),
+                create_time INTEGER NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW())
+
             )`,
+
+			`CREATE TABLE IF NOT EXISTS api_ip_whitelist (
+    				id SERIAL PRIMARY KEY,
+    				api_id INTEGER NOT NULL,
+    				ip VARCHAR(45) NOT NULL,
+    				create_time INTEGER NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW()),
+    				FOREIGN KEY (api_id) REFERENCES api_templates(id) ON DELETE CASCADE
+			)`,
 
 			`CREATE INDEX IF NOT EXISTS idx_unsubscribe_email ON unsubscribe_records (email)`,
 			`CREATE INDEX IF NOT EXISTS idx_unsubscribe_time ON unsubscribe_records (unsubscribe_time)`,
@@ -135,31 +147,6 @@ func init() {
 			`CREATE INDEX IF NOT EXISTS idx_bm_contacts_active ON bm_contacts (active)`,
 			`CREATE INDEX IF NOT EXISTS idx_abnormal_recipient_count ON abnormal_recipient (recipient,count)`,
 			`CREATE INDEX IF NOT EXISTS idx_group_email ON bm_contacts(group_id, email)`,
-			//  attribs
-			`DO $$ 
-			BEGIN
-				IF NOT EXISTS (
-					SELECT 1 
-					FROM information_schema.columns 
-					WHERE table_name = 'bm_contacts' 
-					AND column_name = 'attribs'
-				) THEN
-					ALTER TABLE bm_contacts ADD COLUMN attribs JSONB DEFAULT '{}'::jsonb;
-				END IF;
-			END $$;`,
-			//  status
-			`DO $$ 
-			BEGIN
-				IF NOT EXISTS (
-					SELECT 1 
-					FROM information_schema.columns 
-					WHERE table_name = 'bm_contacts' 
-					AND column_name = 'status'
-				) THEN
-					ALTER TABLE bm_contacts ADD COLUMN status INTEGER DEFAULT 0;
-				END IF;
-			END $$;`,
-
 			`CREATE INDEX IF NOT EXISTS idx_api_mail_logs_api_id ON api_mail_logs (api_id)`,
 			`CREATE INDEX IF NOT EXISTS idx_api_mail_logs_recipient ON api_mail_logs (recipient)`,
 			`CREATE INDEX IF NOT EXISTS idx_api_mail_logs_message_id ON api_mail_logs (message_id)`,
@@ -172,6 +159,16 @@ func init() {
 				return
 			}
 		}
+		// bm_contacts  attribs
+		_ = AddColumnIfNotExists("bm_contacts", "attribs", "JSONB", "'{}'::jsonb", false)
+		//  bm_contacts status
+		_ = AddColumnIfNotExists("bm_contacts", "status", "INTEGER", "0", false)
+		//  api_mail_logs status
+		_ = AddColumnIfNotExists("api_mail_logs", "status", "SMALLINT", "0", true)
+		//  api_mail_logs   error_message
+		_ = AddColumnIfNotExists("api_mail_logs", "error_message", "TEXT", "''", false)
+		//  api_mail_logs  create_time
+		_ = AddColumnIfNotExists("api_mail_logs", "create_time", "INTEGER", "EXTRACT(EPOCH FROM NOW())", true)
 
 		g.Log().Info(context.Background(), "Batch mail tables initialized successfully")
 	})

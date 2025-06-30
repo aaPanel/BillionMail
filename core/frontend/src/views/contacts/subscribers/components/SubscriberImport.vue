@@ -34,15 +34,7 @@
 							</n-radio-button>
 						</n-radio-group>
 						<div class="mt-8px">
-							<template v-if="form.import_type === 2">
-								<n-input
-									v-model:value="form.contacts"
-									type="textarea"
-									:rows="8"
-									:placeholder="$t('contacts.subscribers.import.pastePlaceholder')">
-								</n-input>
-							</template>
-							<template v-else-if="form.import_type === 1">
+							<template v-if="form.import_type === 1">
 								<bt-file-upload :is-upload="false" :accept="['csv']" @change="handleChangeFile">
 								</bt-file-upload>
 								<div class="mt-8px text-12px text-desc">
@@ -50,6 +42,14 @@
 									<n-button text type="primary" @click="handleDownloadTemplate">
 										{{ $t('common.actions.download') }}
 									</n-button>
+								</div>
+							</template>
+							<template v-if="form.import_type === 2">
+								<n-input v-model:value="form.contacts" type="textarea" :rows="8"> </n-input>
+								<div class="mt-8px text-12px text-desc">
+									<p>{{ $t('contacts.subscribers.import.pastePlaceholder.0') }}</p>
+									<!-- <p>{{ $t('contacts.subscribers.import.pastePlaceholder.1') }}</p> -->
+									<!-- <p>{{ $t('contacts.subscribers.import.pastePlaceholder.2') }}</p> -->
 								</div>
 							</template>
 						</div>
@@ -142,7 +142,7 @@ const handleChangeFile = (file: UploadFileInfo) => {
 }
 
 const handleDownloadTemplate = async () => {
-	await downloadFile({ file_path: '../data/example_recipients.csv' })
+	await downloadFile({ file_path: './template/example_recipients.csv' })
 }
 
 const validateForm = async () => {

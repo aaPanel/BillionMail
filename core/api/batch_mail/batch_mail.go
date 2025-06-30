@@ -18,6 +18,8 @@ type IBatchMailV1 interface {
 	ApiTemplatesDelete(ctx context.Context, req *v1.ApiTemplatesDeleteReq) (res *v1.ApiTemplatesDeleteRes, err error)
 	ApiMailSend(ctx context.Context, req *v1.ApiMailSendReq) (res *v1.ApiMailSendRes, err error)
 	ListTasks(ctx context.Context, req *v1.ListTasksReq) (res *v1.ListTasksRes, err error)
+	TaskInfo(ctx context.Context, req *v1.TaskInfoReq) (res *v1.TaskInfoRes, err error)
+	TaskOverview(ctx context.Context, req *v1.TaskOverviewReq) (res *v1.TaskOverviewRes, err error)
 	DeleteTask(ctx context.Context, req *v1.DeleteTaskReq) (res *v1.DeleteTaskRes, err error)
 	CreateTask(ctx context.Context, req *v1.CreateTaskReq) (res *v1.CreateTaskRes, err error)
 	GetTaskSendCount(ctx context.Context, req *v1.GetTaskSendCountReq) (res *v1.GetTaskSendCountRes, err error)

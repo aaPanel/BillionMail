@@ -6,6 +6,7 @@ import (
 	"billionmail-core/internal/service/public"
 	relay_service "billionmail-core/internal/service/relay"
 	"context"
+	"database/sql"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 )
@@ -40,7 +41,7 @@ func (c *ControllerV1) ListRelayConfigs(ctx context.Context, req *v1.ListRelayCo
 	var list []*entity.BmRelay
 
 	err = model.Order("create_time DESC").Scan(&list)
-	if err != nil {
+	if err != nil && err != sql.ErrNoRows {
 		res.SetError(gerror.New(public.LangCtx(ctx, "Failed to retrieve relay configuration list: {}", err.Error())))
 		return res, nil
 	}

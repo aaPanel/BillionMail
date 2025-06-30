@@ -27,6 +27,12 @@ export interface SystemInfo {
 	redis_port: string
 	ipv4_network: string
 	fail2ban: boolean
+	server_ip: string
+	ip_whitelist_enable: boolean
+	ip_whitelist: Array<{
+		id: number
+		ip: string
+	}>
 	manage_ports: {
 		http: number
 		https: number

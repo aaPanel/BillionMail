@@ -5,7 +5,7 @@
 				<n-form-item :label="t('contacts.group.form.name')" path="name">
 					<n-input v-model:value="form.name"></n-input>
 				</n-form-item>
-				<n-form-item :span="1" label="Status">
+				<n-form-item label="Status">
 					<n-select v-model:value="form.status" :options="statusOptions"></n-select>
 				</n-form-item>
 				<n-form-item :label="t('contacts.group.form.file')" path="file_data">
@@ -77,7 +77,7 @@ const handleChangeFile = (file: UploadFileInfo) => {
 }
 
 const handleDownloadTemplate = async () => {
-	await downloadFile({ file_path: '../data/example_recipients.csv' })
+	await downloadFile({ file_path: './template/example_recipients.csv' })
 }
 
 const [Modal, modalApi] = useModal({

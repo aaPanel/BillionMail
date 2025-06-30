@@ -1,3 +1,66 @@
 @import './reset.scss';
 @import './variables.scss';
 @import './naive.scss';
+
+
+// Horizontal flex with no direction
+@mixin row-flex {
+	display: flex;
+	align-items: center;
+	flex-direction: row;
+}
+
+// Horizontal flex with center alignment
+@mixin row-flex-center {
+	@include row-flex();
+	justify-content: center;
+}
+
+// Horizontal flex with start alignment
+@mixin row-flex-start {
+	@include row-flex();
+	justify-content: start;
+}
+
+// Horizontal flex with end alignment
+@mixin row-flex-end {
+	@include row-flex();
+	justify-content: end;
+}
+
+
+// Vertical flex with no direction
+@mixin col-flex {
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+}
+
+// Vertical flex with center alignment
+@mixin col-flex-center {
+	@include col-flex();
+	justify-content: center;
+}
+
+// Vertical flex with start alignment
+@mixin col-flex-start {
+	@include col-flex;
+	justify-content: start;
+}
+// Vertical flex with end alignment
+@mixin col-flex-end {
+	@include col-flex;
+	justify-content: end;
+}
+
+// Single-line ellipsis
+@mixin single-line-ellipsis {
+	white-space: nowrap;     
+	overflow: hidden;       
+	text-overflow: ellipsis;
+}
+
+// Transition all
+@mixin transition-all {
+    transition:.1s all ease-in-out;
+}

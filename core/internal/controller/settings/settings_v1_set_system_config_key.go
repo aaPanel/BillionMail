@@ -80,6 +80,7 @@ func convertJsonKeyToEnvKey(jsonKey string, value string, envMap map[string]stri
 		"timezone":             "TZ",
 		"ipv4_network":         "IPV4_NETWORK",
 		"fail2ban":             "FAIL2BAN_INIT",
+		"ip_whitelist_enable":  "IP_WHITELIST_ENABLE",
 	}
 
 	// Get the environment variable key name

@@ -3,6 +3,7 @@ package mail_services
 import (
 	"billionmail-core/internal/service/public"
 	"context"
+	"database/sql"
 	"github.com/gogf/gf/v2/frame/g"
 
 	"github.com/gogf/gf/v2/errors/gerror"
@@ -37,7 +38,7 @@ func (c *ControllerV1) GetMailForwardList(ctx context.Context, req *v1.GetMailFo
 	}
 
 	err = model.Page(req.Page, req.PageSize).OrderDesc("create_time").Scan(&res.Data.List)
-	if err != nil {
+	if err != nil && err != sql.ErrNoRows {
 		res.SetError(gerror.New(public.LangCtx(ctx, "Failed to get email forwarding list: {}", err.Error())))
 		return res, nil
 	}

@@ -145,16 +145,24 @@ func convertEnvToConfig(envMap map[string]string) *v1.SystemConfig {
 	if port := envMap["HTTPS_PORT"]; port != "" {
 		config.ManagePorts.HTTPS = parseInt(port, 443)
 	}
-	config.ManagePorts.Command1 = fmt.Sprintf("cd %s && echo \"PORT\" | bash bm.sh change-port", projectPath)
-	config.ManagePorts.Command2 = fmt.Sprintf("cd %s && echo \"PORT\" | bash bm.sh change-apply-ssl-port", projectPath)
+
+	HostWorkDir := public.HostWorkDir
+	if HostWorkDir == "" {
+		HostWorkDir = projectPath
+	}
+	config.ManagePorts.Command1 = fmt.Sprintf("cd %s && echo \"PORT\" | bash bm.sh change-port", HostWorkDir)
+	config.ManagePorts.Command2 = fmt.Sprintf("cd %s && echo \"PORT\" | bash bm.sh change-apply-ssl-port", HostWorkDir)
 
 	// Time zone configuration
 	config.ManageTimeZone.TimeZone = envMap["TZ"]
-	config.ManageTimeZone.Command = fmt.Sprintf("cd %s && echo \"TIME ZONE\" | bash bm.sh change-tz", projectPath)
+	config.ManageTimeZone.Command = fmt.Sprintf("cd %s && echo \"TIME ZONE\" | bash bm.sh change-tz", HostWorkDir)
 
 	// Network configuration
 	config.IPv4Network = envMap["IPV4_NETWORK"]
 	config.Fail2ban = envMap["FAIL2BAN_INIT"] == "y"
+
+	// IP whitelist  IP_WHITELIST_ENABLE
+	config.IPWhitelistEnabled = envMap["IP_WHITELIST_ENABLE"] == "true"
 
 	return config
 }

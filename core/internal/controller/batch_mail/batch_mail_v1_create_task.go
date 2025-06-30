@@ -28,7 +28,7 @@ func (c *ControllerV1) CreateTask(ctx context.Context, req *v1.CreateTaskReq) (r
 
 	addType := 0
 	// create task and import recipients
-	_, err = batch_mail.CreateTaskWithRecipients(ctx, req, addType)
+	res.Data.Id, err = batch_mail.CreateTaskWithRecipients(ctx, req, addType)
 	if err != nil {
 		res.SetError(err)
 		return

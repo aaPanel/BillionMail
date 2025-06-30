@@ -26,6 +26,7 @@ export interface Task {
 	template_name: string
 	success_count: number
 	error_count: number
+	estimated_time_with_warmup: number
 }
 
 export interface Group {

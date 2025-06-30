@@ -1,4 +1,5 @@
 import { createVNode, render } from 'vue'
+import { render as renderContent } from 'naive-ui/es/_utils'
 import { app } from '@/index'
 import type { ConfirmOptions } from './interface'
 
@@ -24,7 +25,7 @@ export function confirm(options: ConfirmOptions) {
 		Modal,
 		{
 			show: true,
-			width: 420,
+			width: options.width || 420,
 			title: options.title,
 			onCancel: options.onCancel,
 			onConfirm: options.onConfirm,
@@ -35,7 +36,7 @@ export function confirm(options: ConfirmOptions) {
 			},
 		},
 		{
-			default: () => <div class="pt-6px pb-10px text-14px">{options.content}</div>,
+			default: () => <div class="pt-6px pb-10px text-14px">{renderContent(options.content)}</div>,
 		}
 	)
 

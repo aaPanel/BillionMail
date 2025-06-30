@@ -41,7 +41,7 @@
 import { DataTableColumns, NButton, NFlex, NProgress, NTag } from 'naive-ui'
 import { useModal } from '@/hooks/modal/useModal'
 import { useTableData } from '@/hooks/useTableData'
-import { confirm, formatTime } from '@/utils'
+import { confirm, formatDurationHighest, formatTime } from '@/utils'
 import { deleteTask, getTaskList, pauseTask, resumeTask } from '@/api/modules/market/task'
 import type { Task, TaskParams } from './interface'
 
@@ -69,15 +69,17 @@ const columns = ref<DataTableColumns<Task>>([
 	{
 		key: 'create_time',
 		title: t('market.task.columns.time'),
-		width: '14%',
-		minWidth: 140,
+		width: '9%',
+		minWidth: 130,
+		ellipsis: {
+			tooltip: true,
+		},
 		render: row => formatTime(row.create_time),
 	},
 	{
 		key: 'subject',
 		title: t('market.task.columns.subject'),
-		width: '12%',
-		minWidth: 100,
+		minWidth: 120,
 		ellipsis: {
 			tooltip: true,
 		},
@@ -85,8 +87,7 @@ const columns = ref<DataTableColumns<Task>>([
 	{
 		key: 'addresser',
 		title: t('market.task.columns.sender'),
-		minWidth: 160,
-		width: '14%',
+		minWidth: 130,
 		ellipsis: {
 			tooltip: true,
 		},
@@ -94,19 +95,19 @@ const columns = ref<DataTableColumns<Task>>([
 	{
 		key: 'recipient_count',
 		title: t('market.task.columns.recipients'),
-		width: '7%',
+		width: '6%',
 		minWidth: 80,
 	},
 	{
 		key: 'success_count',
 		title: t('market.task.columns.success'),
-		width: '7%',
+		width: '6%',
 		minWidth: 80,
 	},
 	{
 		key: 'error_count',
 		title: t('market.task.columns.failed'),
-		width: '7%',
+		width: '6%',
 		minWidth: 80,
 		render: row => (
 			<NButton
@@ -133,7 +134,7 @@ const columns = ref<DataTableColumns<Task>>([
 				)
 			if (row.task_process === 1)
 				return (
-					<NTag size="small" bordered={false} type="warning">
+					<NTag size="small" bordered={false} type="info">
 						{t('market.task.status.processing')}
 					</NTag>
 				)
@@ -147,17 +148,38 @@ const columns = ref<DataTableColumns<Task>>([
 	{
 		key: 'remark',
 		title: t('market.task.columns.remark'),
-		width: '10%',
-		minWidth: 100,
+		width: '8%',
+		minWidth: 80,
 		ellipsis: {
 			tooltip: true,
 		},
 		render: row => row.remark || '--',
 	},
 	{
+		key: 'estimated_time_with_warmup',
+		title: t('market.task.columns.estimatedTime'),
+		width: '11%',
+		minWidth: 110,
+		ellipsis: {
+			tooltip: true,
+		},
+		render: row => {
+			// 已完成
+			if (row.task_process === 2) {
+				return '--'
+			}
+			// 显示预计时间
+			if (row.estimated_time_with_warmup >= 0) {
+				return formatDurationHighest(row.estimated_time_with_warmup)
+			}
+			return t('market.task.status.noIpWarmup')
+		},
+	},
+	{
 		key: 'progress',
 		title: t('market.task.columns.progress'),
-		minWidth: 120,
+		width: '8%',
+		minWidth: 130,
 		render: row => {
 			return (
 				<div class="max-w-160px">
@@ -177,7 +199,7 @@ const columns = ref<DataTableColumns<Task>>([
 		title: t('common.columns.actions'),
 		key: 'actions',
 		align: 'right',
-		width: 160,
+		width: 220,
 		render: row => (
 			<NFlex inline={true}>
 				{row.task_process !== 2 && (
@@ -192,6 +214,14 @@ const columns = ref<DataTableColumns<Task>>([
 							: t('market.task.actions.pause')}
 					</NButton>
 				)}
+				<NButton
+					type="primary"
+					text={true}
+					onClick={() => {
+						handleGoAnalytics(row)
+					}}>
+					{t('market.task.actions.analytics')}
+				</NButton>
 				<NButton
 					type="primary"
 					text={true}
@@ -218,6 +248,11 @@ const router = useRouter()
 // 添加任务
 const handleAdd = () => {
 	router.push('/market/task/edit')
+}
+
+// 前往分析
+const handleGoAnalytics = (row: Task) => {
+	router.push(`/market/task/analytics/${row.id}`)
 }
 
 // 暂停/发送任务

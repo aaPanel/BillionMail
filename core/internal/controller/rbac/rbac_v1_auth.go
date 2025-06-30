@@ -149,6 +149,9 @@ func (c *ControllerV1) Logout(ctx context.Context, req *v1.LogoutReq) (res *v1.L
 		return
 	}
 
+	// Destroy the session
+	_ = g.RequestFromCtx(ctx).Session.RemoveAll()
+
 	res.Success = true
 	res.Code = 0
 	res.Msg = "Logout successful"

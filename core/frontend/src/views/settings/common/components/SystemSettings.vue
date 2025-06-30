@@ -13,6 +13,8 @@
 			<PortSettings />
 			<n-divider />
 			<TimezoneSettings />
+			<n-divider />
+			<IpWhitelistSettings />
 		</div>
 	</n-card>
 </template>
@@ -20,4 +22,5 @@
 <script lang="ts" setup>
 import PortSettings from './PortSettings.vue'
 import TimezoneSettings from './TimezoneSettings.vue'
+import IpWhitelistSettings from './IpWhitelistSettings.vue'
 </script>

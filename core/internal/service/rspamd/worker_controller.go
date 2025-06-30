@@ -49,7 +49,7 @@ func InitWorkerController() (err error) {
 	}
 
 	_, err = public.WriteFile(wci, `count = 1;
-password = "`+strings.TrimSpace(res.Output)+`";
+password = "`+strings.TrimSpace(strings.SplitN(strings.TrimSpace(res.Output), "\n", 2)[0])+`";
 secure_ip = "127.0.0.1";
 secure_ip = "::1";
 static_dir = "${WWWDIR}";`)

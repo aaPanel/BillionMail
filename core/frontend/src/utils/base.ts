@@ -2,6 +2,8 @@ import { isNumber } from './is'
 
 export const isDev = import.meta.env.DEV
 
+export const apiUrl: string = import.meta.env.SERVER.address
+
 // Server prefix
 export const apiUrlPrefix: string = import.meta.env.API_URL_PREFIX
 

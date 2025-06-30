@@ -39,7 +39,7 @@ const loading = ref(false)
 
 monacoLoader.config({
 	paths: {
-		vs: `${location.origin}/static/plugin/monaco/min/vs`,
+		vs: `${location.origin}/static/plugin/monaco`,
 	},
 })
 

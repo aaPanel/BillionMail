@@ -32,11 +32,11 @@
 </template>
 
 <script lang="tsx" setup>
-import { DataTableColumns, NFlex, NButton } from 'naive-ui'
+import { DataTableColumns, NFlex, NButton, NTag } from 'naive-ui'
 import { confirm, getByteUnit } from '@/utils'
 import { useModal } from '@/hooks/modal/useModal'
 import { useTableData } from '@/hooks/useTableData'
-import { deleteDomain, getDomainList } from '@/api/modules/domain'
+import { deleteDomain, getDomainList, setDefaultDomain } from '@/api/modules/domain'
 import type { MailDomain, MailDomainParams } from './interface'
 
 import DomainForm from './components/DomainForm.vue'
@@ -69,19 +69,30 @@ const columns = ref<DataTableColumns<MailDomain>>([
 		ellipsis: {
 			tooltip: true,
 		},
-		render: row => (
-			<NButton
-				text
-				type="primary"
-				onClick={() => {
-					router.push({
-						path: '/mailbox',
-						state: { domain: row.domain },
-					})
-				}}>
-				{row.domain}
-			</NButton>
-		),
+		render: row => {
+			return (
+				<>
+					<NButton
+						text
+						type="primary"
+						onClick={() => {
+							router.push({
+								path: '/mailbox',
+								state: { domain: row.domain },
+							})
+						}}>
+						{row.domain}
+					</NButton>
+					{row.default ? (
+						<NTag size="small" class="ml-8px" bordered={false}>
+							Default
+						</NTag>
+					) : (
+						''
+					)}
+				</>
+			)
+		},
 	},
 	{
 		key: 'quota',
@@ -148,6 +159,7 @@ const columns = ref<DataTableColumns<MailDomain>>([
 		title: t('domain.columns.actions'),
 		key: 'actions',
 		align: 'right',
+		width: 260,
 		render: row => (
 			<NFlex inline={true}>
 				<NButton
@@ -165,6 +177,15 @@ const columns = ref<DataTableColumns<MailDomain>>([
 						handleEdit(row)
 					}}>
 					{t('common.actions.edit')}
+				</NButton>
+				<NButton
+					type="primary"
+					text={true}
+					disabled={row.default === 1}
+					onClick={() => {
+						handleSetDefault(row)
+					}}>
+					Set Default
 				</NButton>
 				<NButton
 					type="error"
@@ -231,6 +252,17 @@ const [DnsModal, dnsModalApi] = useModal({
 const handleDNSRecord = (row: MailDomain) => {
 	dnsModalApi.setState({ row })
 	dnsModalApi.open()
+}
+
+const handleSetDefault = (row: MailDomain) => {
+	confirm({
+		title: `Set Default [${row.domain}]`,
+		content: 'Are you sure to set this domain as default?',
+		onConfirm: async () => {
+			await setDefaultDomain({ domain: row.domain })
+			getTableData()
+		},
+	})
 }
 
 // Handle edit
