@@ -440,6 +440,11 @@ func SyncRelayConfigsToPostfix(ctx context.Context) error {
 	} else {
 
 		activeConfigs = []*entity.BmRelayConfig{}
+		// Clear stale relay transport mappings to ensure fallback to original SMTP
+		_, err = g.DB().Model("bm_domain_smtp_transport").Where("atype", "relay").Delete()
+		if err != nil {
+			g.Log().Warningf(ctx, "Failed to clear relay transport mappings: %v", err)
+		}
 		g.Log().Info(ctx, "No active relay to domain mappings, relay functionality will be disabled")
 	}
 
@@ -799,6 +804,21 @@ sender_dependent_default_transport_maps = pgsql:/etc/postfix/sql/pgsql_sender_tr
 				content = content + "\n" + configBlock + "\n"
 			}
 			modified = true
+		}
+	} else {
+		// Remove the configuration block when relay is disabled
+		if hasConfigBlock {
+			blockEnd := endIndex + len(endMarker)
+			// Include trailing newline if present
+			if blockEnd < len(content) && (content[blockEnd] == '\n' || content[blockEnd] == '\r') {
+				blockEnd++
+				if blockEnd < len(content) && content[blockEnd] == '\n' {
+					blockEnd++
+				}
+			}
+			content = content[:beginIndex] + content[blockEnd:]
+			modified = true
+			g.Log().Info(nil, "Removed relay configuration block from main.cf")
 		}
 	}
 	// If there are modifications, write to the file
