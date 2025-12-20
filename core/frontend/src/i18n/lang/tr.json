@@ -1,0 +1,1586 @@
+{
+	"common": {
+		"all": {
+			"text": "Tümü",
+			"domain": "Tüm Alan Adları"
+		},
+		"time": {
+			"today": "Bugün",
+			"yesterday": "Dün",
+			"last7days": "Son 7 Gün",
+			"custom": "Özel Tarih"
+		},
+		"unit": {
+			"days": "Gün",
+			"hours": "Saat",
+			"minutes": "Dakika",
+			"seconds": "Saniye"
+		},
+		"columns": {
+			"actions": "İşlemler"
+		},
+		"actions": {
+			"view": "Görüntüle",
+			"edit": "Düzenle",
+			"delete": "Sil",
+			"add": "Ekle",
+			"create": "Oluştur",
+			"update": "Güncelle",
+			"save": "Kaydet",
+			"cancel": "İptal",
+			"confirm": "Onayla",
+			"back": "Geri",
+			"search": "Ara",
+			"reset": "Sıfırla",
+			"more": "Diğer",
+			"refresh": "Yenile",
+			"copy": "Kopyala",
+			"restart": "Yeniden Başlat",
+			"import": "İçe Aktar",
+			"export": "Dışa Aktar",
+			"download": "İndir",
+			"upload": "Yükle",
+			"apply": "Uygula",
+			"test": "Test Et",
+			"rename": "Yeniden Adlandır",
+			"preview": "Önizleme",
+			"modify": "Değiştir",
+			"config": "Yapılandır",
+			"help": "Yardım",
+			"settings": "Ayarlar",
+			"clear": "Temizle"
+		},
+		"useCopy": {
+			"noText": "Kopyalanacak metin bulunamadı",
+			"success": "Kopyalama başarılı",
+			"failed": "Kopyalama başarısız"
+		}
+	},
+	"components": {
+		"tableHelp": {
+			"text1": "Sorularınız veya önerileriniz için {issues} gönderin ve projeyi desteklemek için GitHub'da bir {star} bırakın.",
+			"text2": "Katılımınız bizim için değerlidir. Teşekkür ederiz."
+		},
+		"upload": {
+			"error": {
+				"fileSizeExceeded": "[{fileName}] dosyasının boyutu {maxSize}MB sınırını aşamaz",
+				"uploadFailed": "Dosya yükleme başarısız. Lütfen tekrar deneyin"
+			},
+			"prompt": {
+				"dragText": "Dosyaları yüklemek için tıklayın veya bu alana sürükleyin",
+				"supportedFiles": "Sadece {suffix} formatındaki dosyalar desteklenir"
+			}
+		}
+	},
+	"layout": {
+		"header": {
+			"submit": "Destek Talebi Oluştur"
+		},
+		"menu": {
+			"overview": "Genel Bakış",
+			"market": "E-posta Pazarlama",
+			"task": "Görevler",
+			"template": "Şablonlar",
+			"sendApi": "Gönderim API'si",
+			"contacts": "Kişiler",
+			"subscribers": "Aboneler",
+			"group": "Gruplar",
+			"domain": "Alan Adları",
+			"mailboxes": "Posta Kutuları",
+			"settings": "Ayarlar",
+			"common": "Genel Ayarlar",
+			"bcc": "BCC Yönetimi",
+			"forward": "Yönlendirme",
+			"logout": "Çıkış Yap",
+			"service": "Hizmetler",
+			"logs": "Loglar",
+			"operation_logs": "İşlem Logları",
+			"error_logs": "Hata Logları"
+		}
+	},
+	"login": {
+		"title": "BillionMail",
+		"form": {
+			"usernamePlaceholder": "Kullanıcı Adı",
+			"passwordPlaceholder": "Şifre",
+			"loginButton": "Giriş Yap",
+			"captchaPlaceholder": "Doğrulama Kodu",
+			"changeCaptcha": "Kodu değiştirmek için tıklayın",
+			"captcha": "Doğrulama Kodu"
+		},
+		"validation": {
+			"usernameRequired": "Kullanıcı adı zorunludur",
+			"passwordRequired": "Şifre zorunludur",
+			"captchaRequired": "Lütfen doğrulama kodunu girin"
+		},
+		"messages": {
+			"loginSuccess": "Giriş başarılı",
+			"loginFailed": "Giriş başarısız",
+			"networkError": "Ağ hatası, lütfen daha sonra tekrar deneyin"
+		}
+	},
+	"user": {
+		"logout": {
+			"title": "Çıkış Onayı",
+			"content": "Oturumu kapatmak istediğinize emin misiniz?"
+		},
+		"api": {
+			"loading": {
+				"logout": "Çıkış yapılıyor, lütfen bekleyin..."
+			}
+		}
+	},
+	"overview": {
+		"delivered": "İletildi",
+		"opened": "Açıldı",
+		"clicked": "Tıklandı",
+		"bounced": "Bounce",
+		"delayedQueue": "Gecikme Kuyruğu",
+		"mailProviders": "E-posta Sağlayıcıları",
+		"sendStats": "Gönderim İstatistikleri",
+		"provider": {
+			"mailProvider": "Sağlayıcı",
+			"delivered": "İletilen",
+			"open": "Açılan",
+			"click": "Tıklanan",
+			"bounce": "Bounce"
+		},
+		"send": {
+			"successRate": "Başarı Oranı",
+			"success": "Başarılı",
+			"fail": "Başarısız",
+			"sendSuccess": "Gönderim Başarılı",
+			"sendFail": "Gönderim Başarısız"
+		},
+		"rate": {
+			"openRate": "Açılma Oranı",
+			"clickRate": "Tıklanma Oranı",
+			"bounceRate": "Bounce Oranı"
+		},
+		"sendFailDetails": {
+			"title": "Gönderim Hatası Ayrıntıları",
+			"columns": {
+				"recipient": "Alıcı",
+				"dsn": "DSN",
+				"delay": "Gecikme",
+				"delays": "Gecikmeler",
+				"status": "Durum",
+				"relay": "SMTP Relay",
+				"details": "Ayrıntılar"
+			}
+		},
+		"sendQueue": {
+			"title": "Gönderim Kuyruğu",
+			"breadcrumb": "Gönderim Kuyruğu",
+			"buttons": {
+				"refresh": "Kuyruğu Yenile",
+				"quickClear": "Hızlı Temizle",
+				"paramConfig": "Parametre Yapılandırması",
+				"resend": "Yeniden Gönder",
+				"batchDelete": "Toplu Sil",
+				"batchResend": "Toplu Yeniden Gönder"
+			},
+			"table": {
+				"columns": {
+					"sender": "Gönderici",
+					"recipient": "Alıcı",
+					"arrivalTime": "Geliş Zamanı",
+					"messageSize": "İleti Boyutu",
+					"delayReason": "Gecikme Nedeni",
+					"action": "İşlem"
+				}
+			},
+			"confirm": {
+				"quickClear": {
+					"title": "Hızlı Temizleme",
+					"content": "Kuyruğu tamamen temizlemek istediğinize emin misiniz?"
+				},
+				"resend": {
+					"title": "Yeniden Gönderim",
+					"content": "Kuyruktaki iletileri yeniden göndermek istediğinize emin misiniz?"
+				},
+				"delete": {
+					"title": "Kuyruğu Sil",
+					"content": "Bu kuyruğu silmek istediğinize emin misiniz?"
+				},
+				"batchDelete": {
+					"title": "Toplu Silme",
+					"content": "Seçilen {count} kuyruk öğesini silmek istediğinize emin misiniz?"
+				},
+				"batchResend": {
+					"title": "Toplu Yeniden Gönderim",
+					"content": "Seçilen {count} kuyruk öğesini yeniden göndermek istediğinize emin misiniz?"
+				}
+			},
+			"paramConfig": {
+				"title": "Kuyruk Parametre Yapılandırması",
+				"fields": {
+					"bounceQueueLifetime": "Bounce Kuyruk Ömrü",
+					"maximalQueueLifetime": "Maksimum Kuyruk Ömrü",
+					"minimalBackoffTime": "Minimum Bekleme Süresi",
+					"maximalBackoffTime": "Maksimum Bekleme Süresi",
+					"queueRunDelay": "Kuyruk Çalıştırma Gecikmesi",
+					"triggerTimeout": "Tetikleme Zaman Aşımı"
+				}
+			},
+			"queueLogs": {
+				"title": "Kuyruk Logları"
+			}
+		},
+		"api": {
+			"loading": {
+				"resendQueue": "Kuyruk yeniden gönderiliyor, lütfen bekleyin...",
+				"deleteQueue": "Kuyruk siliniyor, lütfen bekleyin...",
+				"setQueueConfig": "Parametreler ayarlanıyor, lütfen bekleyin...",
+				"clearQueue": "Kuyruk temizleniyor, lütfen bekleyin..."
+			}
+		}
+	},
+	"market": {
+		"task": {
+			"title": "Görevler",
+			"actions": {
+				"add": "Görev Ekle",
+				"detail": "İncele",
+				"export": "Dışa Aktar",
+				"send": "Gönder",
+				"pause": "Duraklat",
+				"analytics": "Analiz"
+			},
+			"columns": {
+				"time": "Zaman",
+				"subject": "Konu",
+				"sender": "Gönderici",
+				"recipients": "Alıcılar",
+				"success": "Başarılı",
+				"failed": "Hatalı",
+				"status": "Durum",
+				"remark": "Açıklama",
+				"estimatedTime": "Tahmini Bitiş",
+				"progress": "İlerleme",
+				"email": "E-posta",
+				"errorMsg": "Hata Mesajı"
+			},
+			"status": {
+				"pending": "Beklemede",
+				"processing": "İşleniyor",
+				"done": "Tamamlandı",
+				"noIpWarmup": "IP Warm-up Devre Dışı"
+			},
+			"search": {
+				"subjectPlaceholder": "Konu başlığı ile arayın"
+			},
+			"changeStatus": {
+				"title": "Görev Durumu Değişikliği [{subject}]",
+				"startConfirm": "Görev gönderimi şimdi başlatılsın mı?",
+				"pauseConfirm": "Görev duraklatılsın mı?"
+			},
+			"delete": {
+				"title": "Görevi Sil",
+				"confirm": "\"{subject}\" adlı görevi silmek istediğinize emin misiniz?"
+			},
+			"detail": {
+				"title": "Görev Detayları",
+				"displayName": "Görünen Ad",
+				"sender": "Gönderici",
+				"subject": "Konu",
+				"groups": "Gruplar",
+				"sendTime": "Gönderim Zamanı",
+				"unsubscribeLink": "Abonelikten Ayrılma Linki",
+				"threads": "Thread (İş Parçacığı) Sayısı",
+				"remark": "Açıklama",
+				"yes": "Evet",
+				"no": "Hayır",
+				"auto": "Otomatik"
+			},
+			"edit": {
+				"addTitle": "Yeni Görev Oluştur",
+				"editTitle": "Görevi Düzenle",
+				"from": "Gönderen",
+				"to": "Alıcı",
+				"displayName": "Görünen Ad",
+				"displayNamePlaceholder": "Görünen adı girin",
+				"subject": "Konu",
+				"subjectPlaceholder": "E-posta konusunu girin",
+				"recipients": "Alıcı Kitlesi",
+				"recipientsPlaceholder": "Alıcı gruplarını seçin",
+				"recipientsCount": "Seçilen alıcı sayısı: {count}",
+				"template": "E-posta Şablonu",
+				"saveOutbox": "Giden Kutusuna Kaydet",
+				"ipWarmup": "IP Warm-up Sistemini Kullan",
+				"ipWarmupTip": "Bu özellik etkinleştirildiğinde gönderim hızı otomatik olarak sınırlandırılır (Isınma modu)",
+				"trackClick": "Tıklama Takibi (Click Tracking)",
+				"trackOpen": "Açılış Takibi (Open Tracking)",
+				"unsubscribeLink": "Abonelikten Ayrılma Linki Ekle",
+				"threads": "Thread (İş Parçacığı) Ayarları",
+				"threadsAuto": "Otomatik",
+				"threadsCustom": "Özel Ayar",
+				"sendTime": "Gönderim Planı",
+				"sendTimeNow": "Hemen Gönder",
+				"sendTimeSchedule": "İleri Tarihli Gönder",
+				"remark": "Açıklama / Not",
+				"remarkPlaceholder": "Varsa bir açıklama girin",
+				"testEmail": "Test E-postası",
+				"testEmailPlaceholder": "Test gönderimi için e-posta adresi",
+				"sendTest": "Test Gönder",
+				"viewCase": "Örneği Görüntüle",
+				"tags": "Etiketler",
+				"tagLogic": "Etiket Mantığı",
+				"preview": {
+					"empty": "Önizleme için lütfen bir şablon seçin"
+				},
+				"validation": {
+					"displayNameRequired": "Lütfen görünen adı girin",
+					"subjectRequired": "Lütfen e-posta konusunu girin",
+					"recipientsRequired": "Lütfen en az bir alıcı grubu seçin",
+					"sendTimeRequired": "Lütfen gönderim zamanını belirleyin",
+					"testEmailRequired": "Lütfen test için bir e-posta adresi girin",
+					"templateRequired": "Lütfen bir e-posta şablonu seçin"
+				},
+				"discard": {
+					"title": "İptal Et",
+					"content": "Yapılan değişiklikler kaydedilmeyecek. Çıkmak istediğinize emin misiniz?"
+				}
+			},
+			"createGroup": {
+				"title": "Yeni Grup Oluştur",
+				"groupName": "Grup Adı",
+				"email": "E-posta",
+				"groupNamePlaceholder": "Grup adını girin",
+				"validation": {
+					"groupNameRequired": "Grup adı zorunludur"
+				}
+			},
+			"loading": {
+				"creating": "Görev oluşturuluyor, lütfen bekleyin...",
+				"updating": "Görev güncelleniyor, lütfen bekleyin...",
+				"deleting": "Görev siliniyor, lütfen bekleyin...",
+				"pausing": "Görev duraklatılıyor, lütfen bekleyin...",
+				"resuming": "Görev devam ettiriliyor, lütfen bekleyin...",
+				"sendingTest": "Test e-postası gönderiliyor, lütfen bekleyin..."
+			}
+		},
+		"template": {
+			"title": "Şablonlar",
+			"name": "Şablon Adı",
+			"content": "Şablon İçeriği",
+			"uploadHtml": "HTML Dosyası Yükle",
+			"file": "Şablon Dosyası",
+			"actions": {
+				"add": "Şablon Ekle",
+				"preview": "Önizleme",
+				"duplicate": "Çoğalt",
+				"export": "Dışa Aktar",
+				"import": "İçe Aktar"
+			},
+			"columns": {
+				"name": "Şablon Adı",
+				"type": "Tür",
+				"createdAt": "Oluşturulma Tarihi"
+			},
+			"types": {
+				"drag": "Sürükle-Bırak",
+				"html": "HTML Kod",
+				"ai": "Yapay Zeka (AI)"
+			},
+			"edit": {
+				"confirm": "Kaydet",
+				"cancel": "Vazgeç"
+			},
+			"search": {
+				"namePlaceholder": "Şablon adıyla arayın"
+			},
+			"delete": {
+				"title": "Şablonu Sil",
+				"confirm": "\"{name}\" şablonunu silmek istediğinize emin misiniz?"
+			},
+			"form": {
+				"name": "Şablon Adı",
+				"type": "Şablon Türü",
+				"content": "İçerik"
+			},
+			"add": {
+				"title": "Yeni Şablon Ekle",
+				"namePlaceholder": "Şablon adını girin",
+				"validation": {
+					"nameRequired": "Şablon adı zorunludur",
+					"uploadRequired": "Lütfen bir HTML dosyası yükleyin"
+				}
+			},
+			"preview": {
+				"title": "Şablon Önizlemesi"
+			},
+			"loading": {
+				"creating": "Şablon oluşturuluyor, lütfen bekleyin...",
+				"updating": "Şablon güncelleniyor, lütfen bekleyin...",
+				"copying": "Şablon kopyalanıyor, lütfen bekleyin...",
+				"deleting": "Şablon siliniyor, lütfen bekleyin..."
+			}
+		}
+	},
+	"template": {
+		"template": "Şablon",
+		"createTpl": {
+			"sourceUrl": "Kaynak URL",
+			"useAiTools": "E-posta içeriğinizi otomatik oluşturmak ve verimliliği artırmak için AI araçlarından faydalanın.",
+			"create": "Oluştur",
+			"notices": {
+				"domainListEmpty": "E-posta gönderimi yapabilmek için lütfen önce bir alan adı ekleyin",
+				"aiConfigurationInvalid": "AI modelleri henüz yapılandırılmamış. Şablon oluşturmak için lütfen önce AI yapılandırmasını tamamlayın",
+				"invalidBrandDomain": "Lütfen önce ilgili alan adı için marka bilgilerini oluşturun"
+			},
+			"buttons": {
+				"createNow": "Oluştur",
+				"configureNow": "Yapılandır"
+			}
+		},
+		"ai": {
+			"title": "AI Şablon Sihirbazı",
+			"welcomeMessage": "Örnek komut: \"{domain} alan adına yeni kayıt olan kullanıcılar için bir hoş geldin e-postası hazırla\"",
+			"greeting": "Yeni bir e-posta şablonu oluşturmaya başlayın.",
+			"brandName": "BillionMail",
+			"buttons": {
+				"regenerate": "Yeniden Oluştur",
+				"info": "Bilgi",
+				"view": "Görüntüle",
+				"edit": "Düzenle",
+				"copy": "Kopyala",
+				"copied": "Kopyalandı",
+				"apply": "Uygula"
+			},
+			"spintax": {
+				"instruction": "Spintax sözdizimi kullanılsın, {count} farklı varyasyon oluşturulsun"
+			},
+			"tips": {
+				"saveShortcut": "Kaydetmek için [Ctrl + S] tuşlarını kullanabilirsiniz"
+			},
+			"loading": {
+				"message": "İçerik oluşturuluyor, lütfen bekleyin..."
+			},
+			"send": "Gönder"
+		}
+	},
+	"contacts": {
+		"subscribers": {
+			"joinGroup": "Gruba Ekle",
+			"tags": "Etiketler",
+			"selectGroupHint": "Lütfen sağ panelden bir grup seçin",
+			"trends": {
+				"title": "Abonelik Grafiği",
+				"subscriber": "Abone Sayısı"
+			},
+			"search": {
+				"emailPlaceholder": "E-posta adresi arayın"
+			},
+			"columns": {
+				"email": "E-posta",
+				"name": "Grup",
+				"createdAt": "Kayıt Tarihi",
+				"lastActiveAt": "Son Aktivite"
+			},
+			"status": {
+				"subscribed": "Abone",
+				"unsubscribed": "Ayrıldı",
+				"unconfirmed": "Onay Bekliyor"
+			},
+			"labels": {
+				"status": "Durum: ",
+				"tags": "Etiketler: ",
+				"active": "Aktivite: "
+			},
+			"activeSelect": {
+				"options": {
+					"all": "Tümü",
+					"yes": "Aktif",
+					"no": "Pasif"
+				},
+				"timeOptions": {
+					"past7Days": "Son 7 gün",
+					"pastMonth": "Son 1 ay",
+					"past90Days": "Son 3 ay",
+					"pastHalfYear": "Son 6 ay",
+					"pastYear": "Son 1 yıl"
+				}
+			},
+			"actions": {
+				"changeGroup": "Grup Değiştir",
+				"setTag": "Etiket Yönetimi"
+			},
+			"delete": {
+				"title": "Abone Silme",
+				"confirm": "{email} adresli aboneyi silmek istediğinize emin misiniz?"
+			},
+			"batchDelete": {
+				"title": "Toplu Silme",
+				"confirm": "Seçilen aboneleri silmek istediğinizden emin misiniz?"
+			},
+			"select": {
+				"prefix": "Hedef Grup:"
+			},
+			"edit": {
+				"title": "Abone Düzenle",
+				"email": "E-posta Adresi",
+				"group": "Grup",
+				"status": "Abonelik Durumu",
+				"attributes": "Özellikler (Attributes)",
+				"statusOptions": {
+					"subscribe": "Abone",
+					"unsubscribe": "Ayrıldı"
+				},
+				"validation": {
+					"emailRequired": "E-posta adresi zorunludur",
+					"groupRequired": "Bir grup seçilmelidir"
+				}
+			},
+			"import": {
+				"title": "Kişileri İçe Aktar",
+				"group": "Hedef Grup",
+				"data": "Veri Girişi",
+				"pasteData": "Manuel Veri Girişi",
+				"uploadFile": "Dosyadan Yükle (CSV)",
+				"pastePlaceholder": [
+					"Her satıra bir e-posta gelecek şekilde verilerinizi yapıştırın. İsteğe bağlı olarak JSON formatında özellikler ekleyebilirsiniz.",
+					"Örnek Giriş:",
+					"kullanici@ornek.com",
+					"kullanici2@ornek.com,\"{\"\"yas\"\": \"\"25\"\", \"\"sehir\"\": \"\"Istanbul\"\"}\""
+				],
+				"fileTypeHint": "Desteklenen format: CSV (Maks. 5 MB)",
+				"overwriteLabel": "Mevcut Kayıtları Güncelle",
+				"overwriteDescription": "İşaretlenirse, sistemde zaten kayıtlı olan e-posta adreslerinin bilgileri yeni verilerle güncellenir.",
+				"subscriptionStatus": "Varsayılan Abonelik Durumu",
+				"status": "Durum",
+				"exampleCsvLabel": "Örnek CSV Şablonu",
+				"overwriteOptions": {
+					"no": "Hayır, güncelleme",
+					"yes": "Evet, güncelle"
+				},
+				"subscriptionOptions": {
+					"subscribe": "Abone Olarak Ekle",
+					"unsubscribe": "Ayrılmış Olarak Ekle"
+				},
+				"statusOptions": {
+					"confirmed": "Onaylanmış",
+					"unconfirmed": "Onay Bekliyor"
+				},
+				"validation": {
+					"groupRequired": "Lütfen bir hedef grup seçin",
+					"dataRequired": "Lütfen içe aktarılacak verileri girin",
+					"fileRequired": "Lütfen bir CSV dosyası yükleyin"
+				}
+			},
+			"batchSetTag": {
+				"title": "Toplu Etiket İşlemi",
+				"labels": {
+					"tag": "Etiket",
+					"action": "İşlem Türü"
+				},
+				"actions": {
+					"add": "Etiket Ekle",
+					"remove": "Etiket Kaldır"
+				}
+			},
+			"tagSelect": {
+				"manageTags": "Etiketleri Yönet"
+			},
+			"loading": {
+				"importSubscribers": "Kişiler içe aktarılıyor, lütfen bekleyin...",
+				"updateSubscriberGroup": "Grup bilgisi güncelleniyor, lütfen bekleyin...",
+				"deleteSubscriber": "Kişi siliniyor, lütfen bekleyin...",
+				"batchSetTag": "Etiketler güncelleniyor, lütfen bekleyin..."
+			}
+		},
+		"group": {
+			"search": {
+				"namePlaceholder": "Grup adına göre ara"
+			},
+			"columns": {
+				"name": "Grup Adı",
+				"subscribers": "Abone Sayısı",
+				"unsubscribe": "Abonelikten Ayrılanlar",
+				"createdAt": "Oluşturulma Tarihi",
+				"type": "Tür"
+			},
+			"type": {
+				"doubleOptin": "Çift Onaylı (Double Opt-In)",
+				"singleOptin": "Tek Onaylı (Single Opt-In)"
+			},
+			"export": {
+				"title": "Grubu Dışa Aktar",
+				"confirm": "{count} grubu dışa aktarmak istiyor musunuz?"
+			},
+			"form": {
+				"name": "Grup Adı",
+				"file": "Dosya",
+				"nameRequired": "Lütfen grup adını girin"
+			},
+			"add": {
+				"title": "Grup Ekle"
+			},
+			"rename": {
+				"title": "Grubu Yeniden Adlandır"
+			},
+			"delete": {
+				"title": "Grubu Sil",
+				"confirm": "{name} grubunu silmek istediğinize emin misiniz?"
+			},
+			"fileUpload": {
+				"hint": "Dosya türü: csv, 10 MB'den fazla değil",
+				"emptyHint": "Dosya yüklenmezse boş bir grup oluşturulacaktır"
+			},
+			"loading": {
+				"createGroup": "Grup oluşturuluyor, lütfen bekleyin...",
+				"updateGroup": "Grup güncelleniyor, lütfen bekleyin...",
+				"deleteGroup": "Grup siliniyor, lütfen bekleyin...",
+				"exportGroup": "Dışa aktarılıyor, lütfen bekleyin...",
+				"saveSettings": "Kaydediliyor, lütfen bekleyin..."
+			}
+		},
+		"settings": {
+			"title": "Ayarlar",
+			"tabs": {
+				"subscribeForm": "Abone Formu",
+				"subscribeSettings": "Abone Ayarları",
+				"unsubscribeSettings": "Abonelikten Ayrılma Ayarları"
+			},
+			"subscribeForm": {
+				"separateSubscriptionPage": {
+					"title": "Ayrı Abonelik Sayfası",
+					"description": "Bu URL'yi kullanıcılarla kopyalayıp paylaşın – abonelik formu kullanıma hazır."
+				},
+				"embeddableForm": {
+					"title": "Gömülebilir Form",
+					"description": "Bu abonelik formunu web sitesi sayfalarınıza kolayca gömün."
+				}
+			},
+			"subscribeSettings": {
+				"listType": {
+					"label": "Liste Türü",
+					"placeholder": "Lütfen liste türünü seçin",
+					"options": {
+						"doubleOptin": "Çift Onaylı (Double Opt-in)",
+						"singleOptin": "Tek Onaylı (Single Opt-in)"
+					}
+				},
+				"confirmEmail": {
+					"subject": "Onay E-postası Konusu",
+					"redirectLink": "Onay Yönlendirme Bağlantısı",
+					"redirectDescription": "Kullanıcıları 'Çift Onaylı' abonelikleri için bir onay sayfasına yönlendirmek üzere aşağıya özel bağlantıyı girin",
+					"emailContent": "Onay E-postası",
+					"emailTip1": "Onay e-postasını özelleştirirseniz, onay bağlantısını eklemeyi unutmayın",
+					"emailTip2": "mesajınızda bir yere ekleyin"
+				},
+				"welcomeEmail": {
+					"subject": "Hoş Geldiniz E-postası Konusu",
+					"redirectLink": "Hoş Geldiniz Yönlendirme Bağlantısı",
+					"redirectDescription": "Kullanıcıları başarıyla abone olduktan sonra özel bir onay sayfasına yönlendirmek için lütfen aşağıdaki bağlantıyı girin",
+					"emailContent": "Hoş Geldiniz E-postası",
+					"sendThroughTip": "Mesajlar şu adresten gönderilir:",
+					"mailboxTip": "Varsayılan gönderim alan adının posta kutusu",
+					"enabledDescription": "Etkinleştirildiğinde, kullanıcı abonelik formu veya API aracılığıyla abone olduğunda kullanıcıya bir teşekkür e-postası gönderilir. Bu, manuel olarak eklenen kullanıcılar için tetiklenmez.",
+					"templateVariablesTip": "Topladığınız bilgileri teşekkür e-postanızın konusunda ve mesajında kullanabilirsiniz, bunlar Şablon Değişkenleridir."
+				},
+				"alreadySubscribed": {
+					"redirectLink": "Zaten Abone Yönlendirme Bağlantısı"
+				}
+			},
+			"unsubscribeSettings": {
+				"subject": "Abonelikten Ayrılma Konusu",
+				"redirectLink": "Abonelikten Ayrılma Yönlendirme Bağlantısı",
+				"emailPage": "Abonelikten Ayrılma E-posta Sayfası",
+				"enabledDescription": "Etkinleştirildiğinde, kullanıcılar abonelikten ayrıldığında veya API ile abonelikten çıkıldığında kullanıcılara bir abonelikten ayrılma e-postası gönderilir. Manuel olarak eklenen kullanıcılar bu özelliği tetiklemez."
+			}
+		},
+		"suspend": {
+			"title": "Askıya Alınan E-postalar",
+			"buttons": {
+				"scanInvalidDomains": "Geçersiz Alan Adlarını Tara",
+				"scanLogs": "Logları Tara",
+				"autoBlockFailedEmails": "Başarısız e-postaları otomatik engelle"
+			},
+			"search": {
+				"emailPlaceholder": "Lütfen e-posta girin"
+			},
+			"columns": {
+				"email": "E-posta",
+				"description": "Açıklama",
+				"status": "Durum",
+				"addTime": "Eklenme Zamanı"
+			},
+			"status": {
+				"invalid": "Geçersiz",
+				"checking": "Kontrol Ediliyor"
+			},
+			"confirm": {
+				"clear": {
+					"title": "Temizle",
+					"content": "Bu türdeki tüm veriler temizlenecek, devam edilsin mi?"
+				},
+				"delete": {
+					"title": "Sil",
+					"content": "[{email}] kaydını silmek istediğinize emin misiniz?"
+				}
+			},
+			"scan": {
+				"title": "Geçersiz Alan Adlarını Tara",
+				"confirmText": "Tara",
+				"form": {
+					"group": "Grup",
+					"method": "Yöntem",
+					"groupRequired": "Lütfen grup seçin"
+				},
+				"methods": {
+					"noOperation": "İşlem Yok",
+					"addToExceptionTable": "İstisna tablosuna eklendi",
+					"deleteFromGroup": "Anormal posta kutusu gruptan silindi"
+				}
+			},
+			"scanLogs": {
+				"title": "Tarama Logları",
+				"none": "Yok"
+			},
+			"api": {
+				"loading": {
+					"deleting": "Siliniyor, lütfen bekleyin...",
+					"scanning": "Taranıyor, lütfen bekleyin...",
+					"clearing": "Temizleniyor, lütfen bekleyin...",
+					"setting": "İşleniyor, lütfen bekleyin..."
+				}
+			}
+		},
+		"tags": {
+			"title": "Etiket Yönetimi",
+			"addTag": "Etiket Ekle",
+			"bulkTag": "Toplu Etiketle",
+			"searchPlaceholder": "Etiket ara",
+			"columns": {
+				"name": "Etiket Adı",
+				"groupName": "Grup Adı",
+				"createTime": "Oluşturulma Zamanı",
+				"actions": "İşlemler"
+			},
+			"delete": {
+				"title": "Etiketi Sil",
+				"confirm": "Bu etiketi 【{name}】 silmek istediğinize emin misiniz?"
+			},
+			"bulk": {
+				"title": "Kişiyi toplu etiketle",
+				"form": {
+					"group": "Grup",
+					"tags": "Etiketler",
+					"emails": "E-postalar",
+					"action": "İşlem",
+					"emailsPlaceholder": "Lütfen e-postaları yapıştırın, her satıra bir tane"
+				},
+				"actions": {
+					"tagThese": "Bu e-postaları etiketle",
+					"tagExcept": "Bu e-postalar dışındakileri etiketle"
+				}
+			},
+			"form": {
+				"title": {
+					"create": "Etiket Oluştur",
+					"edit": "Etiketi Düzenle"
+				},
+				"fields": {
+					"name": "Etiket Adı",
+					"group": "Grup"
+				},
+				"validation": {
+					"nameRequired": "Lütfen etiket adını girin",
+					"groupRequired": "Lütfen grup seçin"
+				}
+			},
+			"loading": {
+				"creating": "Etiket oluşturuluyor, lütfen bekleyin...",
+				"deleting": "Etiket siliniyor, lütfen bekleyin...",
+				"updating": "Etiket güncelleniyor, lütfen bekleyin...",
+				"bulkSetting": "Toplu ayarlama yapılıyor, lütfen bekleyin..."
+			}
+		}
+	},
+	"domain": {
+		"title": "Alan Adı Yönetimi",
+		"addDomain": "Alan Adı Ekle",
+		"help": "E-posta göndermek için kullanmak istediğiniz alan adını ekleyin",
+		"columns": {
+			"domain": "Alan Adı",
+			"quota": "Kota",
+			"mailboxes": "Posta Kutuları",
+			"defaultMailboxSize": "Varsayılan Posta Kutusu Boyutu",
+			"dedicatedIp": "Özel IP",
+			"actions": "İşlemler"
+		},
+		"ipSet": {
+			"title": "Özel IP Ayarları",
+			"titleWithDomain": "Özel IP Ayarları [{domain}]",
+			"dedicatedIp": "Özel IP: ",
+			"configFile": "Yapılandırma Dosyası: ",
+			"connectionStatus": "Bağlantı Durumu: ",
+			"warning": "Özel IP bağlantı durumunu SSH terminalinde aşağıdaki komutu manuel olarak çalıştırarak etkinleştirebilirsiniz\nÖzel IP yapılandırması gereken birden fazla alan adınız varsa, posta sunucusunda çoklu kesintileri önlemek için önce tüm alan adlarını yapılandırmanızı ve ardından aşağıdaki komutu çalıştırmanızı öneririz",
+			"getCommand": "Komutu Al",
+			"copyCommand": "Komutu Kopyala",
+			"operationReminder": "İşlem Hatırlatıcısı",
+			"fixCommandTip": "Komut yürütme başarısız olursa, düzeltmek için şu komutu çalıştırabilirsiniz: ",
+			"understood": "Anlaşıldı",
+			"validation": {
+				"getCommandFirst": "Lütfen önce komutu alın"
+			}
+		},
+		"status": {
+			"default": "Varsayılan"
+		},
+		"actions": {
+			"dnsRecord": "DNS Kayıtları",
+			"setDefault": "Varsayılan Yap"
+		},
+		"notSpam": {
+			"checkNow": "Şimdi Kontrol Et",
+			"logs": "Loglar"
+		},
+		"checkLogs": {
+			"title": "Logları Kontrol Et"
+		},
+		"blacklistDetection": {
+			"title": "Kara Liste Kontrolü",
+			"checking": "{ip} olarak çözümlenen {results} adresi {tested} bilinen kara listeye karşı kontrol ediliyor...",
+			"listed": "Listelendi: {count}",
+			"success": "IP adresiniz aaPanel tarafından bilinen kara listede yok",
+			"columns": {
+				"blacklist": "Kara Liste",
+				"responseIp": "Yanıt IP",
+				"checkTime": "Kontrol Zamanı"
+			}
+		},
+		"setDefault": {
+			"title": "Varsayılan Yap [{domain}]",
+			"confirm": "Bu alan adını varsayılan olarak ayarlamak istediğinize emin misiniz?"
+		},
+		"delete": {
+			"title": "Alan Adını Sil",
+			"confirm": "[{domain}] alan adını silmek istediğinize emin misiniz?"
+		},
+		"waitAndCheckDomainStatus": {
+			"success": "Marka bilgisi başlatma başarılı.",
+			"error": "Marka bilgisi başlatma başarısız.",
+			"loading": "Marka bilgisi başlatılıyor, lütfen bekleyin..."
+		},
+		"form": {
+			"addTitle": "Alan Adı Ekle",
+			"editTitle": "Alan Adını Düzenle",
+			"domain": "Alan Adı",
+			"domainPlaceholder": "Lütfen alan adını girin, örn: billionmail.com",
+			"urlsPlacement": "Lütfen url girin, örn: https://billionmail.com",
+			"aRecord": "A Kaydı",
+			"aRecordPlaceholder": "Lütfen A kaydını girin, örn: mail.aapanel.com",
+			"quota": "Alan Adı Kotası",
+			"mailboxCount": "Posta Kutusu Sayısı",
+			"globalCatch": "Catch-All (Tümünü Yakala)",
+			"globalCatchPlaceholder": "Mevcut olmayan e-postaları bu adrese yönlendir",
+			"dedicatedIp": "Özel IP",
+			"notSet": "Ayarlanmadı",
+			"testConnection": "Bağlantıyı Test Et",
+			"validation": {
+				"domainRequired": "Alan adı boş olamaz!",
+				"domainInputRequired": "Lütfen önce alan adını girin",
+				"dedicatedIpRequired": "Lütfen önce özel IP girin"
+			},
+			"tips": {
+				"aRecordFailed": "A kaydı çözümü başarısız. Lütfen A kaydı alan adının sunucu IP'sine çözümlenip çözümlenmediğini kontrol edin",
+				"dnsSetup": "DNS sağlayıcınızın konsolunda bir A kaydı eklemeniz gerekir",
+				"cloudflare": "CloudFlare kullanıyorsanız, kayıt eklerken lütfen [Sadece DNS] seçeneğini seçin"
+			},
+			"createBrandInfo": "Marka bilgilerini otomatik oluştur",
+			"modelNotice": "Bu özelliği kullanmak için önce bir AI modeli entegre etmeniz gerekir.",
+			"integrateImmediately": "Hemen entegre et",
+			"modelDescription": "AI destekli bilgi içe aktarma, e-posta alan adlarından marka bilgilerini otomatik olarak analiz eder ve oluşturur. Oluşturulduktan sonra istediğiniz gibi değiştirebilirsiniz.",
+			"extractBrand": "Marka ve rengi ayıkla",
+			"analyzeStructure": "İçerik yapısını analiz et",
+			"importContent": "Görselleri ve içeriği içe aktar",
+			"customLogo": "Özel logo kullan (isteğe bağlı)",
+			"specifyDomain": "Bir alan adı belirtin",
+			"addMoreUrls": "Daha fazla URL ekle",
+			"maxUrl": "En fazla 3 URL doldurulabilir."
+		},
+		"dns": {
+			"title": "DNS Kayıtları",
+			"verify": "Kayıtlar ayarlandı, DNS çözümünü doğrula",
+			"status": {
+				"ok": "TAMAM",
+				"notSet": "Ayarlanmadı"
+			},
+			"columns": {
+				"domain": "Alan Adı"
+			},
+			"table": {
+				"recordType": "Kayıt Türü",
+				"host": "Ana Bilgisayar (Host)",
+				"value": "Değer",
+				"mxPriority": "MX Önceliği"
+			},
+			"step1": {
+				"title": "Adım 1: A Kaydı Ekle"
+			},
+			"step2": {
+				"title": "Adım 2: MX Kaydı Ekle",
+				"description": "Alan adı hizmet sağlayıcınızda oturum açın ve e-posta hizmeti için bir MX kaydı ekleyin (lütfen aşağıdaki parametreleri doğrudan kopyalayın)"
+			},
+			"step3": {
+				"title": "Adım 3: TXT Kaydı Ekle",
+				"description": "E-posta anti-spam için TXT kayıtları ekleyin (lütfen aşağıdaki parametreleri doğrudan kopyalayın)"
+			},
+			"step4": {
+				"title": "Adım 4: PTR Kaydı Ekle",
+				"description1": "(İsteğe bağlı) PTR kaydı ters DNS araması için kullanılır",
+				"description2": "PTR kaydı oluşturmak için IP sağlayıcınızla iletişime geçin"
+			},
+			"dkim": {
+				"formatLabel": "DKIM Kayıt Formatı:",
+				"keySize": {
+					"option2048": "2048-bit RSA Anahtarı",
+					"option1024": "1024-bit RSA Anahtarı"
+				},
+				"tips": {
+					"line1": "DKIM, 2048-bit ve 1024-bit RSA anahtarlarını destekler.",
+					"line2": "Daha güçlü güvenlik için 2048-bit anahtarları tercih edin.",
+					"line3": "DNS sağlayıcınızın yeteneğine göre seçim yapın."
+				}
+			}
+		},
+		"ssl": {
+			"expired": "Süresi Doldu",
+			"daysLeft": "{days} gün",
+			"notSet": "Ayarlanmadı",
+			"title": "Alan Adı SSL",
+			"tabs": {
+				"otherCertificate": "Diğer Sertifika"
+			},
+			"cert": {
+				"brand": "Marka",
+				"domains": "Sertifika Alan Adları",
+				"privateKey": "Özel Anahtar (KEY)",
+				"certificate": "Sertifika (CRT/PEM)",
+				"keyPlaceholder": "Özel anahtar içeriğini girin",
+				"certPlaceholder": "Sertifika içeriğini girin"
+			},
+			"actions": {
+				"applyFree": "Ücretsiz Sertifika Başvurusu"
+			},
+			"tips": {
+				"paste": "KEY ve CRT içeriğinizi yapıştırın, ardından kaydedin",
+				"chainCheck": "Tarayıcı sertifika zincirinin eksik olduğunu belirtirse, lütfen PEM sertifikasının doğru şekilde birleştirilip birleştirilmediğini kontrol edin",
+				"pemFormat": "PEM formatı sertifika = Alan adı sertifikası .crt + Kök sertifika (root_bundle).crt",
+				"defaultSite": "SSL varsayılan sitesi belirtilmediğinde, SSL yapılandırması olmayan siteler, SSL  sitelerine erişmek için HTTPS kullanacaktır"
+			}
+		},
+		"edit": {
+			"pageTitle": "Alan Adı / Alan Adını Düzenle",
+			"save": "Kaydet",
+			"breadcrumb": {
+				"domain": "Alan Adı",
+				"editDomain": "Alan Adını Düzenle"
+			},
+			"tabs": {
+				"domainConfiguration": "Alan Adı Yapılandırması",
+				"projectDetails": "Proje Ayrıntıları",
+				"companyProfile": "Şirket Profili",
+				"styling": "Stil",
+				"sitemap": "Site Haritası",
+				"footerSettings": "Altbilgi Ayarları",
+				"aiSettings": "AI Ayarları"
+			},
+			"domainConfiguration": {
+				"title": "E-posta Alan Adı Yapılandırması",
+				"domain": "Alan Adı",
+				"domainQuota": "Alan Adı Kotası",
+				"mailboxCount": "Posta Kutusu Sayısı",
+				"catchAll": "Catch-All (Tümünü Yakala)",
+				"dedicatedIp": "Alan Adı Özel IP",
+				"dedicatedIpDesc": "{domain} alan adı, e-posta gönderirken ve alırken bu özel IP'yi iptables'ta belirtecektir. Sunucunuzda yalnızca bir IP varsa, bu özelliği ayarlamanıza gerek yoktur",
+				"notSet": "Ayarlanmadı",
+				"testConnection": "Bağlantıyı Test Et",
+				"catchAllDesc": "Buraya e-postayı girdikten sonra, bu alan adı altındaki bilinmeyen tüm e-postalar bu e-postaya yönlendirilecektir",
+				"domainQuotaDesc": "Bu alan adı için kullanılabilir alanı ayarlayın",
+				"mailboxCountDesc": "Bu alan adı için kaç posta kutusu oluşturulabileceğini ayarlayın",
+				"autoCreateBrand": "Marka bilgilerini otomatik oluştur",
+				"aiIntegrationWarning": "Bu özelliği kullanmak için önce bir AI modeli entegre etmeniz gerekir.",
+				"integrateImmediately": "Hemen entegre et",
+				"aiDescription": "AI destekli bilgi içe aktarma, e-posta alan adlarından marka bilgilerini otomatik olarak analiz eder ve oluşturur. Oluşturulduktan sonra istediğiniz gibi değiştirebilirsiniz.",
+				"features": {
+					"extractBrand": "Marka ve rengi ayıkla",
+					"analyzeStructure": "İçerik yapısını analiz et",
+					"importContent": "Görselleri ve içeriği içe aktar",
+					"customLogo": "Özel logo kullan (isteğe bağlı)"
+				},
+				"specifyDomain": "Bir alan adı belirtin",
+				"addMoreUrls": "Daha fazla URL ekle",
+				"createNow": "Hemen Oluştur",
+				"brandInfo": "Marka Bilgisi",
+				"noBrandInfo": "Marka bilgisi yok.",
+				"fillDomain": "Lütfen alan adını doldurun",
+				"fillValidDomain": "Lütfen geçerli bir alan adı doldurun",
+				"validation": {
+					"setDedicatedIpFirst": "Lütfen önce alan adı özel IP'sini ayarlayın"
+				},
+				"api": {
+					"testingConnection": "Bağlantı test ediliyor, lütfen bekleyin..."
+				}
+			},
+			"projectDetails": {
+				"title": "Proje Ayrıntıları",
+				"projectName": "Proje Adı",
+				"description": "Açıklama",
+				"brandLogos": "Marka Logoları",
+				"logoSystem": "Logo Sistemi",
+				"logoSystemDesc": "Projeniz genelinde tutarlı markalamayı sürdürmek için markanızın logo sistemini yükleyin",
+				"primaryLogo": "Birincil Logo",
+				"primaryLogoDesc": "Başlıklar için yatay sürüm",
+				"secondaryLogo": "İkincil Logo",
+				"secondaryLogoDesc": "Dikey/istiflenmiş sürüm",
+				"favicon": "Favicon",
+				"faviconDesc": "Tarayıcı sekmeleri için simge",
+				"loadingFailed": "Yükleme başarısız",
+				"knowledgeBase": "Bilgi Tabanı",
+				"newFile": "Yeni Dosya",
+				"edit": "Düzenle",
+				"preview": "Önizleme",
+				"newKnowledgeFile": "Yeni Bilgi Dosyası",
+				"fileName": "Dosya Adı",
+				"day": "gün",
+				"hour": "saat",
+				"minute": "dakika",
+				"ago": "önce",
+				"justNow": "hemen şimdi",
+				"close": "Kapat",
+				"cancel": "İptal",
+				"create": "Oluştur",
+				"notice": "Bildirim",
+				"sureDel": "Silmek istediğinize emin misiniz?"
+			},
+			"companyProfile": {
+				"title": "Şirket Detayı",
+				"legalCompanyName": "Yasal Şirket Adı",
+				"website": "Web Sitesi",
+				"organizationNumber": "Organizasyon Numarası",
+				"additionalInfo": "Ek Şirket Bilgileri",
+				"contactInfo": "İletişim Bilgileri",
+				"contactEmail": "İletişim E-postası",
+				"phoneNumber": "Telefon Numarası",
+				"supportUrl": "Destek URL'si"
+			},
+			"styling": {
+				"colorPalette": "Renk Paleti",
+				"accentColor": "Vurgu Rengi",
+				"textColor": "Metin Rengi",
+				"pageBackground": "Sayfa Arka Planı",
+				"containerBackground": "Konteyner Arka Planı",
+				"linkFooterColor": "Altbilgi Bağlantı Rengi",
+				"linkSocialColor": "Sosyal Bağlantı Rengi",
+				"typography": "Tipografi",
+				"headingFont": "Başlık Yazı Tipi",
+				"bodyFont": "Gövde Yazı Tipi",
+				"preview": "Önizleme:",
+				"previewText": "Hızlı kahverengi tilki tembel köpeğin üzerinden atlar",
+				"typographyGuidelines": "Tipografi Kuralları:",
+				"webSafeFonts": "Daha iyi uyumluluk için web güvenli yazı tiplerini kullanın",
+				"fallbackFonts": "Daha iyi performans için her zaman yedek yazı tiplerini ekleyin"
+			},
+			"sitemap": {
+				"title": "Site Haritası",
+				"addLink": "Bağlantı ekle"
+			},
+			"footerSettings": {
+				"title": "Altbilgi Ayarları",
+				"additionalContent": "Ek İçerik",
+				"copyrightText": "Telif Hakkı Metni"
+			},
+			"aiSettings": {
+				"title": "AI Ayarları",
+				"defaultInstructions": "Varsayılan AI Talimatları",
+				"emailGenerationInstructions": "E-posta Oluşturma Talimatları",
+				"instructionsDescription": "Bu talimatlar, yeni e-postalar oluşturulurken varsayılan yönergeler olarak kullanılacaktır. Gerektiğinde bu talimatları bireysel e-postalar için geçersiz kılabilirsiniz."
+			},
+			"common": {
+				"daysAgo": "gün önce",
+				"noBrandInfo": "Mevcut alan adı için marka bilgisi yok."
+			}
+		},
+		"api": {
+			"loading": {
+				"creating": "Alan adı oluşturuluyor, lütfen bekleyin...",
+				"updating": "Alan adı güncelleniyor, lütfen bekleyin...",
+				"deleting": "Alan adı siliniyor, lütfen bekleyin...",
+				"settingSSL": "SSL sertifikası ayarlanıyor, lütfen bekleyin...",
+				"refreshingDns": "DNS kayıtları yenileniyor, lütfen bekleyin...",
+				"applyingCert": "Sertifika uygulanıyor, lütfen bekleyin...",
+				"settingDefault": "Varsayılan alan adı ayarlanıyor, lütfen bekleyin...",
+				"settingBrandInfo": "Alan adı marka bilgisi ayarlanıyor, lütfen bekleyin...",
+				"testingConnection": "Bağlantı test ediliyor, lütfen bekleyin...",
+				"detecting": "Algılanıyor, lütfen bekleyin..."
+			}
+		}
+	},
+	"mailbox": {
+		"title": "Posta Kutusu Yönetimi",
+		"actions": {
+			"add": "Posta Kutusu Ekle",
+			"batchAdd": "Toplu Ekle",
+			"batchDelete": "Toplu Sil",
+			"exportAll": "Tümünü Dışa Aktar"
+		},
+		"search": {
+			"usernamePlaceholder": "Kullanıcı adı ara"
+		},
+		"domain": {
+			"selectPlaceholder": "Alan adı seç"
+		},
+		"columns": {
+			"username": "Kullanıcı Adı",
+			"password": "Şifre",
+			"loginInfo": "Giriş Bilgileri (WebMail / SMTP)",
+			"quota": "Kota",
+			"type": "Tür",
+			"status": "Durum"
+		},
+		"userType": {
+			"admin": "Yönetici",
+			"general": "Genel Kullanıcı"
+		},
+		"form": {
+			"addTitle": "Posta Kutusu Ekle",
+			"editTitle": "Posta Kutusunu Düzenle",
+			"batchAddTitle": "Toplu Ekle",
+			"exportTitle": "Posta Kutusunu Dışa Aktar",
+			"importTitle": "Posta Kutusunu İçe Aktar",
+			"emailAddress": "E-posta Adresi",
+			"password": "Şifre",
+			"passwordPlaceholder": "Posta kutusu şifrenizi girin",
+			"quota": "Kota",
+			"userType": "Kullanıcı Türü",
+			"status": "Durum",
+			"domain": "Alan Adı",
+			"prefix": "E-posta Öneki",
+			"count": "E-posta Sayısı"
+		},
+		"validation": {
+			"emailRequired": "Lütfen e-posta adresini girin",
+			"passwordLength": "Şifre en az 8 karakter olmalıdır",
+			"passwordFormat": "Şifre en az bir büyük harf, bir küçük harf ve bir sayı içermelidir",
+			"domainRequired": "Lütfen alan adı seçin",
+			"prefixRequired": "Lütfen e-posta önekini girin",
+			"countRequired": "Lütfen e-posta sayısını girin",
+			"fileRequired": "Lütfen yükleme dosyasını seçin"
+		},
+		"delete": {
+			"title": "Posta Kutusunu Sil",
+			"confirm": "[{name}] posta kutusunu silmek istediğinize emin misiniz?",
+			"batchConfirm": "{count} posta kutusunu silmek istediğinize emin misiniz?"
+		},
+		"loginInfo": {
+			"template": "WebMail: {webmail}\nKullanıcı Adı: {username}\nŞifre: {password}\nPOP hizmeti [ Adres: {mx} Port: 110/995 ]\nIMAP hizmeti [ Adres: {mx} Port: 143/993 ]\nSMTP hizmeti [ Adres: {mx} Port: 25/465/587 ]"
+		},
+		"api": {
+			"loading": {
+				"creating": "Posta kutusu oluşturuluyor, lütfen bekleyin...",
+				"updating": "Posta kutusu güncelleniyor, lütfen bekleyin...",
+				"deleting": "Posta kutusu siliniyor, lütfen bekleyin...",
+				"exporting": "Posta kutusu dışa aktarılıyor, lütfen bekleyin...",
+				"importing": "Posta kutusu içe aktarılıyor, lütfen bekleyin..."
+			}
+		}
+	},
+	"smtp": {
+		"title": "SMTP Relay Yönetimi",
+		"description": "Birden fazla servis sağlayıcı desteği ile SMTP Relay hizmetlerinizi yönetin",
+		"empty": "Kullanılabilir SMTP Relay hizmeti yok",
+		"providers": {
+			"gmail": "Gmail",
+			"mailgun": "Mailgun",
+			"aws": "AWS SES",
+			"sendgrid": "SendGrid",
+			"custom": "Özel SMTP"
+		},
+		"delete": {
+			"title": "SMTP Relay Hizmetini Sil",
+			"confirm": "Bu SMTP Relay hizmetini [{name}] silmek istediğinize emin misiniz?"
+		},
+		"card": {
+			"domain": "Bağlı Alan Adı",
+			"server": "Sunucu",
+			"port": "Port",
+			"username": "Kullanıcı Adı",
+			"dnsUpdateRequired": "DNS kayıtlarının güncellenmesi gerekiyor"
+		},
+		"form": {
+			"addTitle": "SMTP Ekle",
+			"editTitle": "SMTP Düzenle",
+			"remark": "Not",
+			"domain": "Bağlı Alan Adı",
+			"server": "SMTP Sunucusu",
+			"port": "SMTP Portu",
+			"username": "Kullanıcı Adı",
+			"password": "Şifre",
+			"authMethod": "Kimlik Doğrulama Yöntemi",
+			"advancedFeatures": "Gelişmiş Seçenekler",
+			"testConnection": "Bağlantıyı Test Et",
+			"bind": " [Bağlı]",
+			"skipTlsVerify": "TLS Doğrulamayı Atla",
+			"tlsOptions": {
+				"skip": "Atla",
+				"noSkip": "Atlama"
+			},
+			"validation": {
+				"nameRequired": "Lütfen bir Relay adı girin",
+				"domainRequired": "Lütfen bağlı bir alan adı seçin",
+				"serverRequired": "Lütfen bir SMTP sunucusu girin",
+				"portRequired": "Lütfen bir SMTP portu girin",
+				"usernameRequired": "Lütfen bir kullanıcı adı girin",
+				"passwordRequired": "Lütfen bir şifre girin"
+			}
+		},
+		"status": {
+			"online": "Çevrimiçi",
+			"offline": "Çevrimdışı"
+		},
+		"api": {
+			"loading": {
+				"adding": "SMTP ekleniyor, lütfen bekleyin...",
+				"editing": "SMTP düzenleniyor, lütfen bekleyin...",
+				"testing": "SMTP bağlantısı test ediliyor, lütfen bekleyin...",
+				"deleting": "SMTP siliniyor, lütfen bekleyin..."
+			}
+		}
+	},
+	"settings": {
+		"title": "Ayarlar",
+		"service": {
+			"title": "Hizmet Durumu",
+			"tips": "İpuçları: Ctrl+F Anahtar kelime ara, Ctrl+S Kaydet, Ctrl+H Ara ve değiştir",
+			"editTitle": "Çevrimiçi Düzenle {name}",
+			"columns": {
+				"name": "Hizmet Adı",
+				"status": "Durum"
+			},
+			"status": {
+				"running": "Çalışıyor",
+				"stopped": "Durduruldu"
+			},
+			"actions": {
+				"restart": "Yeniden Başlat"
+			},
+			"restart": {
+				"title": "Hizmeti Yeniden Başlat",
+				"confirm": "[{name}] hizmetini yeniden başlatmak istediğinize emin misiniz?"
+			}
+		},
+		"bcc": {
+			"title": "BCC Yönetimi",
+			"add": "BCC Ekle",
+			"edit": "BCC Düzenle",
+			"needCopy": "İzlenecek Adres (Kaynak)",
+			"copyTo": "BCC Alıcısı (Hedef)",
+			"domain": "Alan Adı",
+			"type": "BCC Türü",
+			"status": "Durum",
+			"active": "Aktif",
+			"types": {
+				"sender": "Gönderirken",
+				"recipient": "Alırken"
+			},
+			"delete": {
+				"title": "BCC'yi Sil [{address}]",
+				"content": "BCC ayarı silinsin mi?"
+			},
+			"placeholders": {
+				"needCopy": "BCC kuralının uygulanacağı e-posta adresini girin",
+				"copyTo": "BCC kopyasının gönderileceği e-posta adresini girin"
+			},
+			"loading": {
+				"adding": "BCC ekleniyor, lütfen bekleyin...",
+				"saving": "BCC kaydediliyor, lütfen bekleyin...",
+				"deleting": "BCC siliniyor, lütfen bekleyin..."
+			}
+		},
+		"forward": {
+			"add": "Yönlendirme Ekle",
+			"edit": "Yönlendirme Düzenle",
+			"columns": {
+				"address": "Adres",
+				"goto": "Şuraya Git",
+				"domain": "Alan Adı",
+				"created": "Oluşturuldu",
+				"modified": "Değiştirildi",
+				"status": "Durum"
+			},
+			"form": {
+				"status": "Durum",
+				"forwardedUsers": "Yönlendirilen Hesap",
+				"forwardedUsersPlaceholder": "Yönlendirilmesi gereken posta kutusunu girin",
+				"domain": "Alan Adı",
+				"domainPlaceholder": "Yönlendirilen kullanıcıların alan adı",
+				"receivingUser": "Hedef Hesap",
+				"receivingUserPlaceholder": "Yönlendirilen postayı kabul etmesi gereken kullanıcılar. Birden fazla varsa lütfen yeni satırlarla ayırın"
+			},
+			"delete": {
+				"title": "Posta Yönlendirmeyi Sil",
+				"content": "Posta yönlendirmesini [{address}] silmek istediğinize emin misiniz?"
+			},
+			"loading": {
+				"adding": "Posta yönlendirme ekleniyor, lütfen bekleyin...",
+				"editing": "Posta yönlendirme düzenleniyor, lütfen bekleyin...",
+				"deleting": "Posta yönlendirme siliniyor, lütfen bekleyin..."
+			}
+		},
+		"common": {
+			"confirm": "Güncelle",
+			"security": {
+				"title": "Güvenlik Ayarları",
+				"username": "Kullanıcı Adını Değiştir",
+				"currentUsername": "Mevcut Kullanıcı Adı",
+				"newUsernamePlaceholder": "Yeni kullanıcı adını girin",
+				"usernameRule": "4-20 karakter, harf ve rakam",
+				"usernameExists": "Kullanıcı adı zaten var",
+				"changePassword": "Şifreyi Değiştir",
+				"currentPassword": "Mevcut Şifre",
+				"newPassword": "Yeni Şifre",
+				"confirmPassword": "Yeni Şifreyi Onayla",
+				"passwordStrength": "Şifre Gücü",
+				"passwordMismatch": "Şifreler eşleşmiyor",
+				"strength": {
+					"weak": "Zayıf",
+					"medium": "Orta",
+					"strong": "Güçlü"
+				},
+				"securityPath": "Güvenlik Yolunu Değiştir",
+				"currentPath": "Mevcut Yol",
+				"newPathPlaceholder": "Yeni yolu girin, örn. admin-abc123",
+				"pathRule": "Daha fazla güvenlik için karmaşık yol kullanılması önerilir",
+				"usernameValidation": {
+					"lengthError": "Kullanıcı adı uzunluğu 4 ile 20 karakter arasında olmalıdır",
+					"formatError": "Kullanıcı adı harf, rakam veya alt çizgiden oluşmalıdır",
+					"duplicateError": "Kullanıcı adı mevcut kullanıcı adıyla aynı olamaz"
+				}
+			},
+			"network": {
+				"title": "Ağ Yapılandırması",
+				"domain": "Alan Adı Ayarları",
+				"currentDomain": "Konsol Erişim Alan Adı",
+				"newDomainPlaceholder": "Yeni alan adını girin, örn. admin.alanadiniz.com",
+				"domainRule": "Lütfen geçerli bir alan adı girin",
+				"ssl": "SSL Sertifikası Yapılandırması",
+				"sslEnabled": "SSL Etkin",
+				"certStatus": "Sertifika Durumu",
+				"certValid": "({days} gün kaldı)",
+				"sslCert": "SSL Sertifikası (PEM formatı)",
+				"sslKey": "Özel Anahtar (PEM formatı)",
+				"certPlaceholder": "-----BEGIN CERTIFICATE-----\nMIIFazCCA1OgAwIBAgIURv...\n-----END CERTIFICATE-----",
+				"keyPlaceholder": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG...\n-----END PRIVATE KEY-----",
+				"updateSSL": "SSL Sertifikasını Güncelle",
+				"certValidStatus": "Sertifika Geçerli",
+				"certExpiredStatus": "Sertifika Süresi Doldu",
+				"certExpireTime": "Sertifika bitiş tarihi: {time}"
+			},
+			"system": {
+				"title": "Sistem Yapılandırması",
+				"port": "Port Ayarları",
+				"currentPort": "Mevcut Port",
+				"terminalRequired": "Bu ayar terminal işlemi gerektirir",
+				"copyCommand": "Yukarıdaki komutu kopyalayın ve sunucu terminalinde çalıştırın",
+				"commandCopied": "Komut panoya kopyalandı",
+				"timezone": "Saat Dilimi Ayarları",
+				"currentTime": "Mevcut Sistem Saat Dilimi"
+			},
+			"ipWhitelist": {
+				"title": "IP Beyaz Liste",
+				"enable": "Etkinleştir",
+				"disable": "Devre Dışı Bırak",
+				"add": "Ekle",
+				"clear": "Temizle",
+				"description": "Sadece listedeki IP'lerin erişimine izin ver, devre dışı bırakmak için terminal komutu: bm.sh cancel-ip-limit",
+				"placeholder": "Lütfen IP adresi girin",
+				"validation": {
+					"ipRequired": "Lütfen IP adresi girin"
+				},
+				"confirm": {
+					"deleteTitle": "IP Beyaz Listesini Sil",
+					"deleteContent": "IP beyaz listesini silmeyi onayla: {ip}",
+					"enableTitle": "IP Beyaz Listesini Etkinleştir",
+					"disableTitle": "IP Beyaz Listesini Devre Dışı Bırak",
+					"enableContent": "IP beyaz listesini etkinleştirmeyi onayla, etkinleştirdikten sonra sadece beyaz listedeki IP adresleri erişebilir",
+					"disableContent": "IP beyaz listesini devre dışı bırakmayı onayla, devre dışı bıraktıktan sonra tüm IP adresleri erişebilir",
+					"clearTitle": "IP Beyaz Listesini Temizle",
+					"clearContent": "IP beyaz listesini temizlemeyi onayla, temizledikten sonra tüm IP adresleri erişebilir"
+				}
+			},
+			"proxy": {
+				"title": "Ters Proxy",
+				"description": "Ters proxy adresi, dışarıya açılmak için kullanılır, örneğin: abonelik listeleri, abonelikten ayrılma e-postaları vb.",
+				"placeholder": "Lütfen ters proxy adresini girin",
+				"formatTip": "Format: https://ornek.com",
+				"reset": "Sıfırla",
+				"resetConfirm": {
+					"title": "Ters Proxy'yi Sıfırla",
+					"content": "Ters proxy'yi sıfırlamayı onayla?"
+				}
+			},
+			"api": {
+				"title": "API Ayarları",
+				"enableApi": "API'yi Etkinleştir",
+				"apiDocUrl": "API Dokümantasyon URL'si",
+				"swaggerUrl": "Swagger URL'si",
+				"token": "Jeton (Token)",
+				"confirm": {
+					"enable": "API'yi Etkinleştir",
+					"disable": "API'yi Devre Dışı Bırak",
+					"enableContent": "API ayarlarını etkinleştirmek istiyor musunuz?",
+					"disableContent": "API ayarlarını devre dışı bırakmak istiyor musunuz?"
+				}
+			},
+			"notifySettings": {
+				"title": "Bildirim Ayarları",
+				"blacklist": {
+					"title": "Bir IP/Alan Adı kara listeye alındığında bana bildir",
+					"alarmSet": "Alarm Ayarlı",
+					"alarmSettings": {
+						"title": "Alarm Ayarları",
+						"name": "Ad",
+						"senderEmail": "Gönderici E-postası",
+						"smtpPassword": "SMTP Şifresi",
+						"smtpServer": "SMTP Sunucusu",
+						"port": "Port",
+						"recipientEmail": "Alıcı E-postası"
+					},
+					"autoCheck": {
+						"title": "Kara listeleri otomatik olarak algıla",
+						"confirm": {
+							"enableTitle": "Otomatik kara liste algılamayı etkinleştir",
+							"disableTitle": "Otomatik kara liste algılamayı devre dışı bırak",
+							"enableContent": "Otomatik kara liste algılama hizmetini başlatmak istediğinize emin misiniz?",
+							"disableContent": "Otomatik kara liste algılama hizmetini durdurmak istediğinize emin misiniz?"
+						}
+					}
+				}
+			},
+			"retention": {
+				"title": "E-posta Saklama Süresi",
+				"currentDays": "{days} gün",
+				"trashHint": "Çöp kutusundaki e-postaların saklanma süresi",
+				"day": "Gün"
+			}
+		},
+		"api": {
+			"loading": {
+				"restarting": "Hizmet yeniden başlatılıyor, lütfen bekleyin...",
+				"saving": "Yapılandırma kaydediliyor, lütfen bekleyin...",
+				"setting": "İşleniyor, lütfen bekleyin...",
+				"settingSSL": "SSL ayarlanıyor, lütfen bekleyin...",
+				"applyingCert": "Sertifika uygulanıyor, lütfen bekleyin...",
+				"adding": "Ekleniyor, lütfen bekleyin...",
+				"deleting": "Siliniyor, lütfen bekleyin...",
+				"clearing": "Temizleniyor, lütfen bekleyin..."
+			}
+		},
+		"aiModel": {
+			"modelId": "Model Kimliği",
+			"modelAlias": "Model Takma Adı",
+			"modelFeature": "Model Özelliği",
+			"contentLength": "Maksimum Bağlam Uzunluğu",
+			"supplierTitle": "Sağlayıcı Başlığı",
+			"supplierName": "Sağlayıcı Adı",
+			"cancel": "İptal",
+			"confirm": "Onayla",
+			"aPIKey": "API Anahtarı",
+			"apiPath": "Temel URL",
+			"check": "Kontrol Et",
+			"getKey": "Anahtarı Almak İçin Tıkla",
+			"example": "Örnek",
+			"saveAPI": "API'yi Kaydet",
+			"model": "Model",
+			"byDefault": "Varsayılan olarak, tüm modeller /models adresinden alınır",
+			"addModel": "Model Ekle"
+		}
+	},
+	"logs": {
+		"title": "Loglar",
+		"table": {
+			"columns": {
+				"username": "Kullanıcı Adı",
+				"type": "Tür",
+				"operatingTime": "İşlem Zamanı",
+				"details": "Ayrıntılar"
+			}
+		},
+		"filter": {
+			"all": "Tümü"
+		},
+		"search": {
+			"placeholder": "Aramak için ayrıntı/IP girin"
+		}
+	},
+	"api": {
+		"title": "Gönderim API'si",
+		"timeRange": "Zaman Aralığı: ",
+		"status": "Durum: ",
+		"search": "Ara: ",
+		"searchPlaceholder": "Lütfen API adını girin",
+		"refreshData": "Veriyi Yenile",
+		"createNew": "API Oluştur",
+		"statusOptions": {
+			"all": "Tümü",
+			"active": "Aktif",
+			"inactive": "Pasif"
+		},
+		"columns": {
+			"apiName": "API Adı",
+			"apiKey": "API Anahtarı",
+			"sendCount": "Gönderim Sayısı",
+			"openRate": "Açılma Oranı",
+			"clickRate": "Tıklanma Oranı",
+			"bounceRate": "Bounce Oranı",
+			"status": "Durum"
+		},
+		"statusLabels": {
+			"active": "Aktif",
+			"inactive": "Pasif"
+		},
+		"confirmDelete": {
+			"title": "API'yi Sil [{apiName}]",
+			"content": "Bu API'yi silmek istediğinize emin misiniz?"
+		},
+		"overview": {
+			"totalSend": "Toplam Gönderilen",
+			"avgOpenRate": "Ort. Açılma Oranı",
+			"avgClickRate": "Ort. Tıklanma Oranı",
+			"avgBounceRate": "Ort. Bounce Oranı"
+		},
+		"form": {
+			"apiName": "API Adı",
+			"status": "Durum",
+			"ipWhitelist": "IP Beyaz Liste",
+			"apiNamePlaceholder": "Lütfen API adını girin",
+			"ipWhitelistPlaceholder": "Birden fazla IP virgülle ayrılır, boş bırakılırsa kısıtlama uygulanmaz",
+			"advancedFeatures": "Gelişmiş Özellikler",
+			"validation": {
+				"apiNameRequired": "Lütfen API adını girin",
+				"addresserRequired": "Lütfen gönderici seçin",
+				"templateRequired": "Lütfen şablon seçin"
+			},
+			"title": {
+				"edit": "API'yi Düzenle",
+				"add": "API Ekle"
+			},
+			"group": {
+				"label": "Alıcı Grupları",
+				"tips": {
+					"choose": "Bir grup seçildi: Bu API aracılığıyla eklenen tüm yeni kişiler otomatik olarak seçilen gruba eklenecektir.",
+					"autoCreate": "Grup seçilmedi: Sistem, tüm yeni kişileri saklamak için bu API'ye özel bir grup otomatik olarak oluşturacaktır."
+				}
+			}
+		},
+		"loading": {
+			"creating": "Oluşturuluyor, lütfen bekleyin...",
+			"updating": "Güncelleniyor, lütfen bekleyin...",
+			"deleting": "Siliniyor, lütfen bekleyin...",
+			"testing": "Test ediliyor, lütfen bekleyin..."
+		}
+	}
+}
