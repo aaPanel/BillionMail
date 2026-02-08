@@ -86,6 +86,9 @@ type CreateGroupReq struct {
 
 type CreateGroupRes struct {
 	api_v1.StandardRes
+	Data struct {
+		GroupId int `json:"group_id" dc:"Created Group ID"`
+	} `json:"data"`
 }
 
 // ImportContactsReq Import contacts request
