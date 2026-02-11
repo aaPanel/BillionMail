@@ -118,7 +118,6 @@ func (c *ControllerV1) BatchTagContacts(ctx context.Context, req *v1.BatchTagCon
 
 	if totalSkippedCount > 0 {
 		successMsg += public.LangCtx(ctx, " ( {}  skipped,  {}  errors)", totalSkippedCount, totalErrorCount)
-		successMsg += public.LangCtx(ctx, " ( {}  skipped,  {}  errors)", totalSkippedCount, totalErrorCount)
 	}
 
 	res.SetSuccess(successMsg)
@@ -342,15 +341,13 @@ func parseEmailList(data string) []string {
 	emailMap := make(map[string]bool)
 
 	for _, line := range lines {
-		email := strings.TrimSpace(line)
+		email := strings.ToLower(strings.TrimSpace(line))
 		if email != "" && !emailMap[email] {
-
 			if strings.Contains(email, "@") && strings.Contains(email, ".") {
-				emails = append(emails, strings.ToLower(email))
+				emails = append(emails, email)
 				emailMap[email] = true
 			}
 		}
-
 	}
 
 	return emails

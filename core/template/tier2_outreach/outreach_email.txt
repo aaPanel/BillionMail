@@ -1,0 +1,13 @@
+Hi {{.Subscriber.first_name}},
+
+I came across your business and noticed {{.Enrichment.TopSignal}} - something we help companies like yours solve every day.
+
+We specialize in turning missed opportunities into booked appointments. Based on what I saw, there are a few quick wins that could make a real difference for you.
+
+Would you be open to a quick 10-minute call this week to see if we can help?
+
+Best,
+{{.Task.FullName}}
+
+---
+Unsubscribe: {{UnsubscribeURL .}}

@@ -7,12 +7,14 @@ import (
 	"billionmail-core/internal/service/collect"
 	"billionmail-core/internal/service/domains"
 	"billionmail-core/internal/service/fail2ban"
+	"billionmail-core/internal/service/frostbyte"
 	"billionmail-core/internal/service/log_maintenance"
 	"billionmail-core/internal/service/mail_boxes"
 	"billionmail-core/internal/service/mail_service"
 	"billionmail-core/internal/service/maillog_stat"
 	"billionmail-core/internal/service/multi_ip_domain"
 	"billionmail-core/internal/service/relay"
+	"billionmail-core/internal/service/video_gen"
 	"billionmail-core/internal/service/warmup"
 	"context"
 	"time"
@@ -182,6 +184,16 @@ func Start(ctx context.Context) (err error) {
 
 	gtimer.AddOnce(1*time.Minute, func() {
 		relay.EnsurePostfixConfExists(ctx)
+	})
+
+	// FrostByte reply detection (scan Dovecot Maildir for incoming replies)
+	gtimer.Add(1*time.Minute, func() {
+		frostbyte.CheckForReplies()
+	})
+
+	// Video generation pipeline orchestrator
+	gtimer.Add(30*time.Second, func() {
+		video_gen.ProcessVideoJobs(ctx)
 	})
 
 	// Check the domain name blacklist

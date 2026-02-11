@@ -179,8 +179,25 @@ func (c *ControllerV1) RefreshToken(ctx context.Context, req *v1.RefreshTokenReq
 		return
 	}
 
+	// Validate token type — only accept refresh tokens
+	if claims.Subject != "refresh_token" {
+		res.SetError(gerror.New("Invalid token type"))
+		return
+	}
+
+	// Get account roles from database
+	roles, roleErr := service.Account().GetAccountRoles(ctx, claims.AccountId)
+	if roleErr != nil {
+		res.SetError(gerror.New("Failed to get account roles"))
+		return
+	}
+	roleNames := make([]string, 0, len(roles))
+	for _, role := range roles {
+		roleNames = append(roleNames, role.RoleName)
+	}
+
 	// Generate new JWT token
-	token, _, err := service.JWT().GenerateToken(claims.AccountId, claims.Username, []string{})
+	token, _, err := service.JWT().GenerateToken(claims.AccountId, claims.Username, roleNames)
 	if err != nil {
 		res.SetError(gerror.New("Failed to generate token"))
 		return
@@ -199,7 +216,7 @@ func (c *ControllerV1) RefreshToken(ctx context.Context, req *v1.RefreshTokenReq
 	res.Msg = "Token refreshed successfully"
 	res.Data.Token = token
 	res.Data.RefreshToken = refreshToken
-	res.Data.TTL = gconv.Int64(service.JWT().RefreshExpiry.Seconds())
+	res.Data.TTL = gconv.Int64(service.JWT().AccessExpiry.Seconds())
 
 	return
 }

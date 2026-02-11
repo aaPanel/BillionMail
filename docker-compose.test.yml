@@ -1,0 +1,57 @@
+# E2E test overlay — use with: docker compose -f docker-compose.yml -f docker-compose.test.yml up -d
+services:
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      billionmail-network:
+        aliases:
+          - mailpit
+
+  mockserver:
+    image: wiremock/wiremock:3.10.0
+    ports:
+      - "9090:8080"
+    volumes:
+      - ./e2e/mocks/wiremock:/home/wiremock
+    command: ["--verbose"]
+    networks:
+      billionmail-network:
+        aliases:
+          - mockserver
+
+  postfix-billionmail:
+    volumes:
+      - postfix-spool:/var/spool/postfix
+      - ./conf/postfix/main.test.cf:/etc/postfix/main.cf:ro
+
+  frostbyte-api:
+    environment:
+      - APIFY_BASE_URL=http://mockserver:8080/apify
+      - APOLLO_BASE_URL=http://mockserver:8080/apollo
+      - TAVUS_BASE_URL=http://mockserver:8080/tavus
+      - DID_BASE_URL=http://mockserver:8080/did
+      - HUNTER_BASE_URL=http://mockserver:8080/hunter
+      - PROSPEO_BASE_URL=http://mockserver:8080/prospeo
+      - LINKEDIN_BASE_URL=http://mockserver:8080/linkedin
+      - GLM_BASE_URL=http://mockserver:8080/glm
+      - GMAPS_SCRAPER_URL=http://mockserver:8080/gmaps
+      - LOG_LEVEL=DEBUG
+
+  frostbyte-worker:
+    environment:
+      - APIFY_BASE_URL=http://mockserver:8080/apify
+      - APOLLO_BASE_URL=http://mockserver:8080/apollo
+      - TAVUS_BASE_URL=http://mockserver:8080/tavus
+      - DID_BASE_URL=http://mockserver:8080/did
+      - HUNTER_BASE_URL=http://mockserver:8080/hunter
+      - PROSPEO_BASE_URL=http://mockserver:8080/prospeo
+      - LINKEDIN_BASE_URL=http://mockserver:8080/linkedin
+      - GLM_BASE_URL=http://mockserver:8080/glm
+      - GMAPS_SCRAPER_URL=http://mockserver:8080/gmaps
+      - LOG_LEVEL=DEBUG
+
+volumes:
+  postfix-spool:

@@ -81,8 +81,8 @@ const form = reactive({
 	auth_password: '',
 	remark: '',
 	active: 1,
-	auth_method: null as string | null,
-	skip_tls_verify: null as number | null,
+	auth_method: 'LOGIN' as string | null,
+	skip_tls_verify: 0 as number | null,
 	helo_name: '',
 })
 

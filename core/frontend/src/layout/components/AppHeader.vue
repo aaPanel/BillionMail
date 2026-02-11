@@ -23,6 +23,7 @@
 					<i class="icon i-mdi-language text-20px"></i>
 				</n-button>
 			</n-dropdown>
+			<InstanceSwitcher />
 			<n-dropdown size="large" :options="userOptions" @select="handleUserAction">
 				<n-button class="icon-btn" :bordered="false">
 					<i class="icon i-mdi-user-outline"></i>
@@ -39,6 +40,7 @@
 import { storeToRefs } from 'pinia'
 import { DropdownOption } from 'naive-ui'
 import { useUserStore, useGlobalStore, useThemeStore } from '@/store'
+import InstanceSwitcher from './InstanceSwitcher.vue'
 import { getVersionInfo } from '@/api/modules/settings'
 import { isObject } from '@/utils'
 

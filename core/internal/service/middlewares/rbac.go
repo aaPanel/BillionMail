@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"billionmail-core/internal/model"
 	"billionmail-core/internal/service/public"
 	"context"
 	"fmt"
@@ -17,7 +18,14 @@ import (
 // PathToRouteInfo converts path to module, action, and resource
 func PathToRouteInfo(path string) (module, action, resource string) {
 	// Extract module
-	modules := []string{"account", "role", "permission"}
+	modules := []string{
+		"account", "role", "permission",
+		"domains", "mail_boxes", "overview", "dockerapi",
+		"contact", "email_template", "batch_mail", "files",
+		"abnormal_recipient", "languages", "mail_services",
+		"relay", "settings", "subscribe_list", "operation_log",
+		"askai", "tags", "frostbyte", "video_outreach",
+	}
 	for _, m := range modules {
 		if strings.Contains(path, "/"+m+"/") || strings.HasSuffix(path, "/"+m) {
 			module = m
@@ -64,9 +72,19 @@ func NewRBACMiddleware() *RBACMiddleware {
 
 // PermissionCheck checks if the current user has the required permission
 func (m *RBACMiddleware) PermissionCheck(r *ghttp.Request) {
-	// Skip permission check for authentication-related routes
-	if r.URL.Path == "/api/v1/login" ||
-		r.URL.Path == "/api/v1/refresh-token" {
+	// Skip permission check for public/auth routes (must match jwt.go bypass list)
+	if r.URL.Path == "/api/login" ||
+		r.URL.Path == "/api/refresh-token" ||
+		r.URL.Path == "/api/get_validate_code" ||
+		r.URL.Path == "/api/languages/get" ||
+		r.URL.Path == "/api/languages/set" ||
+		r.URL.Path == "/api/unsubscribe" ||
+		r.URL.Path == "/api/unsubscribe_new" ||
+		r.URL.Path == "/api/unsubscribe/user_group" ||
+		r.URL.Path == "/api/batch_mail/api/send" ||
+		r.URL.Path == "/api/batch_mail/api/batch_send" ||
+		r.URL.Path == "/api/subscribe/submit" ||
+		r.URL.Path == "/api/subscribe/confirm" {
 		r.Middleware.Next()
 		return
 	}
@@ -80,25 +98,42 @@ func (m *RBACMiddleware) PermissionCheck(r *ghttp.Request) {
 	}
 	accountId := gconv.Int64(accountIdVar)
 
-	// Get roles from context
-	roles := r.GetCtxVar("roles", []string{}).Strings()
-
-	// Check for admin role (has all permissions)
-	for _, role := range roles {
-		if role == "admin" {
-			r.Middleware.Next()
-			return
+	// Get roles from context — may be []model.Role, []string, or []interface{}
+	rolesVal := r.GetCtxVar("roles").Val()
+	isAdmin := false
+	switch rv := rolesVal.(type) {
+	case []model.Role:
+		for _, role := range rv {
+			if role.RoleName == "admin" {
+				isAdmin = true
+				break
+			}
 		}
+	default:
+		for _, s := range gconv.Strings(rv) {
+			if s == "admin" {
+				isAdmin = true
+				break
+			}
+		}
+	}
+	if isAdmin {
+		r.Middleware.Next()
+		return
 	}
 
 	// Extract module, action, and resource from request path
 	module, action, resource := PathToRouteInfo(r.URL.Path)
 
-	// If we couldn't determine the module, action, or resource, log it and allow the request
+	// Default-deny: if we couldn't determine the module, action, or resource, deny access
 	if module == "" || action == "" || resource == "" {
 		g.Log().Warning(context.Background(),
-			fmt.Sprintf("Could not determine permission components for path: %s, allowing access", r.URL.Path))
-		r.Middleware.Next()
+			fmt.Sprintf("Could not determine permission components for path: %s, denying access", r.URL.Path))
+		r.Response.WriteJson(g.Map{
+			"code": 403,
+			"msg":  "Insufficient permissions",
+		})
+		r.Exit()
 		return
 	}
 

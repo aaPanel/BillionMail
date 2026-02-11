@@ -50,3 +50,7 @@ IP_WHITELIST_ENABLE=false
 
 # Number of days to keep log backup
 RETENTION_DAYS=7
+
+# ── FrostByte Integration ──
+BM_API_KEY=fb-$(cat /proc/sys/kernel/random/uuid 2>/dev/null || uuidgen 2>/dev/null || python3 -c "import uuid;print(uuid.uuid4())")
+SENDING_BACKEND=billionmail

@@ -3,6 +3,7 @@ package maillog_stat
 import (
 	"billionmail-core/internal/model/entity"
 	"billionmail-core/internal/service/contact_activity"
+	"billionmail-core/internal/service/frostbyte"
 	"fmt"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
@@ -79,6 +80,9 @@ func CampaignEventHandler(r *ghttp.Request, encStr string) {
 		// Update contact activity when email is opened (user interaction)
 		contact_activity.UpdateActivityByEmailAndGroup(data.Recipient, groupId)
 
+		// Dispatch to FrostByte
+		frostbyte.DispatchOpen(ctx, data.MessageId, data.Recipient)
+
 		// Create a 1x1 transparent PNG image
 		img := image.NewRGBA(image.Rect(0, 0, 1, 1))
 		// Set the pixel to transparent
@@ -124,6 +128,9 @@ func CampaignEventHandler(r *ghttp.Request, encStr string) {
 		g.Log().Debug(ctx, "开始记录活跃时间 !!! Click event data: ", data.Recipient, "组->", groupId)
 		// Update contact activity when link is clicked (user interaction)
 		contact_activity.UpdateActivityByEmailAndGroup(data.Recipient, groupId)
+
+		// Dispatch to FrostByte
+		frostbyte.DispatchClick(ctx, data.MessageId, data.Recipient)
 
 		// Redirect to the target URL
 		r.Response.RedirectTo(data.Url)

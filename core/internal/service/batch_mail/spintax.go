@@ -4,7 +4,6 @@ import (
 	"crypto/md5"
 	"fmt"
 	"math/rand"
-	"regexp"
 	"strings"
 	"sync"
 	"time"
@@ -316,29 +315,33 @@ func (p *SpintaxParser) HasSpintax(content string) bool {
 	return p.hasValidSpintaxPattern(content)
 }
 
-// GetSpintaxOptions Get all Spintax options (used for preview)
+// GetSpintaxOptions Get all Spintax options (used for preview).
+// Uses context-aware parsing to skip <style>, <script>, and HTML tag interiors.
 func (p *SpintaxParser) GetSpintaxOptions(content string) map[string][]string {
-	spintaxRegex := regexp.MustCompile(`\{([^}]+)\}`)
-	matches := spintaxRegex.FindAllStringSubmatch(content, -1)
-
 	result := make(map[string][]string)
-	for _, match := range matches {
-		if len(match) >= 2 {
-			original := match[0]
-			optionsStr := match[1]
+	if content == "" {
+		return result
+	}
 
-			options := strings.Split(optionsStr, "|")
+	i := 0
+	contentLen := len(content)
 
-			validOptions := make([]string, 0)
-			for _, option := range options {
-				option = strings.TrimSpace(option)
-				if option != "" {
-					validOptions = append(validOptions, option)
-				}
-			}
-
-			result[original] = validOptions
+	for i < contentLen {
+		if skipLen := p.getSkipLength(content, i); skipLen > 0 {
+			i += skipLen
+			continue
 		}
+
+		if content[i] == '{' {
+			if spintaxResult := p.parseSpintaxAtPosition(content, i); spintaxResult != nil {
+				original := content[i : i+spintaxResult.Length]
+				result[original] = spintaxResult.Options
+				i += spintaxResult.Length
+				continue
+			}
+		}
+
+		i++
 	}
 
 	return result

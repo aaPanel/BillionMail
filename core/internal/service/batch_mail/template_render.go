@@ -2,6 +2,7 @@ package batch_mail
 
 import (
 	"billionmail-core/internal/model/entity"
+	"billionmail-core/internal/service/video_outreach"
 	"context"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gview"
@@ -89,6 +90,44 @@ func (e *TemplateEngine) RenderEmailTemplateWithAPI(ctx context.Context, content
 		}
 	}
 
+	// prepare video outreach data from contact attribs
+	videoData := make(map[string]interface{})
+	if contact != nil && contact.Attribs != nil {
+		videoKeys := []string{"video_url", "thumbnail_url", "landing_page_url", "lead_tier", "lead_score"}
+		keyMap := map[string]string{
+			"video_url":        "VideoURL",
+			"thumbnail_url":    "ThumbnailURL",
+			"landing_page_url": "LandingPageURL",
+			"lead_tier":        "LeadTier",
+			"lead_score":       "LeadScore",
+		}
+		for _, k := range videoKeys {
+			if v, ok := contact.Attribs[k]; ok {
+				videoData[keyMap[k]] = v
+			}
+		}
+	}
+
+	// prepare enrichment data from lead signals for tier_2 text templates
+	enrichmentData := make(map[string]interface{})
+	if contact != nil && contact.Attribs != nil {
+		signals := contact.Attribs["lead_signals"]
+		enrichmentData["Signals"] = signals
+		copies := video_outreach.SignalsToCopy(signals)
+		enrichmentData["SignalCount"] = len(copies)
+		if len(copies) > 0 {
+			enrichmentData["TopSignal"] = copies[0]
+		} else {
+			enrichmentData["TopSignal"] = ""
+		}
+		if len(copies) > 1 {
+			enrichmentData["SecondSignal"] = copies[1]
+		} else {
+			enrichmentData["SecondSignal"] = ""
+		}
+		enrichmentData["PainPoints"] = strings.Join(copies, ", ")
+	}
+
 	// prepare task data
 	taskData := g.Map{
 		"Id":             0,
@@ -140,7 +179,9 @@ func (e *TemplateEngine) RenderEmailTemplateWithAPI(ctx context.Context, content
 		"Task":           taskData,
 		"UnsubscribeURL": unsubscribeURL,
 		// use the prepared apiData so API variables are available to templates
-		"API": apiData,
+		"API":           apiData,
+		"VideoOutreach": videoData,
+		"Enrichment":    enrichmentData,
 	}
 
 	// use template engine to render with error recovery
@@ -216,6 +257,8 @@ func (e *TemplateEngine) cleanUndefinedVariables(content string) string {
 		`\{\{\s*\.\s*Subscriber\s*\.\s*[^\s{}]+[^}]*}}`,
 		`\{\{\s*\.\s*Task\s*\.\s*[^\s{}]+[^}]*}}`,
 		`\{\{\s*\.\s*API\s*\.\s*[^\s{}]+[^}]*}}`,
+		`\{\{\s*\.\s*VideoOutreach\s*\.\s*[^\s{}]+[^}]*}}`,
+		`\{\{\s*\.\s*Enrichment\s*\.\s*[^\s{}]+[^}]*}}`,
 	}
 
 	allVarRegex := regexp.MustCompile(`\{\{[\s\S]*?}}`)

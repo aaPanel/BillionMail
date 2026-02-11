@@ -3,7 +3,6 @@ import { defineConfig } from 'unocss'
 import path from 'path'
 import presetUno from '@unocss/preset-uno'
 import presetIcons from '@unocss/preset-icons'
-import presetAttributify from '@unocss/preset-attributify'
 import transformerDirectives from '@unocss/transformer-directives'
 import { FileSystemIconLoader } from '@iconify/utils/lib/loader/node-loaders'
 
@@ -28,9 +27,11 @@ const collections = Object.fromEntries(
 )
 
 export default defineConfig({
+	content: {
+		filesystem: ['src/**/*.{vue,tsx,jsx}'],
+	},
 	presets: [
 		presetUno({ preflight: false }),
-		presetAttributify(),
 		presetIcons({
 			prefix: 'i-',
 			extraProperties: {

@@ -367,6 +367,6 @@ func exportToExcel(contacts []*entity.Contact) ([]byte, error) {
 
 // GfMd5Short generates a short MD5 hash based on the current time and a random number
 func GfMd5Short() string {
-	str := fmt.Sprintf("%s_%d_%d", time.Now().UnixNano(), rand.Intn(100000))
+	str := fmt.Sprintf("%d_%d", time.Now().UnixNano(), rand.Intn(100000))
 	return gmd5.MustEncryptString(str)[:12]
 }

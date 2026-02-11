@@ -458,6 +458,11 @@ func SyncRelayConfigsToPostfix(ctx context.Context) error {
 		return err
 	}
 
+	// 4. Rebuild DKIM signing config to exclude relay-mapped domains
+	if err := domains.RepairDKIMSigningConfig(ctx); err != nil {
+		g.Log().Warningf(ctx, "Failed to repair DKIM signing config after relay sync: %v", err)
+	}
+
 	return reloadPostfixConfigs(ctx)
 }
 
@@ -800,6 +805,12 @@ sender_dependent_default_transport_maps = pgsql:/etc/postfix/sql/pgsql_sender_tr
 			}
 			modified = true
 		}
+	} else if hasConfigBlock {
+		// Remove the relay configuration block
+		content = content[:beginIndex] + content[endIndex+len(endMarker):]
+		// Clean up extra blank lines
+		content = strings.TrimRight(content, "\n") + "\n"
+		modified = true
 	}
 	// If there are modifications, write to the file
 	if modified {

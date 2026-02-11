@@ -7,6 +7,7 @@ import (
 	"billionmail-core/internal/service/public"
 	"context"
 	"github.com/gogf/gf/v2/errors/gerror"
+	"github.com/gogf/gf/v2/frame/g"
 )
 
 func (c *ControllerV1) CreateGroup(ctx context.Context, req *v1.CreateGroupReq) (res *v1.CreateGroupRes, err error) {
@@ -64,6 +65,7 @@ func (c *ControllerV1) CreateGroup(ctx context.Context, req *v1.CreateGroupReq) 
 					Log:  "Created group :" + req.Name + " successfully",
 				})
 
+				res.Data = g.Map{"group_id": groupId}
 				res.SetSuccess(public.LangCtx(ctx, "Group created successfully"))
 				return
 			}
@@ -100,6 +102,7 @@ func (c *ControllerV1) CreateGroup(ctx context.Context, req *v1.CreateGroupReq) 
 	}
 
 	// set success message according to different situations
+	res.Data = g.Map{"group_id": groupId}
 	switch req.CreateType {
 	case 1:
 		res.SetSuccess(public.LangCtx(ctx, "Group created successfully"))
