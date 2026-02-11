@@ -121,7 +121,7 @@ func (m *ConfigManager) rollback(ctx context.Context, backups map[string]string)
 		}
 	}
 	if len(allErrors) > 0 {
-		return fmt.Errorf(strings.Join(allErrors, "; "))
+		return fmt.Errorf("%s", strings.Join(allErrors, "; "))
 	}
 	return nil
 }

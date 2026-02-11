@@ -210,6 +210,94 @@ services:
           aliases:
             - core
 
+    # ── FrostByte Sidecar (Python) ──
+
+    frostbyte-api:
+      build: ./frostbyte
+      command: uvicorn frostbyte.api.app:app --host 0.0.0.0 --port 8001
+      ports:
+        - "8001:8001"
+      env_file: ./frostbyte/.env
+      environment:
+        - DATABASE_URL=postgresql+asyncpg://${DBUSER}:${DBPASS}@pgsql:5432/${DBNAME}
+        - DATABASE_URL_SYNC=postgresql://${DBUSER}:${DBPASS}@pgsql:5432/${DBNAME}
+        - REDIS_URL=redis://:${REDISPASS}@redis:6379/1
+        - BILLIONMAIL_API_URL=http://core:${HTTP_PORT:-80}
+        - BILLIONMAIL_API_KEY=${BM_API_KEY}
+        - SENDING_BACKEND=${SENDING_BACKEND:-billionmail}
+      depends_on:
+        - pgsql-billionmail
+        - redis-billionmail
+        - core-billionmail
+      volumes:
+        - ./frostbyte:/app
+      healthcheck:
+        test: ["CMD", "python", "-c", "import httpx; httpx.get('http://localhost:8001/health').raise_for_status()"]
+        interval: 30s
+        timeout: 5s
+        retries: 3
+      restart: always
+      networks:
+        billionmail-network:
+          aliases:
+            - frostbyte-api
+
+    frostbyte-worker:
+      build: ./frostbyte
+      command: celery -A frostbyte.workers.celery_app worker -l info -c 4
+      env_file: ./frostbyte/.env
+      environment:
+        - DATABASE_URL=postgresql+asyncpg://${DBUSER}:${DBPASS}@pgsql:5432/${DBNAME}
+        - DATABASE_URL_SYNC=postgresql://${DBUSER}:${DBPASS}@pgsql:5432/${DBNAME}
+        - REDIS_URL=redis://:${REDISPASS}@redis:6379/1
+        - BILLIONMAIL_API_URL=http://core:${HTTP_PORT:-80}
+        - BILLIONMAIL_API_KEY=${BM_API_KEY}
+        - SENDING_BACKEND=${SENDING_BACKEND:-billionmail}
+      depends_on:
+        - pgsql-billionmail
+        - redis-billionmail
+        - core-billionmail
+      volumes:
+        - ./frostbyte:/app
+      restart: always
+      networks:
+        billionmail-network:
+          aliases:
+            - frostbyte-worker
+
+    frostbyte-beat:
+      build: ./frostbyte
+      command: celery -A frostbyte.workers.celery_app beat -l info
+      env_file: ./frostbyte/.env
+      environment:
+        - DATABASE_URL=postgresql+asyncpg://${DBUSER}:${DBPASS}@pgsql:5432/${DBNAME}
+        - DATABASE_URL_SYNC=postgresql://${DBUSER}:${DBPASS}@pgsql:5432/${DBNAME}
+        - REDIS_URL=redis://:${REDISPASS}@redis:6379/1
+        - BILLIONMAIL_API_URL=http://core:${HTTP_PORT:-80}
+        - BILLIONMAIL_API_KEY=${BM_API_KEY}
+        - SENDING_BACKEND=${SENDING_BACKEND:-billionmail}
+      depends_on:
+        - pgsql-billionmail
+        - redis-billionmail
+      volumes:
+        - ./frostbyte:/app
+      restart: always
+      networks:
+        billionmail-network:
+          aliases:
+            - frostbyte-beat
+
+    gmaps-scraper:
+      image: gosom/google-maps-scraper:latest
+      command: ["-web"]
+      ports:
+        - "8080:8080"
+      restart: always
+      networks:
+        billionmail-network:
+          aliases:
+            - gmaps-scraper
+
 networks:
   billionmail-network:
     driver: bridge

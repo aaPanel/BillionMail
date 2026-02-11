@@ -2,6 +2,7 @@ package maillog_stat
 
 import (
 	"billionmail-core/internal/consts"
+	"billionmail-core/internal/service/frostbyte"
 	"billionmail-core/internal/service/public"
 	"context"
 	"errors"
@@ -706,6 +707,19 @@ func (ms *MaillogStat) AnalysisAndSaveToDatabase(ctx context.Context) error {
 	if lastMaillogTime > 0 {
 		g.Log().Debug(context.Background(), "AnalysisAndSaveToDatabase: lastMaillogTime", lastMaillogTime)
 		SetLastMaillogTimeMillis(lastMaillogTime)
+	}
+
+	// Dispatch bounce events to FrostByte
+	for _, r := range sendRecords {
+		if r.Status == "bounced" {
+			// Resolve postfix_message_id → message_id via mailstat_message_ids
+			val, lookupErr := g.DB().Model("mailstat_message_ids").
+				Where("postfix_message_id", r.PostfixMessageID).
+				Value("message_id")
+			if lookupErr == nil && val.String() != "" {
+				frostbyte.DispatchBounce(ctx, val.String(), r.Recipient)
+			}
+		}
 	}
 
 	if len(sendRecords) > 0 {

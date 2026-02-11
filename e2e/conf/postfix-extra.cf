@@ -1,0 +1,3 @@
+# E2E testing: relay all outbound mail to Mailpit
+relayhost = [mailpit]:1025
+smtp_tls_security_level = none

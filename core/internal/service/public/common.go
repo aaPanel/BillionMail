@@ -1656,7 +1656,7 @@ func GetAccountIdByUsername(username string) int {
 
 // Get current request object -- Note: This method has low performance, use sparingly
 func GetReq() *ghttp.Request {
-	routineId := gdebug.GoroutineId()
+	routineId := gdebug.GoroutineID()
 	ctxVar, err := Cache.Get(Ctx, routineId)
 	if err != nil {
 		return nil

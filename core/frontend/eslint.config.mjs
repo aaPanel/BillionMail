@@ -10,6 +10,10 @@ import prettier from 'eslint-plugin-prettier'
 const autoImport = JSON.parse(readFileSync('./.eslintrc-auto-import.json', 'utf8'))
 
 export default [
+	// Ignore vendored/generated files
+	{
+		ignores: ['public/static/**', 'coverage/**', 'dist/**'],
+	},
 	// Basic JavaScript rules
 	{
 		rules: {

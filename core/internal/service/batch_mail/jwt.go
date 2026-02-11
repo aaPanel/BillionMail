@@ -191,6 +191,8 @@ func ParseUnsubscribeJWT(tokenString string) (*UnsubscribeClaims, error) {
 		// Extract group ID
 		if groupID, ok := claims["group_id"].(float64); ok {
 			result.GroupId = int(groupID)
+		} else {
+			return nil, errors.New("JWT missing or invalid group_id claim")
 		}
 
 		g.Log().Debug(context.Background(), "JWT parsed successfully: %+v", result)

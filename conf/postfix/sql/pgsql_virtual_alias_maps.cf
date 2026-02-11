@@ -1,0 +1,7 @@
+user = billionmail
+password = billionmail
+hosts = pgsql
+dbname = billionmail
+
+query = SELECT goto FROM alias WHERE address='%s' AND active=1 LIMIT 1
+

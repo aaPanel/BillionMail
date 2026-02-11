@@ -246,9 +246,8 @@ func (s *JWTService) JWTAuthMiddleware(r *ghttp.Request) {
 		}
 
 		public.SetCache(cacheKey, roles, 20)
-	} else {
-		r.SetCtxVar("roles", roles)
 	}
+	r.SetCtxVar("roles", roles)
 
 	// Update Session
 	err = r.Session.Set("SignedToken", tokenString)

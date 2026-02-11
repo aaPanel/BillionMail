@@ -275,6 +275,9 @@ func Chat(ctx context.Context, chatId string, supplierName string, modelId strin
 	}()
 
 	aiObj := NewOpenAI(ctx, supplierInfo.ApiKey, supplierInfo.BaseUrl, modelId, chatId, supplierName, modelInfo.MaxTokens)
+	if aiObj == nil {
+		return errors.New("failed to initialize AI client")
+	}
 	aiObj.GetClient()
 	return aiObj.Chat(content, isText)
 }

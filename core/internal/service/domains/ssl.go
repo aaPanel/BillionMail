@@ -249,7 +249,7 @@ func ApplyConsoleCert(ctx context.Context) error {
 	}
 
 	// Check that the hostname a record exists
-	Arecords, _ := GetARecord(hostname, false)
+	Arecords, _ := GetARecord(hostname, false, "")
 
 	if Arecords.Host == "" || Arecords.Value == "" {
 		return gerror.Newf("A Record does not exist, please check DNS Settings: %s", hostname)

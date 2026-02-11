@@ -331,8 +331,7 @@ func ProcessApiMailQueue(ctx context.Context) {
 func sendApiMailWithSender(ctx context.Context, apiTemplate *entity.ApiTemplates, subject string, content string, log ApiMailLog, sender *mail_service.EmailSender) error {
 	// generate message ID
 	messageId := "<" + log.MessageId + ">"
-	//baseURL := domains.GetBaseURLBySender(log.Addresser)
-	baseURL := domains.GetBaseURL()
+	baseURL := domains.GetBaseURLBySender(log.Addresser)
 	apiTemplate_id := apiTemplate.Id + 1000000000
 	mailTracker := maillog_stat.NewMailTracker(content, apiTemplate_id, messageId, log.Recipient, baseURL)
 	if apiTemplate.TrackOpen == 1 {
@@ -430,8 +429,7 @@ func sendApiMail(ctx context.Context, apiTemplate *entity.ApiTemplates, subject 
 	messageId := "<" + log.MessageId + ">"
 
 	// add 1 billion to prevent conflict with marketing task id
-	//baseURL := domains.GetBaseURLBySender(log.Addresser)
-	baseURL := domains.GetBaseURL()
+	baseURL := domains.GetBaseURLBySender(log.Addresser)
 	apiTemplate_id := apiTemplate.Id + 1000000000
 	mailTracker := maillog_stat.NewMailTracker(content, apiTemplate_id, messageId, log.Recipient, baseURL)
 	mailTracker.TrackLinks()
@@ -487,7 +485,7 @@ func processMailContentAndSubject(ctx context.Context, content, subject string, 
 			content = public.AddUnsubscribeButton(content)
 		}
 
-		domain := domains.GetBaseURL()
+		domain := domains.GetBaseURLBySender(log.Addresser)
 
 		jwtToken, _ := GenerateUnsubscribeJWT(log.Recipient, apiTemplate.TemplateId, apiTemplate.Id, contact.GroupId)
 		var unsubscribeJumpURL string

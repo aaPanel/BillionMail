@@ -76,6 +76,19 @@
 		"header": {
 			"submit": "提交需求"
 		},
+		"instances": {
+			"title": "实例",
+			"manage": "管理实例",
+			"add": "添加实例",
+			"name": "名称",
+			"namePlaceholder": "例如：生产环境",
+			"url": "URL",
+			"urlPlaceholder": "例如：https://mail.acme.com",
+			"current": "当前",
+			"noInstances": "暂无保存的实例",
+			"deleteConfirm": "确定移除「{name}」？",
+			"invalidUrl": "无效的URL"
+		},
 		"menu": {
 			"overview": "概览",
 			"market": "邮件营销",
@@ -95,7 +108,11 @@
 			"service": "服务",
 			"logs": "日志",
 			"operation_logs": "操作日志",
-			"error_logs": "错误日志"
+			"error_logs": "错误日志",
+			"sequences": "Sequences",
+			"leads": "Leads",
+			"enrichment": "Enrichment",
+			"videoOutreach": "视频外联"
 		}
 	},
 	"login": {
@@ -1566,5 +1583,20 @@
 			"deleting": "正在删除，请稍候...",
 			"testing": "正在测试，请稍候..."
 		}
+	},
+	"sequences": {
+		"search": { "placeholder": "Search sequences..." },
+		"empty": "No sequences yet",
+		"columns": { "name": "Name", "status": "Status", "steps": "Steps", "sent": "Sent", "opens": "Opens", "replies": "Replies", "created": "Created" },
+		"detail": { "steps": "Sequence Steps", "stats": "Statistics", "stepNumber": "Step", "subject": "Subject", "status": "Status", "sentAt": "Sent At", "opened": "Opened", "clicked": "Clicked", "replied": "Replied" }
+	},
+	"leads": {
+		"search": { "placeholder": "Search leads..." },
+		"empty": "No leads yet",
+		"columns": { "businessName": "Business Name", "ownerName": "Owner Name", "ownerEmail": "Owner Email", "status": "Status", "category": "Category", "city": "City" }
+	},
+	"enrichment": {
+		"scraper": { "title": "Scraper Configuration", "query": "Search Query", "queryPlaceholder": "e.g. dentist, plumber", "location": "Location", "maxResults": "Max Results", "start": "Start Scraping" },
+		"pipeline": { "title": "Pipeline Status", "scraped": "Scraped", "enriching": "Enriching", "personalized": "Personalized", "queued": "Queued" }
 	}
 }
