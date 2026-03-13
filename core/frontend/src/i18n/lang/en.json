@@ -311,6 +311,7 @@
 				"ipWarmupTip": "Enabling this will limit the sending rate",
 				"trackClick": "Track Clicks",
 				"trackOpen": "Track Opens",
+				"rotateSenders": "Rotate Senders",
 				"unsubscribeLink": "Unsubscribe link",
 				"threads": "Threads",
 				"threadsAuto": "Auto",

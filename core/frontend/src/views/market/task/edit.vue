@@ -82,6 +82,10 @@
 									<n-switch v-model:value="form.track_open" :checked-value="1" :unchecked-value="0">
 									</n-switch>
 								</n-form-item-gi>
+								<n-form-item-gi :span="12" :label="t('market.task.edit.rotateSenders')" path="rotate_senders">
+									<n-switch v-model:value="form.rotate_senders" :checked-value="1" :unchecked-value="0">
+									</n-switch>
+								</n-form-item-gi>
 							</n-grid>
 
 							<n-form-item :label="$t('market.task.edit.threads')" :show-feedback="false">
@@ -212,6 +216,7 @@ const form = reactive({
 	tag_logic: 'OR',
 	track_click: 1,
 	track_open: 1,
+	rotate_senders: 0,
 })
 
 const logicOptions = [
@@ -376,6 +381,7 @@ const getParams = () => {
 	return {
 		track_open: form.track_open,
 		track_click: form.track_click,
+		rotate_senders: form.rotate_senders,
 		addresser: form.addresser || '',
 		full_name: form.full_name,
 		subject: form.subject,
@@ -446,6 +452,7 @@ const initForm = async () => {
 		form.tag_logic = res.tag_logic
 		form.track_open = res.track_open
 		form.track_click = res.track_click
+		form.rotate_senders = res.rotate_senders || 0
 		nextTick(() => {
 			form.tag_ids = res.tag_ids
 		})

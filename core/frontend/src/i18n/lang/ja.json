@@ -314,6 +314,7 @@
 				"ipWarmupTip": "有効にすると送信速度が制限されます",
 				"trackClick": "クリック追跡",
 				"trackOpen": "開封追跡",
+				"rotateSenders": "送信者ローテーション",
 				"preview": {
 					"empty": "プレビューするメールテンプレートを選択してください"
 				},

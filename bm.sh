@@ -891,6 +891,60 @@ MODIFY_SAFE_ENTRANCE() {
     fi
  }
 
+# Rebuild Frontend only
+REBUILD_FRONTEND() {
+    echo "Rebuilding BillionMail Frontend..."
+    echo -e "\033[33mThis will rebuild the frontend UI and restart the core container.\033[0m"
+    
+    # Check if frontend directory exists
+    if [ ! -d "./core/frontend" ]; then
+        echo -e "\033[31mError: Frontend directory not found at ./core/frontend\033[0m"
+        exit 1
+    fi
+    
+    echo "Step 1/4: Building frontend with Node.js (this may take a few minutes)..."
+    
+    # Use Docker to build the frontend (no need for Node.js installed on host)
+    docker run --rm \
+        -v "$(pwd)/core/frontend:/app" \
+        -w /app \
+        node:20-alpine \
+        sh -c "npm install -g pnpm && pnpm install && pnpm run build"
+    
+    if [ $? -eq 0 ]; then
+        echo -e "\033[32m✓ Frontend build completed successfully\033[0m"
+    else
+        echo -e "\033[31m✗ Frontend build failed\033[0m"
+        exit 1
+    fi
+    
+    echo "Step 2/4: Copying build files to public directory..."
+    if [ -d "./core/frontend/dist" ]; then
+        # Clean old build files first
+        rm -rf ./core/public/dist/*
+        # Copy new build
+        cp -r ./core/frontend/dist/* ./core/public/dist/
+        echo -e "\033[32m✓ Build files copied to core/public/dist/\033[0m"
+    else
+        echo -e "\033[31m✗ Build directory not found\033[0m"
+        exit 1
+    fi
+    
+    echo "Step 3/4: Restarting core container to load new frontend..."
+    SERVICE="core"
+    GET_SERVICE_NAME
+    if [ -n "${SERVICE_NAME}" ]; then
+        ${DOCKER_COMPOSE} restart ${SERVICE_NAME}
+        echo -e "\033[32m✓ Core container restarted\033[0m"
+    else
+        echo -e "\033[31m✗ Core service not found\033[0m"
+        exit 1
+    fi
+    
+    echo "Step 4/4: Clearing browser cache recommended..."
+    echo -e "\033[32m✓ Frontend rebuild completed! Please refresh your browser (Ctrl+Shift+R or Cmd+Shift+R)\033[0m"
+}
+
 # Restart the BillionMail project
 RESTART_PROJECT() {
     echo "Restarting BillionMail..."
@@ -1270,7 +1324,12 @@ APPLY_MULTI_IP() {
     else
         echo "📋 Found $(wc -l < "$TEMP_FILE") configuration records"
 
+        # Temporarily disable ERR trap for the loop to prevent early exit
+        trap - ERR
+
         # Safely process query results
+        INSERTED_COUNT=0
+        FAILED_COUNT=0
         while IFS='|' read -r domain smtp_name; do
             # Clean whitespace and validate
             domain=$(echo "$domain" | xargs)
@@ -1292,33 +1351,43 @@ APPLY_MULTI_IP() {
 
             # Use secure SQL query
             escaped_domain=$(printf '%s\n' "$domain_with_at" | sed "s/'/''/g")
-            EXISTS=$(docker exec -i -e PGPASSWORD=${DBPASS} ${PGSQL_CONTAINER_NAME} psql -U ${DBUSER} -d ${DBNAME} -t -A \
-                -c "SELECT 1 FROM bm_domain_smtp_transport WHERE domain = '$escaped_domain';")
+            EXISTS=$(docker exec -e PGPASSWORD=${DBPASS} ${PGSQL_CONTAINER_NAME} psql -U ${DBUSER} -d ${DBNAME} -t -A \
+                -c "SELECT 1 FROM bm_domain_smtp_transport WHERE domain = '$escaped_domain';" 2>/dev/null </dev/null || echo "")
 
             # If exists, delete it
             if [[ -n "$EXISTS" && "$EXISTS" != "" ]]; then
                 echo "🟡 Sender rule already exists for domain: $domain_with_at, deleting..."
-                if ! docker exec -i -e PGPASSWORD=${DBPASS} ${PGSQL_CONTAINER_NAME} psql -U ${DBUSER} -d ${DBNAME} \
-                    -c "DELETE FROM bm_domain_smtp_transport WHERE domain = '$escaped_domain';"; then
-                    Red_Error "❌ Failed to delete old record: $domain_with_at"
+                if docker exec -e PGPASSWORD=${DBPASS} ${PGSQL_CONTAINER_NAME} psql -U ${DBUSER} -d ${DBNAME} \
+                    -c "DELETE FROM bm_domain_smtp_transport WHERE domain = '$escaped_domain';" 2>/dev/null </dev/null; then
+                    echo "✅ Old rule deleted: $domain_with_at"
+                else
+                    echo "⚠️ Warning: Could not delete old record for $domain_with_at, continuing..."
                 fi
-                echo "✅ Old rule deleted: $domain_with_at"
             fi
 
             # Execute insertion (using secure string escaping)
             echo "📝 Inserting: $domain_with_at → $smtp_name"
             escaped_smtp=$(printf '%s\n' "$smtp_name" | sed "s/'/''/g")
             escaped_atype=$(printf '%s\n' "$atype" | sed "s/'/''/g")
-            if ! docker exec -i -e PGPASSWORD=${DBPASS} ${PGSQL_CONTAINER_NAME} psql -U ${DBUSER} -d ${DBNAME} \
-                -c "INSERT INTO bm_domain_smtp_transport (atype, domain, smtp_name) VALUES ('$escaped_atype', '$escaped_domain', '$escaped_smtp');"; then
-                Red_Error "❌ Insertion failed: $domain_with_at"
+            if docker exec -e PGPASSWORD=${DBPASS} ${PGSQL_CONTAINER_NAME} psql -U ${DBUSER} -d ${DBNAME} \
+                -c "INSERT INTO bm_domain_smtp_transport (atype, domain, smtp_name) VALUES ('$escaped_atype', '$escaped_domain', '$escaped_smtp');" 2>/dev/null </dev/null; then
+                echo "✅ Successfully inserted: $domain_with_at → $smtp_name"
+                ((INSERTED_COUNT++))
+            else
+                echo "❌ Failed to insert: $domain_with_at"
+                ((FAILED_COUNT++))
             fi
-
-            echo "✅ Successfully inserted: $domain_with_at → $smtp_name"
 
         done < "$TEMP_FILE"
 
-        echo "📝 All domain mappings have been successfully written to bm_domain_smtp_transport"
+        # Re-enable ERR trap
+        trap 'echo "� Script execution failed, triggering rollback"; rollback_compose; cleanup_apply; exit 1' ERR
+
+        echo "📝 Domain mapping summary: $INSERTED_COUNT inserted, $FAILED_COUNT failed"
+        
+        if [[ $FAILED_COUNT -gt 0 ]]; then
+            echo "⚠️ Warning: Some domains failed to insert, but continuing..."
+        fi
     fi
 
     # Update status of all records in bm_multi_ip_domain table to 'applied'
@@ -1342,6 +1411,26 @@ APPLY_MULTI_IP() {
       else
           echo "✅ All multi-IP domain statuses are already 'applied'"
       fi
+
+    # ============ 3.5. Add dedicated IPs to interface ============
+    if [[ -s "$TEMP_FILE" ]]; then
+        INTERFACE=$(ip route | grep default | awk '{print $5}')
+        echo "🔧 Adding dedicated IPs to interface $INTERFACE..."
+        while IFS='|' read -r domain smtp_name; do
+            domain=$(echo "$domain" | xargs)
+            smtp_name=$(echo "$smtp_name" | xargs)
+            [[ -z "$domain" || -z "$smtp_name" ]] && continue
+            IP=$(echo "$smtp_name" | sed 's/smtp_bind_ip_\([0-9.]*\)_.*$/\1/')
+            if [[ "$IP" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+                if ! ip addr show dev $INTERFACE | grep -q $IP; then
+                    ip addr add $IP/32 dev $INTERFACE
+                    echo "✅ Added IP $IP to $INTERFACE"
+                else
+                    echo "ℹ️ IP $IP already on $INTERFACE"
+                fi
+            fi
+        done < "$TEMP_FILE"
+    fi
 
     # ============ 4. Restart services ============
     echo "🔄 Restarting BillionMail services"
@@ -1388,6 +1477,9 @@ APPLY_MULTI_IP() {
     fi
 
     echo "========================================="
+
+    echo "⚠️💡❌ Remember: Run 'sudo vi /etc/netplan/50-cloud-init.yaml', add the IPs under addresses, and 'sudo netplan apply' for persistence."
+    echo "⚠️💡❌ Remember to Check ?: Check ip addr show dev ens3 | grep \"inet \", you need to see your new ip"
 
     # Successfully completed, remove ERR trap
     trap - ERR
@@ -1599,6 +1691,7 @@ SHOW_HELP() {
         echo "  status                    - Show BillionMail containers running status : $0 status"
         echo "  down                      - Stop and remove containers, networks: $0 down"
         echo "  rebuild                   - Rebuild all BillionMail containers: $0 rebuild"
+        echo "  rebuild-frontend          - Rebuild frontend UI only: $0 rebuild-frontend"
         echo "  top                       - Show all BillionMail processes: $0 top"
         echo "  ps                        - Show all BillionMail containers: $0 ps"
         echo "  service-top               - Show processes of a specific BillionMail service: $0 s-t postfix"
@@ -1675,6 +1768,9 @@ case "$1" in
         ;;
     REBUILD_PROJECT|rebuild_project|rebuild)
         REBUILD_PROJECT
+        ;;
+    REBUILD_FRONTEND|rebuild_frontend|rebuild-frontend)
+        REBUILD_FRONTEND
         ;;
     RESTART_PROJECT|restart_project|restart)
         RESTART_PROJECT

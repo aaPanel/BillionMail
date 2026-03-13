@@ -35,3 +35,26 @@ conf/rspamd/local.d/redis.conf
 ssl-self-signed/cert.pem
 ssl-self-signed/key.pem
 core/billionmail*
+
+# Server-specific runtime configs
+conf/askai/
+conf/chat/
+conf/supplier/
+conf/tokens_cache/
+conf/postfix/conf/
+conf/postfix/main.cf
+conf/postfix/master.cf
+conf/rspamd/local.d/worker-controller.inc
+conf/dovecot/conf.d/10-ssl.conf
+conf/dovecot/conf.d/20-pop3.conf
+conf/dovecot/conf.d/90-quota.conf
+conf/dovecot/dovecot.conf
+
+# Build/runtime artifacts
+core/frontend/package-lock.json
+core/frontend/.pnpm-store/
+core/frontend/node_modules/
+core/frontend/dist/
+core/public/dist/
+docker-compose.yml.bak*
+docker-compose_*.yml

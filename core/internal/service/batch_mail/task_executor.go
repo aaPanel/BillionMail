@@ -1185,7 +1185,27 @@ func (e *TaskExecutor) sendEmail(ctx context.Context, task *entity.EmailTask, re
 	// get rendered content and subject
 	renderedContent, renderedSubject := e.personalizeEmail(ctx, content, currentTask, recipient)
 
-	sender, err := mail_service.NewEmailSenderWithLocal(currentTask.Addresser)
+	// Determine sender email and name (with rotation if enabled)
+	senderEmail := currentTask.Addresser
+	senderName := currentTask.FullName
+
+	if currentTask.RotateSenders == 1 {
+		// Get all mailboxes for the sender's domain
+		domain := extractDomain(currentTask.Addresser)
+		if domain != "" {
+			mailboxes, err := getMailboxesByDomain(ctx, domain)
+			if err != nil {
+				g.Log().Warning(ctx, "failed to get mailboxes for domain %s: %v, using original sender", domain, err)
+			} else if len(mailboxes) > 0 {
+				// Select mailbox based on recipient ID for consistent rotation
+				selected := selectRotatedSender(mailboxes, recipient.Id)
+				senderEmail = selected.Username
+				senderName = selected.FullName
+			}
+		}
+	}
+
+	sender, err := mail_service.NewEmailSenderWithLocal(senderEmail)
 	if err != nil {
 		g.Log().Error(ctx, "create email sender failed: %v", err)
 		return &SendResult{
@@ -1202,17 +1222,21 @@ func (e *TaskExecutor) sendEmail(ctx context.Context, task *entity.EmailTask, re
 	//baseURL := domains.GetBaseURLBySender(currentTask.Addresser)
 	baseURL := domains.GetBaseURL()
 	mail_tracker := maillog_stat.NewMailTracker(renderedContent, currentTask.Id, messageID, recipient.Recipient, baseURL)
-	mail_tracker.TrackLinks()
-	mail_tracker.AppendTrackingPixel()
+	if currentTask.TrackClick == 1 {
+		mail_tracker.TrackLinks()
+	}
+	if currentTask.TrackOpen == 1 {
+		mail_tracker.AppendTrackingPixel()
+	}
 	renderedContent = mail_tracker.GetHTML()
 
 	// create email message with rendered subject
 	message := mail_service.NewMessage(renderedSubject, renderedContent)
 	message.SetMessageID(messageID)
 
-	// set sender display name
-	if currentTask.FullName != "" {
-		message.SetRealName(currentTask.FullName)
+	// set sender display name (use rotated name if rotation is enabled)
+	if senderName != "" {
+		message.SetRealName(senderName)
 	}
 
 	//g.Log().Infof(ctx, "sendEmail - final check before sending: sender=%s, display_name=%s, subject=%s, recipient=%s",
@@ -1254,7 +1278,27 @@ func (e *TaskExecutor) sendEmailMock(ctx context.Context, task *entity.EmailTask
 	// Get the rendered content and subject
 	renderedContent, renderedSubject := e.personalizeEmail(ctx, content, task, recipient)
 
-	sender, err := mail_service.NewEmailSenderWithLocal(task.Addresser)
+	// Determine sender email and name (with rotation if enabled)
+	senderEmail := task.Addresser
+	senderName := task.FullName
+
+	if task.RotateSenders == 1 {
+		// Get all mailboxes for the sender's domain
+		domain := extractDomain(task.Addresser)
+		if domain != "" {
+			mailboxes, err := getMailboxesByDomain(ctx, domain)
+			if err != nil {
+				g.Log().Warning(ctx, "failed to get mailboxes for domain %s: %v, using original sender", domain, err)
+			} else if len(mailboxes) > 0 {
+				// Select mailbox based on recipient ID for consistent rotation
+				selected := selectRotatedSender(mailboxes, recipient.Id)
+				senderEmail = selected.Username
+				senderName = selected.FullName
+			}
+		}
+	}
+
+	sender, err := mail_service.NewEmailSenderWithLocal(senderEmail)
 	if err != nil {
 		g.Log().Error(ctx, "Failed to create email sender: %v", err)
 		return &SendResult{
@@ -1283,9 +1327,9 @@ func (e *TaskExecutor) sendEmailMock(ctx context.Context, task *entity.EmailTask
 	message := mail_service.NewMessage(renderedSubject, renderedContent)
 	message.SetMessageID(messageID)
 
-	// Set sender display name
-	if task.FullName != "" {
-		message.SetRealName(task.FullName)
+	// Set sender display name (use rotated name if rotation is enabled)
+	if senderName != "" {
+		message.SetRealName(senderName)
 	}
 
 	// We will create a log entry and save it, instead of sending.
@@ -1293,13 +1337,13 @@ func (e *TaskExecutor) sendEmailMock(ctx context.Context, task *entity.EmailTask
 	postfixMessageID := strings.ToUpper("TEST_" + grand.S(11))
 	nowMillis := time.Now().UnixMilli()
 
-	// 1. Create MailSender record
+	// 1. Create MailSender record (use rotated sender if applicable)
 	senderRecord := &maillog_stat.MailSender{
 		MailRecord: maillog_stat.MailRecord{
 			PostfixMessageID: postfixMessageID,
 			LogTimeMillis:    nowMillis,
 		},
-		Sender: task.Addresser,
+		Sender: senderEmail,
 		Size:   int64(len(renderedContent)),
 	}
 	_, err = g.DB().Model("mailstat_senders").InsertIgnore(senderRecord)
@@ -1548,4 +1592,41 @@ func (e *TaskExecutor) UpdateTaskThreads(taskId int, threads int) error {
 	}
 
 	return nil
+}
+
+// MailboxInfo represents a mailbox with email and display name
+type MailboxInfo struct {
+	Username string `json:"username"`
+	FullName string `json:"full_name"`
+}
+
+// getMailboxesByDomain returns all active mailboxes for a given domain
+func getMailboxesByDomain(ctx context.Context, domain string) ([]MailboxInfo, error) {
+	var mailboxes []MailboxInfo
+	err := g.DB().Model("mailbox").
+		Where("domain", domain).
+		Where("active", 1).
+		Order("username ASC").
+		Scan(&mailboxes)
+	if err != nil {
+		return nil, err
+	}
+	return mailboxes, nil
+}
+
+// extractDomain extracts the domain from an email address
+func extractDomain(email string) string {
+	parts := strings.Split(email, "@")
+	if len(parts) == 2 {
+		return parts[1]
+	}
+	return ""
+}
+
+// selectRotatedSender selects a sender from the mailbox list based on recipient index
+func selectRotatedSender(mailboxes []MailboxInfo, recipientIndex int) MailboxInfo {
+	if len(mailboxes) == 0 {
+		return MailboxInfo{}
+	}
+	return mailboxes[recipientIndex%len(mailboxes)]
 }

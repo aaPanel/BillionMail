@@ -149,6 +149,7 @@ type CreateTaskReq struct {
 	Threads       int    `json:"threads" v:"min:0" dc:"threads" default:"5"`
 	TrackOpen     int    `json:"track_open" v:"in:0,1" dc:"track open" default:"1"`
 	TrackClick    int    `json:"track_click" v:"in:0,1" dc:"track click" default:"1"`
+	RotateSenders int    `json:"rotate_senders" v:"in:0,1" dc:"rotate through all domain mailboxes" default:"0"`
 	StartTime     int    `json:"start_time" v:"required" dc:"start time"`
 	Warmup        int    `json:"warmup" v:"in:0,1" dc:"warmup" default:"0"`
 	Remark        string `json:"remark" dc:"remark"`

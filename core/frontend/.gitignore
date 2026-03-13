@@ -7,6 +7,7 @@
 # Dist
 node_modules
 dist/
+.pnpm-store/
 
 # IDE
 .vscode/*

@@ -427,6 +427,7 @@ func CreateTaskWithRecipients(ctx context.Context, req *v1.CreateTaskReq, addTyp
 			"threads":         req.Threads,
 			"track_open":      req.TrackOpen,
 			"track_click":     req.TrackClick,
+			"rotate_senders":  req.RotateSenders,
 			"start_time":      req.StartTime,
 			"create_time":     now,
 			"update_time":     now,

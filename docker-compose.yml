@@ -139,8 +139,15 @@ services:
         billionmail-network:
           aliases:
             - postfix
-
-
+          ipv4_address: 172.66.1.100
+        billionmail-net-20260108050752:
+          aliases:
+            - aliases-aioutreach-shop
+          ipv4_address: 172.66.2.100
+        billionmail-net-20260111185450:
+          aliases:
+            - aliases-aiemail-shop
+          ipv4_address: 172.66.3.100
     webmail-billionmail:
       image: roundcube/roundcubemail:1.6.11-fpm-alpine
       hostname: roundcube
@@ -192,6 +199,7 @@ services:
         - ./logs:/opt/billionmail/logs
         - ./logs/core:/opt/billionmail/core/logs
         - ./core-data:/opt/billionmail/core/data
+        - ./core/public:/opt/billionmail/core/public
         - /var/run/docker.sock:/var/run/docker.sock:ro
         - ./vmail-data:/opt/billionmail/vmail-data
       environment:
@@ -220,3 +228,18 @@ networks:
       config:
         - subnet: ${IPV4_NETWORK:-172.66.1}.0/24
 
+
+  billionmail-net-20260108050752:
+      driver: bridge
+      ipam:
+        config:
+          - gateway: 172.66.2.1
+            subnet: 172.66.2.0/24
+        driver: default
+  billionmail-net-20260111185450:
+      driver: bridge
+      ipam:
+        config:
+          - gateway: 172.66.3.1
+            subnet: 172.66.3.0/24
+        driver: default

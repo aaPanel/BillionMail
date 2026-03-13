@@ -313,6 +313,7 @@
 				"ipWarmupTip": "开启后将会限制发件速率",
 				"trackClick": "跟踪点击",
 				"trackOpen": "跟踪打开",
+				"rotateSenders": "轮换发件人",
 				"unsubscribeLink": "退订链接",
 				"threads": "线程数",
 				"threadsAuto": "自动",
