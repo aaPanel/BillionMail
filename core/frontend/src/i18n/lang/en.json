@@ -136,6 +136,7 @@
 		"clicked": "Clicked",
 		"bounced": "Bounced",
 		"delayedQueue": "Delayed Queue",
+		"metricCount": "{count} mails",
 		"mailProviders": "Mail Providers",
 		"sendStats": "Send Statistics",
 		"provider": {

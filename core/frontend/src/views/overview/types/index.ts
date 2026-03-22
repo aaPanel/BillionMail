@@ -77,6 +77,7 @@ interface RateItem {
 	label: string
 	value: number
 	unit: string
+	count?: number
 }
 
 // 定义rate数据
