@@ -187,7 +187,6 @@ services:
         - ./php-sock:/opt/billionmail/php-sock
         - ./rspamd-data:/opt/billionmail/rspamd-data
         - ./webmail-data:/opt/billionmail/webmail-data
-        - ./.env:/opt/billionmail/.env
         - ./conf:/opt/billionmail/conf
         - ./logs:/opt/billionmail/logs
         - ./logs/core:/opt/billionmail/core/logs
