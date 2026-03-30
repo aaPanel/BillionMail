@@ -200,9 +200,6 @@ services:
         - NET_BIND_SERVICE
         - NET_ADMIN
         - NET_RAW
-      ports:
-        - "${HTTP_PORT:-80}:${HTTP_PORT:-80}"
-        - "${HTTPS_PORT:-443}:${HTTPS_PORT:-443}"
       restart: always
       networks:
         billionmail-network:
