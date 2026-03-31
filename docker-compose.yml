@@ -190,6 +190,7 @@ services:
       - ./webmail-data:/opt/billionmail/webmail-data
       - ./.env:/opt/billionmail/.env
       - ./conf:/opt/billionmail/conf
+      - ./conf:/opt/conf
       - ./logs:/opt/billionmail/logs
       - ./logs/core:/opt/billionmail/core/logs
       - ./core-data:/opt/billionmail/core/data
