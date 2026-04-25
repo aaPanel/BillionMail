@@ -35,7 +35,7 @@ func SenderIpWarmup() *SenderIpWarmupService {
 func (s *SenderIpWarmupService) getSenderIdentitiesForIp(ctx context.Context, senderIp string) (domains []string, err error) {
 	// Get the sender identities associated with this IP.
 	var vals []gdb.Value
-	vals, err = g.DB().Ctx(ctx).Model("domain").Where("active = 1").Fields("domain").Array("domain")
+	vals, err = g.DB().Ctx(ctx).Model("domain").Where("sender_ip", senderIp).Where("active = 1").Fields("domain").Array()
 
 	if err != nil {
 		err = fmt.Errorf("getSenderIdentitiesForIp err: %v", err)
@@ -104,7 +104,7 @@ func (s *SenderIpWarmupService) EvaluateIpScore(ctx context.Context, senderIp st
 		// Even if identities cannot be fetched, try to update the evaluation time to avoid getting stuck
 		_, _ = g.DB().Model("bm_sender_ip_warmup").Ctx(ctx).Data(g.Map{
 			"last_evaluate_time": gtime.Now().Timestamp(),
-		}).Update()
+		}).Where("sender_ip", senderIp).Update()
 		return warmupStatus.Score, err
 	}
 
