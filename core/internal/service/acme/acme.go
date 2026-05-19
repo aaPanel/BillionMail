@@ -18,7 +18,6 @@ import (
 
 	"github.com/go-acme/lego/v4/certcrypto"
 	"github.com/go-acme/lego/v4/certificate"
-	"github.com/go-acme/lego/v4/challenge/http01"
 	"github.com/go-acme/lego/v4/lego"
 	"github.com/go-acme/lego/v4/log"
 	"github.com/go-acme/lego/v4/providers/dns/alidns"
@@ -27,7 +26,9 @@ import (
 	"github.com/go-acme/lego/v4/providers/dns/cloudxns"
 	"github.com/go-acme/lego/v4/providers/dns/godaddy"
 	"github.com/go-acme/lego/v4/providers/dns/tencentcloud"
+	"github.com/go-acme/lego/v4/providers/http/webroot"
 	"github.com/go-acme/lego/v4/registration"
+	"github.com/gogf/gf/v2/frame/g"
 )
 
 type MyUser struct {
@@ -394,9 +395,17 @@ func ApplySSLWithExistingServer(ctx context.Context, domains []string, email str
 
 	// Set verification method
 	if vtype == "http" {
-		// Assume the HTTP server is already running and properly configured
-		// to handle the challenge requests
-		err = client.Challenge.SetHTTP01Provider(http01.NewProviderServer("127.0.0.1", "60880"))
+		// Serve the HTTP-01 challenge via the embedded GoFrame static file
+		// server. lego writes the token to <serverRoot>/.well-known/acme-challenge/
+		// and removes it after validation. This avoids running a second HTTP
+		// listener on 127.0.0.1:60880 (whose responses were shadowed by the
+		// static file handler in front of the bound proxy route).
+		serverRoot := g.Cfg().MustGet(ctx, "server.serverRoot", "public/dist").String()
+		webrootProvider, wErr := webroot.NewHTTPProvider(public.AbsPath(serverRoot))
+		if wErr != nil {
+			return "", "", errors.New(public.LangCtx(ctx, "Failed to init webroot provider: {}", wErr.Error()))
+		}
+		err = client.Challenge.SetHTTP01Provider(webrootProvider)
 		if err != nil {
 			return "", "", errors.New(public.LangCtx(ctx, "Failed to set HTTP verification: {}", err.Error()))
 		}
