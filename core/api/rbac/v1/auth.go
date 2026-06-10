@@ -2,6 +2,7 @@ package v1
 
 import (
 	"billionmail-core/utility/types/api_v1"
+
 	"github.com/gogf/gf/v2/frame/g"
 )
 
@@ -16,6 +17,29 @@ type LoginReq struct {
 
 // LoginRes defines the response for user login
 type LoginRes struct {
+	api_v1.StandardRes
+	Data struct {
+		Token        string `json:"token" dc:"JWT token"`
+		RefreshToken string `json:"refreshToken" dc:"Refresh token"`
+		TTL          int64  `json:"ttl" dc:"Token lifetime (in seconds)"`
+		AccountInfo  struct {
+			Id       int64  `json:"id" dc:"Account ID"`
+			Username string `json:"username" dc:"Username"`
+			Email    string `json:"email" dc:"Email address"`
+			Status   int    `json:"status" dc:"Account status"`
+			Lang     string `json:"lang" dc:"Preferred language"`
+		} `json:"accountInfo" dc:"Basic account information"`
+	} `json:"data"`
+}
+
+// AaPanelSSOReq defines the request for aaPanel trusted SSO.
+type AaPanelSSOReq struct {
+	g.Meta   `path:"/aapanel/sso" method:"post" tags:"Authentication" summary:"aaPanel SSO" sm:"aaPanel SSO" in:"body"`
+	Username string `p:"username" dc:"BillionMail username to sign in"`
+}
+
+// AaPanelSSORes defines the response for aaPanel trusted SSO.
+type AaPanelSSORes struct {
 	api_v1.StandardRes
 	Data struct {
 		Token        string `json:"token" dc:"JWT token"`

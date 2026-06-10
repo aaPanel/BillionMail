@@ -1320,6 +1320,14 @@ SQL_PORT=${SQL_PORT}
 HTTP_PORT=${HTTP_PORT}
 HTTPS_PORT=${HTTPS_PORT}
 
+# Web deployment base path. Keep empty for root deployment.
+# Set to /billionmail when embedding behind aaPanel path proxy.
+WEB_BASE_PATH=
+
+# Shared secret used by aaPanel to request trusted BillionMail SSO tokens.
+# Keep empty to disable aaPanel SSO.
+AAPANEL_SSO_SECRET=
+
 # You can use this script to set the time zone for your container.
 # See https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for a list of timezones"
 # echo -e "Use a column named "TZ identifier" + note the column named "Notes""
