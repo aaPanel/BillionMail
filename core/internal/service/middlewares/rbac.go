@@ -74,6 +74,7 @@ func NewRBACMiddleware() *RBACMiddleware {
 func (m *RBACMiddleware) PermissionCheck(r *ghttp.Request) {
 	// Skip permission check for public/auth routes (must match jwt.go bypass list)
 	if r.URL.Path == "/api/login" ||
+		r.URL.Path == "/api/aapanel/sso" ||
 		r.URL.Path == "/api/refresh-token" ||
 		r.URL.Path == "/api/get_validate_code" ||
 		r.URL.Path == "/api/languages/get" ||
