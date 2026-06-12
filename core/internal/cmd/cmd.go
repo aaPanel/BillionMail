@@ -248,6 +248,15 @@ var (
 							return
 						}
 
+						// Allow ACME HTTP-01 challenge requests through the
+						// SafePath gate. Let's Encrypt validation servers
+						// have no session cookie, and the challenge files
+						// are served directly by the GoFrame static handler
+						// from the webroot.
+						if strings.HasPrefix(r.URL.Path, "/.well-known/acme-challenge/") {
+							return
+						}
+
 						if r.IsFileRequest() {
 							return
 						}
@@ -359,20 +368,6 @@ var (
 				Root:    consts.ROUNDCUBE_ROOT_PATH_IN_CONTAINER,
 				Static:  consts.ROUNDCUBE_ROOT_PATH,
 			}))
-
-			// Proxy 60880 port for ACME challenge
-			ACMEChallengeProxy := httputil.NewSingleHostReverseProxy(&url.URL{
-				Scheme: "http",
-				Host:   "127.0.0.1:60880",
-			})
-			ACMEChallengeProxy.Transport = &http.Transport{
-				MaxIdleConns:        5,
-				MaxIdleConnsPerHost: 1,
-				IdleConnTimeout:     5 * time.Second,
-			}
-			s.BindHandler("/.well-known/acme-challenge/*any", func(r *ghttp.Request) {
-				ACMEChallengeProxy.ServeHTTP(r.Response.BufferWriter, r.Request)
-			})
 
 			// Proxy Rspamd GUI
 			var rspamdProxy *httputil.ReverseProxy
