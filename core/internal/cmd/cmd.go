@@ -202,7 +202,7 @@ var (
 			// ip whitelist middleware
 			s.Use(middleware.IPWhitelist)
 
-			// Define excluded URIs
+			// Define excluded URIs (exact match)
 			excludesURIs := map[string]struct{}{
 				"/favicon.ico":                   {},
 				"/robots.txt":                    {},
@@ -223,6 +223,12 @@ var (
 				"/subscribe_success.html":        {},
 				"/unsubscribe_success.html":      {},
 				"/subscribe_form_code.html":      {},
+				"/pmta":                          {},
+			}
+
+			// URI prefixes excluded from safe path check (tracking links, etc.)
+			excludedURIPrefixes := []string{
+				"/pmta/",
 			}
 
 			// Bind Server Hooks
@@ -243,10 +249,16 @@ var (
 							return
 						}
 
-						// check if the request is in the excluded URIs
-						if _, ok := excludesURIs[r.URL.Path]; ok {
+					// check if the request is in the excluded URIs
+					if _, ok := excludesURIs[r.URL.Path]; ok {
+						return
+					}
+
+					for _, prefix := range excludedURIPrefixes {
+						if strings.HasPrefix(r.URL.Path, prefix) {
 							return
 						}
+					}
 
 						if r.IsFileRequest() {
 							return
