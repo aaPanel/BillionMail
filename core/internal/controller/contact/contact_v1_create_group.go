@@ -1,11 +1,12 @@
 package contact
 
 import (
-	"billionmail-core/api/contact/v1"
+	v1 "billionmail-core/api/contact/v1"
 	"billionmail-core/internal/consts"
 	"billionmail-core/internal/service/contact"
 	"billionmail-core/internal/service/public"
 	"context"
+
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 )
@@ -67,6 +68,7 @@ func (c *ControllerV1) CreateGroup(ctx context.Context, req *v1.CreateGroupReq) 
 
 				res.Data = g.Map{"group_id": groupId}
 				res.SetSuccess(public.LangCtx(ctx, "Group created successfully"))
+				res.Data.GroupId = groupId
 				return
 			}
 			res.Code = 400
@@ -106,10 +108,13 @@ func (c *ControllerV1) CreateGroup(ctx context.Context, req *v1.CreateGroupReq) 
 	switch req.CreateType {
 	case 1:
 		res.SetSuccess(public.LangCtx(ctx, "Group created successfully"))
+		res.Data.GroupId = groupId
 	case 2:
 		res.SetSuccess(public.LangCtx(ctx, "Group created and contacts imported successfully"))
+		res.Data.GroupId = groupId
 	case 3:
 		res.SetSuccess(public.LangCtx(ctx, "Contacts imported to existing group successfully"))
+		res.Data.GroupId = groupId
 	}
 
 	return
