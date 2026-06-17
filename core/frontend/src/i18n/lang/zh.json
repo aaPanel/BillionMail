@@ -155,6 +155,7 @@
 		"clicked": "已点击",
 		"bounced": "已退回",
 		"delayedQueue": "延迟队列",
+		"metricCount": "{count} 封邮件",
 		"mailProviders": "邮件提供商",
 		"sendStats": "发送统计",
 		"provider": {

@@ -144,6 +144,7 @@
 		"clicked": "クリック済み",
 		"bounced": "バウンス（送信失敗）",
 		"delayedQueue": "遅延キュー",
+		"metricCount": "{count} 通",
 		"mailProviders": "メールプロバイダー",
 		"sendStats": "送信統計",
 		"provider": {

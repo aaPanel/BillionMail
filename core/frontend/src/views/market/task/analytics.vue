@@ -23,6 +23,7 @@
 				:key="key"
 				:title="item.label"
 				:value="item.value"
+				:count="item.count"
 				:unit="item.unit">
 			</metric-card>
 		</div>
@@ -70,10 +71,10 @@ const dateRange = ref(getDayTimeRange())
 const providers = ref<MailProvider[]>([])
 
 const rateData = reactive<RateData>({
-	delivery_rate: { label: t('overview.delivered'), value: 0, unit: '%' },
-	open_rate: { label: t('overview.opened'), value: 0, unit: '%' },
-	click_rate: { label: t('overview.clicked'), value: 0, unit: '%' },
-	bounce_rate: { label: t('overview.bounced'), value: 0, unit: '%' },
+	delivery_rate: { label: t('overview.delivered'), value: 0, unit: '%', count: 0 },
+	open_rate: { label: t('overview.opened'), value: 0, unit: '%', count: 0 },
+	click_rate: { label: t('overview.clicked'), value: 0, unit: '%', count: 0 },
+	bounce_rate: { label: t('overview.bounced'), value: 0, unit: '%', count: 0 },
 })
 
 const sendMail = ref<MailOverview['send_mail_chart']>({
@@ -110,6 +111,11 @@ const updateRateData = (dashboard: MailOverview['dashboard']) => {
 			rateData[key].value = value
 		}
 	})
+
+	rateData.delivery_rate.count = dashboard.delivered
+	rateData.open_rate.count = dashboard.opened
+	rateData.click_rate.count = dashboard.clicked
+	rateData.bounce_rate.count = dashboard.bounced
 }
 
 async function fetchOverviewData() {
