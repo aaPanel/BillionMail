@@ -178,15 +178,21 @@ func (m *ConfigManager) updateDockerCompose(ctx context.Context, configs []map[s
 	}
 	defer dk.Close()
 
-	// Step 1: 复制宿主机的 docker-compose.yml 到宿主机的 core-data 目录
-	// 注意：这里目标路径使用宿主机的路径，因为 chroot /host_root 看到的是宿主机文件系
+	// Step 1: Ensure the destination directory exists on the host, then copy
+	// the original docker-compose.yml to a temporary location for modification.
+	mkdirCmd := []string{
+		"/bin/sh", "-c",
+		fmt.Sprintf(`chroot /host_root mkdir -p "%s"`, gfile.Dir(hostTempDockerComposePath)),
+	}
+	dk.ExecHostCommand(ctx, mkdirCmd)
+
 	copyCmd := []string{
 		"/bin/sh", "-c",
 		fmt.Sprintf(`chroot /host_root cp "%s" "%s"`, originalPath, hostTempDockerComposePath),
 	}
 	result, err := dk.ExecHostCommand(ctx, copyCmd)
 	if err != nil || result.ExitCode != 0 {
-		return gerror.New("failed to copy original configuration file, please check path and permissions")
+		return gerror.Newf("failed to copy original configuration file: %v (src=%s, dst=%s)", err, originalPath, hostTempDockerComposePath)
 	}
 
 	// Step 2: 从容器内路径读取复制的文件
@@ -219,7 +225,13 @@ func (m *ConfigManager) updateDockerCompose(ctx context.Context, configs []map[s
 		return fmt.Errorf("failed to write temporary output file: %v", err)
 	}
 
-	// 然后从宿主机临时位置复制到最终目标位置
+	// Ensure the output directory exists on the host, then copy the generated file.
+	mkdirOutputCmd := []string{
+		"/bin/sh", "-c",
+		fmt.Sprintf(`chroot /host_root mkdir -p "%s"`, gfile.Dir(outputPath)),
+	}
+	dk.ExecHostCommand(ctx, mkdirOutputCmd)
+
 	copyOutputCmd := []string{
 		"/bin/sh", "-c",
 		fmt.Sprintf(`chroot /host_root cp "%s" "%s"`, hostTempOutputPath, outputPath),
@@ -230,7 +242,7 @@ func (m *ConfigManager) updateDockerCompose(ctx context.Context, configs []map[s
 		if gfile.Exists(tempOutputPath) {
 			os.Remove(tempOutputPath)
 		}
-		return gerror.New("failed to copy output file to destination")
+		return gerror.Newf("failed to copy output file to destination: %v", err)
 	}
 
 	// Cleanup temporary output file
