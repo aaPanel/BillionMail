@@ -142,7 +142,7 @@ cd /opt && git clone https://github.com/aaPanel/BillionMail && cd BillionMail &&
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=aapanel/billionmail&type=Date)](https://www.star-history.com/#aapanel/billionmail&Date)
+[![Star History Chart](https://star-history.dera.page/svg?repos=aapanel/billionmail&type=Date)](https://star-history.dera.page/#aapanel/billionmail&Date)
 
 ## License
 
