@@ -366,9 +366,15 @@ func (s *TaskStatService) getTaskMailProviders(taskId int64, domain string, star
 			provider["delivery_rate"] = public.Round(float64(delivered)/float64(sends)*100, 2)
 			provider["bounce_rate"] = public.Round(float64(result["bounced"].Int())/float64(sends)*100, 2)
 		}
+		// open_rate and click_rate are computed here rather than selected, so skipping them on a
+		// zero denominator drops the fields from the response entirely. A provider whose mail all
+		// bounced has delivered == 0 and still has to report rates.
 		if delivered > 0 {
 			provider["open_rate"] = public.Round(float64(result["opened"].Int())/float64(delivered)*100, 2)
 			provider["click_rate"] = public.Round(float64(result["clicked"].Int())/float64(delivered)*100, 2)
+		} else {
+			provider["open_rate"] = 0.0
+			provider["click_rate"] = 0.0
 		}
 		providers = append(providers, provider)
 	}
