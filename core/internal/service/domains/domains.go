@@ -523,6 +523,54 @@ func GetDKIMShortRecord(domain string, validateImmediate bool) (record v1.DNSRec
 	return getDKIMRecordWithKeySize(domain, "short", 1024, validateImmediate)
 }
 
+// ensureDKIMKeyPair generates the DKIM key pair for a domain/selector when either the private
+// or the public key file is missing. It touches key files only: the caller owns the signing
+// configuration and any rspamd reload, so a caller that rebuilds the whole config afterwards
+// does not pay for a per-key config rewrite and container restart.
+func ensureDKIMKeyPair(ctx context.Context, domain, selector string, keySize int) error {
+	dkimPath := public.AbsPath(filepath.Join(consts.RSPAMD_LIB_PATH, "dkim", domain))
+
+	if !public.IsDir(dkimPath) {
+		_ = os.MkdirAll(dkimPath, 0755)
+	}
+
+	dkimPriPath := filepath.Join(dkimPath, selector+".private")
+	dkimPubPath := filepath.Join(dkimPath, selector+".pub")
+
+	mutex.Lock()
+	defer mutex.Unlock()
+
+	// Re-check under the lock: a concurrent caller may have generated the pair already.
+	if public.FileExists(dkimPriPath) && public.FileExists(dkimPubPath) {
+		return nil
+	}
+
+	dk, err := docker.NewDockerAPI()
+	if err != nil {
+		return fmt.Errorf("Failed to connect to Docker API: %v", err)
+	}
+	defer dk.Close()
+
+	var res *v2.ExecResult
+	res, err = dk.ExecCommandByName(ctx, consts.SERVICES.Rspamd, []string{"rspamadm", "dkim_keygen", "-s", selector, "-b", fmt.Sprintf("%d", keySize), "-d", domain, "-k", fmt.Sprintf("/var/lib/rspamd/dkim/%s/%s.private", domain, selector)}, "root")
+	if err != nil {
+		return fmt.Errorf("Failed to generate DKIM key pair: %v", err)
+	}
+
+	if res != nil {
+		if _, err = public.WriteFile(dkimPubPath, res.Output); err != nil {
+			return fmt.Errorf("Failed to write DKIM public key: %v", err)
+		}
+	}
+
+	// update dkim private key file permission to 0644
+	if err = os.Chmod(dkimPriPath, 0644); err != nil {
+		return fmt.Errorf("Failed to change DKIM private key permissions: %v", err)
+	}
+
+	return nil
+}
+
 func getDKIMRecordWithKeySize(domain, selector string, keySize int, validateImmediate bool) (record v1.DNSRecord, err error) {
 	// Create DKIM directory
 	dkimPath := public.AbsPath(filepath.Join(consts.RSPAMD_LIB_PATH, "dkim", domain))
@@ -547,30 +595,12 @@ func getDKIMRecordWithKeySize(domain, selector string, keySize int, validateImme
 
 	// Generate new keys if they don't exist
 	if !public.FileExists(dkimPriPath) || !public.FileExists(dkimPubPath) {
+		if err = ensureDKIMKeyPair(context.Background(), domain, selector, keySize); err != nil {
+			return
+		}
+
 		mutex.Lock()
 		defer mutex.Unlock()
-
-		var res *v2.ExecResult
-		res, err = dk.ExecCommandByName(context.Background(), consts.SERVICES.Rspamd, []string{"rspamadm", "dkim_keygen", "-s", selector, "-b", fmt.Sprintf("%d", keySize), "-d", domain, "-k", fmt.Sprintf("/var/lib/rspamd/dkim/%s/%s.private", domain, selector)}, "root")
-		if err != nil {
-			err = fmt.Errorf("Failed to generate DKIM key pair: %v", err)
-			return
-		}
-
-		if res != nil {
-			_, err = public.WriteFile(dkimPubPath, res.Output)
-			if err != nil {
-				err = fmt.Errorf("Failed to write DKIM public key: %v", err)
-				return
-			}
-		}
-
-		// update dkim private key file permission to 0644
-		err = os.Chmod(dkimPriPath, 0644)
-		if err != nil {
-			err = fmt.Errorf("Failed to change DKIM private key permissions: %v", err)
-			return
-		}
 
 		// Skip DKIM signing config for relay-mapped domains — relay provider signs
 		relayDomains, relayErr := GetRelayDomains(context.Background())
@@ -927,6 +957,7 @@ func RepairDKIMSigningConfig(ctx context.Context) error {
 			continue
 		}
 		// Regenerate missing DKIM key files
+		keysReady := true
 		for _, sel := range []struct {
 			name string
 			size int
@@ -934,9 +965,20 @@ func RepairDKIMSigningConfig(ctx context.Context) error {
 			keyPath := public.AbsPath(filepath.Join(consts.RSPAMD_LIB_PATH, "dkim", d.Domain, sel.name+".private"))
 			if !public.FileExists(keyPath) {
 				g.Log().Warningf(ctx, "DKIM key missing for %s/%s, regenerating", d.Domain, sel.name)
-				getDKIMRecordWithKeySize(d.Domain, sel.name, sel.size, false)
+				if genErr := ensureDKIMKeyPair(ctx, d.Domain, sel.name, sel.size); genErr != nil {
+					g.Log().Errorf(ctx, "Failed to regenerate DKIM key for %s/%s: %v", d.Domain, sel.name, genErr)
+					keysReady = false
+				}
 			}
 		}
+
+		// A signing block naming a key file that does not exist makes rspamd fail to sign for
+		// this domain, so leave the domain out entirely rather than emit a broken block.
+		if !keysReady {
+			g.Log().Warningf(ctx, "Excluding %s from DKIM signing config: key regeneration failed", d.Domain)
+			continue
+		}
+
 		// For each domain, generate the correct config block with both selectors
 		signConf := fmt.Sprintf(`
 #%s_DKIM_BEGIN
