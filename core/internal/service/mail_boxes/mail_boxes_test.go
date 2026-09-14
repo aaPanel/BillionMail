@@ -6,6 +6,8 @@ import (
 	"testing"
 	"time"
 
+	v1 "billionmail-core/api/mail_boxes/v1"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -121,6 +123,29 @@ func TestFormatSize(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			assert.Equal(t, tt.expected, formatSize(tt.input))
+		})
+	}
+}
+
+// AddImport must refuse a record without a username before touching the database:
+// `mailbox.username` is the primary key and an empty string is a legal key value,
+// so such a record used to be stored and could then not be deleted from the
+// Mailboxes page.
+func TestAddImportRejectsMailboxWithoutUsername(t *testing.T) {
+	tests := []struct {
+		name    string
+		mailbox *v1.Mailbox
+	}{
+		{"empty username", &v1.Mailbox{Password: "pw"}},
+		{"blank username", &v1.Mailbox{Username: "   ", Password: "pw", LocalPart: "foo", Domain: "example.com"}},
+		{"username with surrounding spaces only", &v1.Mailbox{Username: "\t\n", Password: "pw"}},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := AddImport(context.Background(), tt.mailbox)
+			require.Error(t, err)
+			assert.Contains(t, err.Error(), "username is empty")
 		})
 	}
 }

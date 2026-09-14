@@ -19,23 +19,20 @@ func (c *ControllerV1) DeleteMailbox(ctx context.Context, req *v1.DeleteMailboxR
 		return nil, gerror.New("Email addresses cannot be empty")
 	}
 
-	var validEmails []string
-	for _, email := range req.Emails {
-		if email != "" {
-			validEmails = append(validEmails, email)
-		}
-	}
+	// Do NOT filter out empty entries here. `mailbox.username` is the primary key
+	// and an empty string is a legal key value, so rows with username = '' exist
+	// (an import used to create them). Filtering them out made such a row
+	// impossible to delete from the Mailboxes page: the request failed with
+	// "No valid email addresses provided" before it reached the database. Deletion
+	// matches the primary key exactly, so an empty identifier can only hit that row.
+	emails := req.Emails
 
-	if len(validEmails) == 0 {
-		return nil, gerror.New("No valid email addresses provided")
-	}
-
-	affected, err := mail_boxes.DeleteBatch(ctx, validEmails)
+	affected, err := mail_boxes.DeleteBatch(ctx, emails)
 	if err != nil {
 		return nil, err
 	}
 
-	for _, email := range validEmails {
+	for _, email := range emails {
 		_ = public.WriteLog(ctx, public.LogParams{
 			Type: consts.LOGTYPE.Mailboxes,
 			Log:  "Deleted mailbox:" + email + " successfully",

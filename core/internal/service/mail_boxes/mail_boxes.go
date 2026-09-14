@@ -376,6 +376,13 @@ func BatchAdd(ctx context.Context, domain string, quota int, count int, prefix s
 
 // AddImport
 func AddImport(ctx context.Context, mailbox *v1.Mailbox) (err error) {
+	// A record without a username must never be stored: `mailbox.username` is the
+	// primary key of the table and an empty string is a legal key value, so such a
+	// record would be created and then be impossible to delete from the Mailboxes
+	// page.
+	if strings.TrimSpace(mailbox.Username) == "" {
+		return fmt.Errorf("mailbox username is empty")
+	}
 
 	if mailbox.PasswordEncode != "" {
 
