@@ -43,8 +43,11 @@ func Add(ctx context.Context, mailbox *v1.Mailbox) (err error) {
 	mailbox.Active = 1
 	mailbox.Maildir = fmt.Sprintf("%s@%s/", mailbox.LocalPart, mailbox.Domain)
 
-	_, err = g.DB().Model("mailbox").Ctx(ctx).InsertIgnore(mailbox)
+	_, err = g.DB().Model("mailbox").Ctx(ctx).Insert(mailbox)
 	if err != nil {
+		if strings.Contains(err.Error(), "duplicate") || strings.Contains(err.Error(), "unique") {
+			return fmt.Errorf("mailbox %s already exists", mailbox.Username)
+		}
 		return err
 	}
 	// maildirsize

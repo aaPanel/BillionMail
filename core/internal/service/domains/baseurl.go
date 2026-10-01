@@ -94,6 +94,12 @@ func UpdateBaseURL(ctx context.Context, domain ...string) {
 }
 
 func buildBaseURL(hostname string) (s string) {
+	// If reverse proxy domain is configured, use it directly (no internal port)
+	var reverseProxyDomain string
+	if err := public.OptionsMgrInstance.GetOption(context.Background(), "reverse_proxy_domain", &reverseProxyDomain); err == nil && reverseProxyDomain != "" {
+		return reverseProxyDomain
+	}
+
 	scheme := "https"
 	serverPort := g.Server(consts.DEFAULT_SERVER_NAME).GetListenedHTTPSPort()
 

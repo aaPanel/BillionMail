@@ -126,11 +126,14 @@ func (s *TaskStatService) getTaskDashboard(taskId int64, domain string, startTim
 	if sends > 0 {
 		stats["delivery_rate"] = public.Round(float64(delivered)/float64(sends)*100, 2)
 		stats["bounce_rate"] = public.Round(float64(bounced)/float64(sends)*100, 2)
-		stats["open_rate"] = public.Round(float64(stats["opened"].(int))/float64(sends)*100, 2)
-		stats["click_rate"] = public.Round(float64(stats["clicked"].(int))/float64(sends)*100, 2)
 	} else {
 		stats["delivery_rate"] = 0.0
 		stats["bounce_rate"] = 0.0
+	}
+	if delivered > 0 {
+		stats["open_rate"] = public.Round(float64(stats["opened"].(int))/float64(delivered)*100, 2)
+		stats["click_rate"] = public.Round(float64(stats["clicked"].(int))/float64(delivered)*100, 2)
+	} else {
 		stats["open_rate"] = 0.0
 		stats["click_rate"] = 0.0
 	}
@@ -358,11 +361,14 @@ func (s *TaskStatService) getTaskMailProviders(taskId int64, domain string, star
 	for _, result := range results {
 		provider := result.Map()
 		sends := result["sends"].Int()
+		delivered := result["delivered"].Int()
 		if sends > 0 {
-			provider["delivery_rate"] = public.Round(float64(result["delivered"].Int())/float64(sends)*100, 2)
+			provider["delivery_rate"] = public.Round(float64(delivered)/float64(sends)*100, 2)
 			provider["bounce_rate"] = public.Round(float64(result["bounced"].Int())/float64(sends)*100, 2)
-			provider["open_rate"] = public.Round(float64(result["opened"].Int())/float64(sends)*100, 2)
-			provider["click_rate"] = public.Round(float64(result["clicked"].Int())/float64(sends)*100, 2)
+		}
+		if delivered > 0 {
+			provider["open_rate"] = public.Round(float64(result["opened"].Int())/float64(delivered)*100, 2)
+			provider["click_rate"] = public.Round(float64(result["clicked"].Int())/float64(delivered)*100, 2)
 		}
 		providers = append(providers, provider)
 	}

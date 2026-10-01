@@ -124,15 +124,8 @@ func (c *ControllerV1) UpdateRelayConfig(ctx context.Context, req *v1.UpdateRela
 		}
 	}
 
-	if len(req.SenderDomains) == 0 {
-		_, err = tx.Model("bm_relay_domain_mapping").
-			Where("relay_id", req.ID).
-			Delete()
-		if err != nil {
-			res.SetError(gerror.New(public.LangCtx(ctx, "Failed to delete sender domains: {}", err.Error())))
-			return res, nil
-		}
-	} else {
+	// Only update sender domain mappings when explicitly provided.
+	if len(req.SenderDomains) > 0 {
 
 		_, err = tx.Model("bm_relay_domain_mapping").
 			Where("relay_id", req.ID).

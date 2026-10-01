@@ -47,16 +47,53 @@ func (u *MyUser) GetPrivateKey() crypto.PrivateKey {
 }
 
 /**
- * @description: Get user information
+ * @description: Get user information (reuses persisted account key if available)
  * @param {string} email Email address
  * @return {*MyUser} User information
  */
 func GetMyUser(ctx context.Context, email string) (*MyUser, error) {
-	// Generate private key
-	privateKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
-	if err != nil {
-		return nil, errors.New(public.LangCtx(ctx, "Failed to generate user private key: {}", err.Error()))
+	// Try to load existing account key from disk
+	accountKeyPath := filepath.Join(public.ROOT_PATH, "core", "data", "acme", "account.key")
+	var privateKey *ecdsa.PrivateKey
+	var err error
+
+	if public.FileExists(accountKeyPath) {
+		keyBytes, readErr := public.ReadFile(accountKeyPath)
+		if readErr == nil {
+			block, _ := pem.Decode([]byte(keyBytes))
+			if block != nil {
+				parsedKey, parseErr := x509.ParseECPrivateKey(block.Bytes)
+				if parseErr == nil {
+					privateKey = parsedKey
+				}
+			}
+		}
 	}
+
+	if privateKey == nil {
+		// Generate new private key if none exists
+		privateKey, err = ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+		if err != nil {
+			return nil, errors.New(public.LangCtx(ctx, "Failed to generate user private key: {}", err.Error()))
+		}
+
+		// Persist the key for future use
+		keyBytes, marshalErr := x509.MarshalECPrivateKey(privateKey)
+		if marshalErr == nil {
+			pemBlock := &pem.Block{
+				Type:  "EC PRIVATE KEY",
+				Bytes: keyBytes,
+			}
+			pemBytes := pem.EncodeToMemory(pemBlock)
+
+			dir := filepath.Dir(accountKeyPath)
+			if !public.FileExists(dir) {
+				os.MkdirAll(dir, 0750)
+			}
+			public.WriteFile(accountKeyPath, string(pemBytes))
+		}
+	}
+
 	// Initialize user
 	myUser := MyUser{
 		Email: email,
@@ -401,10 +438,16 @@ func ApplySSLWithExistingServer(ctx context.Context, domains []string, email str
 		}
 	}
 
-	// Register user to ACME server
-	reg, err := client.Registration.Register(registration.RegisterOptions{TermsOfServiceAgreed: true})
-	if err != nil {
-		return "", "", errors.New(public.LangCtx(ctx, "Failed to register user: {}", err.Error()))
+	// Register or query existing user on ACME server
+	var reg *registration.Resource
+	// Try to query existing registration first (same key = same account)
+	reg, err = client.Registration.QueryRegistration()
+	if err != nil || reg == nil {
+		// No existing registration, register new account
+		reg, err = client.Registration.Register(registration.RegisterOptions{TermsOfServiceAgreed: true})
+		if err != nil {
+			return "", "", errors.New(public.LangCtx(ctx, "Failed to register user: {}", err.Error()))
+		}
 	}
 
 	// Save user information

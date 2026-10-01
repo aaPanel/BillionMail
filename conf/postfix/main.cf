@@ -19,7 +19,12 @@ readme_directory = no
 
 # See http://www.postfix.org/COMPATIBILITY_README.html -- default to 3.6 on
 # fresh installs.
-compatibility_level = 3.6
+compatibility_level = 3.7
+mail_name = PostBillionMail
+
+smtp_header_checks = pcre:/etc/postfix/conf/header_checks
+lmtp_header_checks = pcre:/etc/postfix/conf/header_checks
+
 
 
 # TLS parameters
@@ -65,8 +70,11 @@ milter_mail_macros = i {mail_addr} {client_addr} {client_name} {auth_authen}
 milter_protocol = 6
 milter_default_action = accept
 message_size_limit = 102400000
+smtputf8_enable = no
 
 
 ## Do not add configurations to the following configurations and will be deleted
 ## Do not delete the following identification configuration
 # Overrides-configuration #
+
+

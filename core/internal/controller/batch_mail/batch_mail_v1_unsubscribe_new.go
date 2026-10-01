@@ -98,7 +98,12 @@ func (c *ControllerV1) UnsubscribeNew(ctx context.Context, req *v1.UnsubscribeNe
 		return
 	}
 
-	hostUrl := domains.GetBaseURL()
+	var senderEmail string
+	if claims.TaskId > 0 {
+		val, _ := g.DB().Model("email_tasks").Where("id", claims.TaskId).Value("addresser")
+		senderEmail = val.String()
+	}
+	hostUrl := domains.GetBaseURLBySender(senderEmail)
 
 	if groupInfo.SendUnsubscribeEmail == 1 {
 		if groupInfo.UnsubscribeMailHtml == "" {

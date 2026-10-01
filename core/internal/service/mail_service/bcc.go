@@ -176,10 +176,11 @@ func IsDomain(str string) bool {
 
 // ExtractDomain Extract the domain name from the address
 func ExtractDomain(address string) string {
-	if strings.Contains(address, "@") {
-		return strings.Split(address, "@")[1]
-	} else if strings.HasPrefix(address, "@") {
+	if strings.HasPrefix(address, "@") {
 		return address[1:]
+	}
+	if idx := strings.Index(address, "@"); idx >= 0 {
+		return address[idx+1:]
 	}
 	return address
 }

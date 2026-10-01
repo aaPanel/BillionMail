@@ -55,6 +55,7 @@ export async function createAiTemplate(sourceDomain: string) {
 		return res.chatId
 	} catch (error) {
 		console.warn(error)
+		window.$message?.error('AI template creation failed. Check AI model configuration.')
 		return null
 	}
 }

@@ -12,8 +12,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/gogf/gf/os/gfile"
-	"gopkg.in/yaml.v3"
 	"io"
 	"math"
 	"math/big"
@@ -26,14 +24,17 @@ import (
 	"os/user"
 	"path/filepath"
 	"reflect"
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
 	"unicode/utf8"
 
+	"github.com/gogf/gf/os/gfile"
+	"gopkg.in/yaml.v3"
+
 	"github.com/gogf/gf/v2/util/gconv"
 
-	"github.com/gogf/gf/v2/debug/gdebug"
 	"github.com/gogf/gf/v2/net/ghttp"
 
 	"github.com/gogf/gf/v2/database/gdb"
@@ -1654,9 +1655,23 @@ func GetAccountIdByUsername(username string) int {
 	return dbInfo["account_id"].Int()
 }
 
+// GetGoroutineID returns the current goroutine ID.
+// Uses runtime.Stack as a workaround since Go 1.21+ removed gdebug.GoroutineID.
+func GetGoroutineID() int64 {
+	var buf [64]byte
+	n := runtime.Stack(buf[:], false)
+	text := string(buf[:n])
+	var id int64
+	_, err := fmt.Sscanf(text, "goroutine %d ", &id)
+	if err != nil {
+		return 0
+	}
+	return id
+}
+
 // Get current request object -- Note: This method has low performance, use sparingly
 func GetReq() *ghttp.Request {
-	routineId := gdebug.GoroutineId()
+	routineId := GetGoroutineID()
 	ctxVar, err := Cache.Get(Ctx, routineId)
 	if err != nil {
 		return nil

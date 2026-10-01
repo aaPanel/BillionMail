@@ -1184,6 +1184,10 @@ func RequestUrl(domain, toUrl string) (BotResponse, error) {
 }
 
 func AutoGetProjectInfo() {
+	if err := os.MkdirAll(PRODUCT_CONFIG_PATH, 0755); err != nil {
+		fmt.Println("Error creating project config directory:", err)
+		return
+	}
 	dirs, err := os.ReadDir(PRODUCT_CONFIG_PATH)
 	if err != nil {
 		fmt.Println("Error reading project config directory:", err)

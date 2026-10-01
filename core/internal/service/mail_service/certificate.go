@@ -8,14 +8,15 @@ import (
 	"billionmail-core/internal/service/public"
 	"context"
 	"fmt"
-	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/text/gregex"
-	"github.com/gogf/gf/v2/util/gconv"
 	"os"
 	"path/filepath"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/text/gregex"
+	"github.com/gogf/gf/v2/util/gconv"
 )
 
 // Certificate manages SSL certificates for mail services
@@ -472,10 +473,10 @@ func (c *Certificate) GetSSLStatus(domain string) (bool, error) {
 func (c *Certificate) GetSSLInfo(domain string) (certInfo v1.CertInfo, err error) {
 	// First try to get certificate from database (acme managed certificates)
 
-	//certInfo, err = c.getSSLInfoFromDatabase(domain)
-	//if err == nil && certInfo.Endtime > 0 {
-	//	return  certInfo, err
-	//}
+	certInfo, err = c.getSSLInfoFromDatabase(domain)
+	if err == nil && certInfo.Endtime > 0 {
+		return  certInfo, err
+	}
 
 	// Fallback to file system (legacy certificates)
 	return c.getSSLInfoFromFiles(domain)

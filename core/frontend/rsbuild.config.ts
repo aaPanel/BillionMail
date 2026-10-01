@@ -6,7 +6,6 @@ import { pluginVue } from '@rsbuild/plugin-vue'
 import { pluginVueJsx } from '@rsbuild/plugin-vue-jsx'
 import { pluginSass } from '@rsbuild/plugin-sass'
 import { pluginEslint } from '@rsbuild/plugin-eslint'
-import { UnoCSSRspackPlugin } from '@unocss/webpack/rspack'
 import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
 import { pluginBasicSsl } from '@rsbuild/plugin-basic-ssl'
 import { getEnv, getServer } from './build/utils'
@@ -32,9 +31,6 @@ export default defineConfig({
 	tools: {
 		rspack: {
 			plugins: [
-				UnoCSSRspackPlugin({
-					configFile: './uno.config.ts',
-				}),
 				AutoImport({
 					dts: 'types/auto-import.d.ts',
 					imports: ['vue', 'vue-router', 'vue-i18n'],

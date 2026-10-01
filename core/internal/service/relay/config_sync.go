@@ -1,24 +1,27 @@
 package relay
 
 import (
+	"context"
+	"crypto/sha256"
+	"encoding/hex"
+	"fmt"
+	"path"
+	"regexp"
+	"strings"
+	"time"
+
 	domainsV1 "billionmail-core/api/domains/v1"
 	"billionmail-core/internal/consts"
 	"billionmail-core/internal/model/entity"
 	docker "billionmail-core/internal/service/dockerapi"
 	"billionmail-core/internal/service/domains"
 	"billionmail-core/internal/service/public"
-	"context"
-	"encoding/hex"
-	"fmt"
+
 	"github.com/gogf/gf/util/grand"
 	"github.com/gogf/gf/v2/crypto/gaes"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gfile"
-	"path"
-	"regexp"
-	"strings"
-	"time"
 )
 
 var (
@@ -414,12 +417,19 @@ func SyncRelayConfigsToPostfix(ctx context.Context) error {
 		return gerror.Wrap(err, "Failed to query active relay configurations count")
 	}
 
-	activeMappingCount, err := g.DB().Model("bm_relay_domain_mapping").Count()
+	// Only check domain mappings that belong to ACTIVE relay configs.
+	// Using total mapping count would incorrectly include mappings from disabled relays.
+	activeMappingCount, err := g.DB().Model("bm_relay_domain_mapping rdm").
+		LeftJoin("bm_relay_config rc", "rdm.relay_id = rc.id").
+		Where("rc.active", 1).
+		Count()
 	if err != nil {
 		return gerror.Wrap(err, "Failed to query active relay domain mappings count")
 	}
 
-	isActiveRelaySystem := activeConfigCount > 0 && activeMappingCount > 0
+	// Relay is considered "enabled" when there are active relay configs.
+	// Domain mappings are optional — a relay may exist without bound sender domains.
+	isActiveRelaySystem := activeConfigCount > 0
 	g.Log().Infof(ctx, "Relay system status: Active config count=%d, Active domain mapping count=%d, System enabled=%v",
 		activeConfigCount, activeMappingCount, isActiveRelaySystem)
 
@@ -441,6 +451,16 @@ func SyncRelayConfigsToPostfix(ctx context.Context) error {
 
 		activeConfigs = []*entity.BmRelayConfig{}
 		g.Log().Info(ctx, "No active relay to domain mappings, relay functionality will be disabled")
+
+		// Clear stale relay transport mappings when no active relay exists
+		result, err := g.DB().Model("bm_domain_smtp_transport").Where("atype", "relay").Delete()
+		if err != nil {
+			g.Log().Warningf(ctx, "Failed to clear stale SMTP transport mappings: %v", err)
+		} else {
+			if affected, _ := result.RowsAffected(); affected > 0 {
+				g.Log().Infof(ctx, "Cleared %d stale SMTP transport mappings", affected)
+			}
+		}
 	}
 
 	// 1. Generate configuration files-pwd
@@ -456,6 +476,11 @@ func SyncRelayConfigsToPostfix(ctx context.Context) error {
 	// 3. Check whether to enable relay functionality and update pgsql query file
 	if err := ensurePostfixRelayConfig(path.Join(postfixConfigDir, mainCfFile), isActiveRelaySystem); err != nil {
 		return err
+	}
+
+	// 4. Rebuild DKIM signing config to exclude relay-mapped domains
+	if err := domains.RepairDKIMSigningConfig(ctx); err != nil {
+		g.Log().Warningf(ctx, "Failed to repair DKIM signing config after relay sync: %v", err)
 	}
 
 	return reloadPostfixConfigs(ctx)
@@ -800,6 +825,13 @@ sender_dependent_default_transport_maps = pgsql:/etc/postfix/sql/pgsql_sender_tr
 			}
 			modified = true
 		}
+    
+	} else if hasConfigBlock {
+		// Remove the relay configuration block
+		content = content[:beginIndex] + content[endIndex+len(endMarker):]
+		// Clean up extra blank lines
+		content = strings.TrimRight(content, "\n") + "\n"
+		modified = true
 	}
 	// If there are modifications, write to the file
 	if modified {
@@ -820,8 +852,10 @@ func updateSmtpServiceMappings(ctx context.Context, configs []*entity.BmRelayCon
 	}
 
 	var mappings []RelayDomainMapping
-	err := g.DB().Model("bm_relay_domain_mapping").
-		Fields("relay_id, sender_domain").
+	err := g.DB().Model("bm_relay_domain_mapping rdm").
+		LeftJoin("bm_relay_config rc", "rdm.relay_id = rc.id").
+		Where("rc.active", 1).
+		Fields("rdm.relay_id, rdm.sender_domain").
 		Scan(&mappings)
 
 	if err != nil {
@@ -876,41 +910,49 @@ func updateSmtpServiceMappings(ctx context.Context, configs []*entity.BmRelayCon
 		return nil
 	}
 
-	// Batch insert new mappings
+	// Batch upsert new mappings, using ON CONFLICT to handle cases where
+	// another atype (e.g. 'local') already owns the domain.
+	// Log but don't fail — blocking this would prevent main.cf relay config
+	// block from being written, breaking all relay functionality.
 	_, err = g.DB().Model("bm_domain_smtp_transport").
 		Data(transportMappings).
+		OnConflict("domain").
+		OnDuplicate("smtp_name", "atype").
 		Batch(100).
 		Insert()
 
 	if err != nil {
-		return gerror.Wrap(err, "failed to batch insert SMTP service name mappings")
+		g.Log().Warningf(ctx, "Failed to batch insert SMTP service name mappings (non-fatal): %v", err)
+		// Don't return — let the rest of the sync continue (main.cf update, postfix reload)
+	} else {
+		g.Log().Infof(ctx, "Updated %d SMTP service name mappings", len(transportMappings))
 	}
-
-	g.Log().Infof(ctx, "Updated %d SMTP service name mappings", len(transportMappings))
 	return nil
 }
 
-// generateSmtpServiceName generates SMTP service name based on relay configuration
+// maxSmtpServiceNameLength limits Postfix unix-domain socket path length.
+const maxSmtpServiceNameLength = 64
+
+// generateSmtpServiceName generates SMTP service name based on relay configuration.
+// Names are truncated to avoid exceeding Postfix unix-domain socket path limits.
 func generateSmtpServiceName(config *entity.BmRelayConfig) string {
 	if config.SmtpName != "Custom SMTP Relay" {
 		// Prefer user-defined SMTP name
 		cleanedSmtpName := regexp.MustCompile(`[^a-zA-Z0-9]+`).ReplaceAllString(config.SmtpName, "_")
-		return fmt.Sprintf("smtp_Custom_%s", cleanedSmtpName)
+		name := fmt.Sprintf("smtp_Custom_%s", cleanedSmtpName)
+		return truncateSmtpName(name)
 	}
 
-	// Extract relay_host as base name
+	// Build base from relay_host + auth_user
 	relayDomain := config.RelayHost
 	cleanedRelayDomain := regexp.MustCompile(`[^a-zA-Z0-9]+`).ReplaceAllString(relayDomain, "_")
 
-	// Extract username part from auth_user if exists
 	userName := ""
 	if config.AuthUser != "" {
-		// Handle cases with and without @ symbol
 		if strings.Contains(config.AuthUser, "@") {
 			parts := strings.Split(config.AuthUser, "@")
 			userName = regexp.MustCompile(`[^a-zA-Z0-9]+`).ReplaceAllString(parts[0], "_")
 		} else {
-			// If no @ symbol, use first 5 characters (if available)
 			authUserLen := len(config.AuthUser)
 			if authUserLen > 5 {
 				userName = regexp.MustCompile(`[^a-zA-Z0-9]+`).ReplaceAllString(config.AuthUser[:5], "_")
@@ -920,12 +962,50 @@ func generateSmtpServiceName(config *entity.BmRelayConfig) string {
 		}
 	}
 
-	// Combine SMTP service name
+	var name string
 	if userName != "" {
-		return fmt.Sprintf("smtp_Relay_%s_%s_%d", cleanedRelayDomain, userName, config.Id)
+		name = fmt.Sprintf("smtp_Relay_%s_%s_%d", cleanedRelayDomain, userName, config.Id)
+	} else {
+		name = fmt.Sprintf("smtp_Relay_%s_%d", cleanedRelayDomain, config.Id)
 	}
 
-	return fmt.Sprintf("smtp_Relay_%s_%d", cleanedRelayDomain, config.Id)
+	return truncateSmtpName(name)
+}
+
+// truncateSmtpName ensures the SMTP service name fits within Postfix limits.
+// If the name is too long, it replaces the middle portion with a short SHA-256
+// hash while preserving the suffix (config ID) for uniqueness.
+func truncateSmtpName(name string) string {
+	if len(name) <= maxSmtpServiceNameLength {
+		return name
+	}
+
+	// Extract the trailing _{id} part to preserve uniqueness
+	idIdx := strings.LastIndex(name, "_")
+	idSuffix := ""
+	if idIdx > 0 {
+		idSuffix = name[idIdx:]
+	}
+
+	// Use a hash of the full name to guarantee uniqueness
+	hash := sha256.Sum256([]byte(name))
+	hashStr := hex.EncodeToString(hash[:])[:12]
+
+	prefix := "smtp"
+	if strings.HasPrefix(name, "smtp_Custom_") {
+		prefix = "smtp_Custom"
+	} else if strings.HasPrefix(name, "smtp_Relay_") {
+		prefix = "smtp_Relay"
+	}
+
+	truncated := fmt.Sprintf("%s_%s%s", prefix, hashStr, idSuffix)
+	if len(truncated) > maxSmtpServiceNameLength {
+		truncated = truncated[:maxSmtpServiceNameLength]
+	}
+
+	g.Log().Warningf(nil, "SMTP service name truncated from %d to %d chars: %s",
+		len(name), len(truncated), truncated)
+	return truncated
 }
 
 func ensureSmtpsConfigInMasterCf(content string) (string, bool) {

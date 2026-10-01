@@ -8,19 +8,23 @@ const routesReflectList = [
 	'template',
 	'Send API',
 	'Contacts',
+	'Sequences',
+	'Leads',
+	'Enrichment',
 	'MailDomain',
 	'MailBoxes',
 	'SMTP',
 	'Logs',
 	'Settings',
 	'Automation',
+	'Video Outreach',
 ]
 
 // Import routes from modules
 const modules = import.meta.webpackContext('./modules', {
 	// Whether to search for subdirectories
 	recursive: false,
-	regExp: /\.ts$/,
+	regExp: /^[^.]+\.ts$/,
 })
 
 // Module routes

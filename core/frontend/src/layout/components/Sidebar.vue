@@ -107,12 +107,16 @@ const iconMap: Record<string, VNodeChild> = {
 	market: <i class="i-mdi-email-fast-outline"></i>,
 	api: <i class="i-mdi-chart-line"></i>,
 	contacts: <i class="i-mdi-user-multiple-outline"></i>,
+	sequences: <i class="i-mdi-email-sync-outline"></i>,
+	leads: <i class="i-mdi-account-search-outline"></i>,
+	enrichment: <i class="i-mdi-database-search-outline"></i>,
 	domain: <i class="i-mdi-web"></i>,
 	mailbox: <i class="i-custom:mailbox"></i>,
 	smtp: <i class="i-custom:smtp"></i>,
 	settings: <i class="i-mdi-settings-outline"></i>,
 	template: <i class="i-mdi-settings-outline"></i>,
 	logs: <i class="i-icon-park-outline:log"></i>,
+	'video-outreach': <i class="i-mdi-video-outline"></i>,
 	logout: <i class="i-mdi-logout"></i>,
 }
 

@@ -540,7 +540,7 @@ func BatchCreateContactsWithOverwrite(ctx context.Context, contacts []*entity.Co
 }
 
 func GfMd5Short() string {
-	str := fmt.Sprintf("%s_%d_%d", time.Now().UnixNano(), rand.Intn(100000))
+	str := fmt.Sprintf("%d_%d", time.Now().UnixNano(), rand.Intn(100000))
 	return gmd5.MustEncryptString(str)[:12]
 }
 

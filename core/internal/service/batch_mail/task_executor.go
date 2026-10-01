@@ -95,8 +95,8 @@ func ProcessEmailTasks(ctx context.Context) {
 	// get pending tasks
 	var tasks []*entity.EmailTask
 	err := g.DB().Model("email_tasks").
-		Where("task_process IN (0,1)"). // not started or running
-		Where("pause", 0). // not paused
+		Where("task_process IN (0,1)").              // not started or running
+		Where("pause", 0).                           // not paused
 		Where("start_time <= ?", time.Now().Unix()). // start time has arrived
 		Order("id ASC").
 		Scan(&tasks)
@@ -163,10 +163,18 @@ type TaskExecutor struct {
 	failedCount atomic.Int64
 	startTime   time.Time
 
+	// circuit breaker
+	consecutiveFailures atomic.Int64
+
 	// pause/resume control
 	pauseChan  chan struct{}
 	resumeChan chan struct{}
 }
+
+const (
+	// CircuitBreakerThreshold pauses task after N consecutive SMTP failures
+	CircuitBreakerThreshold = 10
+)
 
 // SendResult send result
 type SendResult struct {
@@ -290,7 +298,7 @@ func (e *TaskExecutor) ProcessTask(ctx context.Context) error {
 			g.Log().Error(ctx, "Worker panic: %v", p)
 		}),
 		ants.WithMaxBlockingTasks(poolSize*100), // allow more waiting tasks
-		ants.WithNonblocking(false)) // blocking submit can improve stability
+		ants.WithNonblocking(false))             // blocking submit can improve stability
 
 	if err != nil {
 		g.Log().Error(ctx, "failed to create worker pool: %v", err)
@@ -318,7 +326,8 @@ func (e *TaskExecutor) ProcessTask(ctx context.Context) error {
 			g.Log().Info(ctx, "task %d is canceled", task.Id)
 			return nil
 		}
-		return err
+		// Don't return — fall through to check completion
+		// Task may be partially complete with some recipients sent/failed
 	}
 
 	// end time and duration
@@ -806,11 +815,17 @@ func (e *TaskExecutor) processRecipientBatch(ctx context.Context, task *entity.E
 			// record send
 			e.rateController.RecordSend()
 
-			// update stats
+			// update stats + circuit breaker
 			if result.Success {
 				e.sentCount.Add(1)
+				e.consecutiveFailures.Store(0)
 			} else {
 				e.failedCount.Add(1)
+				failures := e.consecutiveFailures.Add(1)
+				if failures >= CircuitBreakerThreshold {
+					g.Log().Warning(ctx, "circuit breaker tripped: %d consecutive failures, pausing task", failures)
+					e.isPaused.Store(true)
+				}
 			}
 
 			// safe send result
@@ -960,14 +975,13 @@ func (e *TaskExecutor) processSendResults(ctx context.Context, resultChan <-chan
 			successResults = successResults[:0]
 		}
 
-		// clear failed records
+		// mark failed records with is_sent=3 (failed) for retry
 		if len(failedIDs) > 0 {
 			now := time.Now().Unix()
-			// 失败的也更新 is_sent 和 sent_time 避免卡住发送状态
 			_, err := g.DB().Model("recipient_info").
 				WhereIn("id", failedIDs).
 				Data(g.Map{
-					"is_sent":   1,
+					"is_sent":   3,
 					"sent_time": now,
 				}).
 				Update()
@@ -975,7 +989,7 @@ func (e *TaskExecutor) processSendResults(ctx context.Context, resultChan <-chan
 			if err != nil {
 				g.Log().Error(ctx, "batch update failed recipients status failed: %v", err)
 			} else {
-				g.Log().Debug(ctx, "marked %d failed recipients as sent", len(failedIDs))
+				g.Log().Warning(ctx, "marked %d recipients as failed (is_sent=3)", len(failedIDs))
 			}
 
 			failedIDs = failedIDs[:0]
@@ -1090,8 +1104,7 @@ func (e *TaskExecutor) personalizeEmail(ctx context.Context, content string, tas
 	engine := GetTemplateEngine()
 
 	if task.Unsubscribe == 1 {
-		//domain := domains.GetBaseURLBySender(task.Addresser)
-		domain := domains.GetBaseURL()
+		domain := domains.GetBaseURLBySender(task.Addresser)
 
 		var contactGroupId int
 		contactGroupId = task.GroupId
@@ -1199,11 +1212,14 @@ func (e *TaskExecutor) sendEmail(ctx context.Context, task *entity.EmailTask, re
 	messageID := sender.GenerateMessageID()
 
 	//Tracking emails
-	//baseURL := domains.GetBaseURLBySender(currentTask.Addresser)
-	baseURL := domains.GetBaseURL()
+	baseURL := domains.GetBaseURLBySender(currentTask.Addresser)
 	mail_tracker := maillog_stat.NewMailTracker(renderedContent, currentTask.Id, messageID, recipient.Recipient, baseURL)
-	mail_tracker.TrackLinks()
-	mail_tracker.AppendTrackingPixel()
+	if currentTask.TrackClick == 1 {
+		mail_tracker.TrackLinks()
+	}
+	if currentTask.TrackOpen == 1 {
+		mail_tracker.AppendTrackingPixel()
+	}
 	renderedContent = mail_tracker.GetHTML()
 
 	// create email message with rendered subject
@@ -1268,8 +1284,7 @@ func (e *TaskExecutor) sendEmailMock(ctx context.Context, task *entity.EmailTask
 	messageID := sender.GenerateMessageID()
 
 	// Track email
-	//baseURL := domains.GetBaseURLBySender(task.Addresser)
-	baseURL := domains.GetBaseURL()
+	baseURL := domains.GetBaseURLBySender(task.Addresser)
 	mail_tracker := maillog_stat.NewMailTracker(renderedContent, task.Id, messageID, recipient.Recipient, baseURL)
 	if task.TrackClick == 1 {
 		mail_tracker.TrackLinks()
@@ -1397,7 +1412,7 @@ func (e *TaskExecutor) isTaskComplete(ctx context.Context, taskId int) (bool, er
 	err := g.DB().Transaction(ctx, func(ctx context.Context, tx gdb.TX) error {
 
 		err := tx.Model("recipient_info").
-			Fields("COUNT(1) as total_count, SUM(CASE WHEN is_sent = 1 THEN 1 ELSE 0 END) as sent_count").
+			Fields("COUNT(1) as total_count, SUM(CASE WHEN is_sent IN (1, 3) THEN 1 ELSE 0 END) as sent_count").
 			Where("task_id", taskId).
 			Scan(&result)
 		return err

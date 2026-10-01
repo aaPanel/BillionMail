@@ -12,7 +12,7 @@ import (
 )
 
 func (c *ControllerV1) TaskMailProviderStat(ctx context.Context, req *v1.TaskMailProviderStatReq) (res *v1.TaskMailProviderStatRes, err error) {
-	g.Log().Printf(ctx, "get task mail provider stat, TaskId: %d, Status: %s",
+	g.Log().Printf(ctx, "get task mail provider stat, TaskId: %d, Status: %d",
 		req.TaskId, req.Status)
 
 	res = &v1.TaskMailProviderStatRes{}

@@ -68,6 +68,19 @@
 		"header": {
 			"submit": "リクエストを送信"
 		},
+		"instances": {
+			"title": "インスタンス",
+			"manage": "インスタンス管理",
+			"add": "インスタンス追加",
+			"name": "名前",
+			"namePlaceholder": "例：本番環境",
+			"url": "URL",
+			"urlPlaceholder": "例：https://mail.acme.com",
+			"current": "現在",
+			"noInstances": "保存されたインスタンスはありません",
+			"deleteConfirm": "「{name}」を削除しますか？",
+			"invalidUrl": "無効なURL"
+		},
 		"menu": {
 			"overview": "概要",
 			"market": "マーケティング",
@@ -86,7 +99,11 @@
 			"service": "Service",
 			"logs": "Logs",
 			"operation_logs": "Operation Logs",
-			"error_logs": "Error Logs"
+			"error_logs": "Error Logs",
+			"sequences": "Sequences",
+			"leads": "Leads",
+			"enrichment": "Enrichment",
+			"videoOutreach": "ビデオアウトリーチ"
 		}
 	},
 	"login": {
@@ -1474,6 +1491,21 @@
 			"deleting": "Deleting, please wait...",
 			"testing": "Testing, please wait..."
 		}
+	},
+	"sequences": {
+		"search": { "placeholder": "Search sequences..." },
+		"empty": "No sequences yet",
+		"columns": { "name": "Name", "status": "Status", "steps": "Steps", "sent": "Sent", "opens": "Opens", "replies": "Replies", "created": "Created" },
+		"detail": { "steps": "Sequence Steps", "stats": "Statistics", "stepNumber": "Step", "subject": "Subject", "status": "Status", "sentAt": "Sent At", "opened": "Opened", "clicked": "Clicked", "replied": "Replied" }
+	},
+	"leads": {
+		"search": { "placeholder": "Search leads..." },
+		"empty": "No leads yet",
+		"columns": { "businessName": "Business Name", "ownerName": "Owner Name", "ownerEmail": "Owner Email", "status": "Status", "category": "Category", "city": "City" }
+	},
+	"enrichment": {
+		"scraper": { "title": "Scraper Configuration", "query": "Search Query", "queryPlaceholder": "e.g. dentist, plumber", "location": "Location", "maxResults": "Max Results", "start": "Start Scraping" },
+		"pipeline": { "title": "Pipeline Status", "scraped": "Scraped", "enriching": "Enriching", "personalized": "Personalized", "queued": "Queued" }
 	},
 	"logs": {
 		"title": "ログ",

@@ -57,6 +57,10 @@ fi
 # fi
 cp -rf /opt/billionmail/conf/core/fail2ban_init/filter.d/*.conf /etc/fail2ban/filter.d/
 
+if [ ! -d "/opt/billionmail/conf/askai/" ]; then
+    mkdir -p /opt/billionmail/conf/askai
+fi
+
 if [ ! -d "/opt/billionmail/core/template/" ]; then
     mkdir /opt/billionmail/core/template
 fi

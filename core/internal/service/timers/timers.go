@@ -13,6 +13,7 @@ import (
 	"billionmail-core/internal/service/maillog_stat"
 	"billionmail-core/internal/service/multi_ip_domain"
 	"billionmail-core/internal/service/relay"
+	"billionmail-core/internal/service/video_gen"
 	"billionmail-core/internal/service/warmup"
 	"context"
 	"time"
@@ -112,6 +113,10 @@ func Start(ctx context.Context) (err error) {
 	gtimer.Add(5*time.Minute, func() {
 		relay.UpdateRelayStatus(ctx)
 	})
+	// 续签证书 首次启动先运行一次
+	gtimer.AddOnce(1*time.Second, func() {
+		domains.AutoRenewSSL(ctx)
+	})
 
 	gtimer.Add(24*time.Hour, func() {
 		domains.AutoRenewSSL(ctx)
@@ -182,6 +187,11 @@ func Start(ctx context.Context) (err error) {
 
 	gtimer.AddOnce(1*time.Minute, func() {
 		relay.EnsurePostfixConfExists(ctx)
+	})
+
+	// Video generation pipeline orchestrator
+	gtimer.Add(30*time.Second, func() {
+		video_gen.ProcessVideoJobs(ctx)
 	})
 
 	// Check the domain name blacklist

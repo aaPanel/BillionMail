@@ -259,7 +259,11 @@ func Get(ctx context.Context, keyword string, page, pageSize int) ([]v1.Domain, 
 		wg.Add(1)
 		go func(i int, domain v1.Domain) {
 			defer wg.Done()
-			domains[i].DNSRecords = GetRecordsInCache(strings.TrimPrefix(domain.Domain, "mail."))
+			dedicatedIP := ""
+			if domain.MultiIPDomains != nil {
+				dedicatedIP = domain.MultiIPDomains.OutboundIP
+			}
+			domains[i].DNSRecords = GetRecordsInCache(strings.TrimPrefix(domain.Domain, "mail."), dedicatedIP)
 		}(i, domain)
 
 		// Retrieve Domains SSL certificate information
@@ -355,6 +359,33 @@ func All(ctx context.Context) ([]v1.Domain, error) {
 	return domains, err
 }
 
+// GetRelayDomains returns a set of domains that have active SMTP relay mappings.
+// These domains should be excluded from local DKIM signing since the relay provider
+// (e.g. SES, SendGrid) adds its own DKIM signature.
+func GetRelayDomains(ctx context.Context) (map[string]bool, error) {
+	type mapping struct {
+		SenderDomain string `json:"sender_domain"`
+	}
+	var mappings []mapping
+	err := g.DB().Model("bm_relay_domain_mapping rdm").
+		LeftJoin("bm_relay_config rc", "rc.id = rdm.relay_id").
+		Where("rc.active", 1).
+		Fields("rdm.sender_domain").
+		Scan(&mappings)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query relay domain mappings: %v", err)
+	}
+
+	result := make(map[string]bool, len(mappings))
+	for _, m := range mappings {
+		domain := strings.TrimPrefix(m.SenderDomain, "@")
+		if domain != "" {
+			result[domain] = true
+		}
+	}
+	return result, nil
+}
+
 func Exists(ctx context.Context, domainName string) (bool, error) {
 	count, err := g.DB().Model("domain").
 		Ctx(ctx).
@@ -402,7 +433,7 @@ func FreshRecords(ctx context.Context, domain ...string) {
 		// retrieve A record
 		go func(d string) {
 			defer wg.Done()
-			dr, err := GetARecord(d, true)
+			dr, err := GetARecord(d, true, "")
 			if err != nil {
 				g.Log().Error(ctx, "Failed to get A record for domain %s: %v", d, err)
 			} else {
@@ -541,8 +572,16 @@ func getDKIMRecordWithKeySize(domain, selector string, keySize int, validateImme
 			return
 		}
 
-		// build DKIM Sign config
-		signConf := fmt.Sprintf(`
+		// Skip DKIM signing config for relay-mapped domains — relay provider signs
+		relayDomains, relayErr := GetRelayDomains(context.Background())
+		if relayErr != nil {
+			g.Log().Warning(context.Background(), "Failed to check relay domains for DKIM signing:", relayErr)
+			relayDomains = make(map[string]bool)
+		}
+
+		if !relayDomains[domain] {
+			// build DKIM Sign config
+			signConf := fmt.Sprintf(`
 #%s_DKIM_BEGIN
 %s {
    selectors [
@@ -559,42 +598,43 @@ func getDKIMRecordWithKeySize(domain, selector string, keySize int, validateImme
 #%s_DKIM_END
 `, domain, domain, domain, domain, domain)
 
-		// Write DKIM sign config to file
-		signConfPath := public.AbsPath(filepath.Join(consts.RSPAMD_LOCAL_D_PATH, "dkim_signing.conf"))
-		signContent := `sign_headers = "from:sender:reply-to:subject:date:message-id:to:cc:mime-version:content-type:content-transfer-encoding:content-language:resent-to:resent-cc:resent-from:resent-sender:resent-message-id:in-reply-to:references:list-id:list-help:list-owner:list-unsubscribe:list-subscribe:list-post:list-unsubscribe-post:disposition-notification-to:disposition-notification-options:original-recipient:openpgp:autocrypt";
+			// Write DKIM sign config to file
+			signConfPath := public.AbsPath(filepath.Join(consts.RSPAMD_LOCAL_D_PATH, "dkim_signing.conf"))
+			signContent := `sign_headers = "from:sender:reply-to:subject:date:message-id:to:cc:mime-version:content-type:content-transfer-encoding:content-language:resent-to:resent-cc:resent-from:resent-sender:resent-message-id:in-reply-to:references:list-id:list-help:list-owner:list-unsubscribe:list-subscribe:list-post:list-unsubscribe-post:disposition-notification-to:disposition-notification-options:original-recipient:openpgp:autocrypt";
 
 domain {
 #BT_DOMAIN_DKIM_BEGIN
 #BT_DOMAIN_DKIM_END
 }`
 
-		if public.FileExists(signConfPath) {
-			signContent, err = public.ReadFile(signConfPath)
+			if public.FileExists(signConfPath) {
+				signContent, err = public.ReadFile(signConfPath)
+				if err != nil {
+					err = fmt.Errorf("Failed to read DKIM sign config: %v", err)
+					return
+				}
+			}
+
+			// Remove old config block if it exists
+			pattern := fmt.Sprintf(`(?s)#%s_DKIM_BEGIN.*?#%s_DKIM_END\s*`, domain, domain)
+			signContent, err = gregex.ReplaceString(pattern, "", signContent)
 			if err != nil {
-				err = fmt.Errorf("Failed to read DKIM sign config: %v", err)
 				return
 			}
-		}
 
-		// Remove old config block if it exists
-		pattern := fmt.Sprintf(`(?s)#%s_DKIM_BEGIN.*?#%s_DKIM_END\s*`, domain, domain)
-		signContent, err = gregex.ReplaceString(pattern, "", signContent)
-		if err != nil {
-			return
-		}
+			signContent = strings.Replace(signContent, "#BT_DOMAIN_DKIM_END", signConf+"\n#BT_DOMAIN_DKIM_END", 1)
+			_, err = public.WriteFile(signConfPath, signContent)
+			if err != nil {
+				err = fmt.Errorf("Failed to write DKIM sign config: %v", err)
+				return
+			}
 
-		signContent = strings.Replace(signContent, "#BT_DOMAIN_DKIM_END", signConf+"\n#BT_DOMAIN_DKIM_END", 1)
-		_, err = public.WriteFile(signConfPath, signContent)
-		if err != nil {
-			err = fmt.Errorf("Failed to write DKIM sign config: %v", err)
-			return
-		}
-
-		// Restart rspamd service
-		err = dk.RestartContainerByName(context.Background(), consts.SERVICES.Rspamd)
-		if err != nil {
-			err = fmt.Errorf("Failed to restart rspamd container: %v", err)
-			return
+			// Restart rspamd service
+			err = dk.RestartContainerByName(context.Background(), consts.SERVICES.Rspamd)
+			if err != nil {
+				err = fmt.Errorf("Failed to restart rspamd container: %v", err)
+				return
+			}
 		}
 	}
 
@@ -719,24 +759,27 @@ func GetMXRecord(domain string, validateImmediate bool) (record v1.DNSRecord, er
 }
 
 // GetARecord retrieves the A record for a given domain.
-func GetARecord(domain string, validateImmediate bool) (record v1.DNSRecord, err error) {
-	serverIP, err := public.GetServerIP()
-
-	if err != nil {
-		err = fmt.Errorf("Failed to get server IP: %v", err)
-		return
+// If dedicatedIP is non-empty, it is used instead of the server's default IP.
+func GetARecord(domain string, validateImmediate bool, dedicatedIP string) (record v1.DNSRecord, err error) {
+	ip := dedicatedIP
+	if ip == "" {
+		ip, err = public.GetServerIP()
+		if err != nil {
+			err = fmt.Errorf("Failed to get server IP: %v", err)
+			return
+		}
 	}
 
 	recordType := "A"
 
-	if strings.Contains(serverIP, ":") {
+	if strings.Contains(ip, ":") {
 		recordType = "AAAA"
 	}
 
 	record = v1.DNSRecord{
 		Type:  recordType,
 		Host:  public.FormatMX(domain),
-		Value: serverIP,
+		Value: ip,
 	}
 
 	if validateImmediate {
@@ -771,16 +814,20 @@ func GetPTRRecord(domain string, validateImmediate bool) (record v1.DNSRecord, e
 }
 
 // GetRecordsInCache retrieves DNS records from the cache for a given domain.
-func GetRecordsInCache(domain string) (records v1.DNSRecords) {
-	// Get A record from cache
-	aRecord := public.GetCache(buildCacheKey(domain, "A"))
-
-	if aRecord != nil {
-		if v, ok := aRecord.(v1.DNSRecord); ok {
-			records.A = v
-		}
+// If dedicatedIP is non-empty, the A record uses that IP instead of the server default.
+func GetRecordsInCache(domain string, dedicatedIP string) (records v1.DNSRecords) {
+	// Get A record — bypass cache when a dedicated IP is set
+	if dedicatedIP != "" {
+		records.A, _ = GetARecord(domain, false, dedicatedIP)
 	} else {
-		records.A, _ = GetARecord(domain, false)
+		aRecord := public.GetCache(buildCacheKey(domain, "A"))
+		if aRecord != nil {
+			if v, ok := aRecord.(v1.DNSRecord); ok {
+				records.A = v
+			}
+		} else {
+			records.A, _ = GetARecord(domain, false, "")
+		}
 	}
 
 	// Get MX record from cache
@@ -864,9 +911,32 @@ func RepairDKIMSigningConfig(ctx context.Context) error {
 		return fmt.Errorf("failed to get all domains: %v", err)
 	}
 
+	// 1b. Get relay-mapped domains to exclude from DKIM signing
+	relayDomains, err := GetRelayDomains(ctx)
+	if err != nil {
+		g.Log().Warningf(ctx, "Failed to get relay domains, signing all: %v", err)
+		relayDomains = make(map[string]bool)
+	}
+
 	// 2. Build the full DKIM config content
 	var allSignConfBlocks strings.Builder
 	for _, d := range ds {
+		// Skip domains with active relay — relay provider signs DKIM
+		if relayDomains[d.Domain] {
+			g.Log().Debugf(ctx, "Skipping DKIM signing for relay-mapped domain: %s", d.Domain)
+			continue
+		}
+		// Regenerate missing DKIM key files
+		for _, sel := range []struct {
+			name string
+			size int
+		}{{"default", 2048}, {"short", 1024}} {
+			keyPath := public.AbsPath(filepath.Join(consts.RSPAMD_LIB_PATH, "dkim", d.Domain, sel.name+".private"))
+			if !public.FileExists(keyPath) {
+				g.Log().Warningf(ctx, "DKIM key missing for %s/%s, regenerating", d.Domain, sel.name)
+				getDKIMRecordWithKeySize(d.Domain, sel.name, sel.size, false)
+			}
+		}
 		// For each domain, generate the correct config block with both selectors
 		signConf := fmt.Sprintf(`
 #%s_DKIM_BEGIN

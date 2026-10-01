@@ -142,11 +142,14 @@ func (o *Overview) overviewDashboard(campaignID int64, domain string, startTime,
 	if aggregate["sends"].(int) > 0 {
 		aggregate["delivery_rate"] = public.Round(float64(aggregate["delivered"].(int))/float64(aggregate["sends"].(int))*100, 2)
 		aggregate["bounce_rate"] = public.Round(float64(aggregate["bounced"].(int))/float64(aggregate["sends"].(int))*100, 2)
-		aggregate["open_rate"] = public.Round(float64(aggregate["opened"].(int))/float64(aggregate["sends"].(int))*100, 2)
-		aggregate["click_rate"] = public.Round(float64(aggregate["clicked"].(int))/float64(aggregate["sends"].(int))*100, 2)
 	} else {
 		aggregate["delivery_rate"] = 0
 		aggregate["bounce_rate"] = 0
+	}
+	if aggregate["delivered"].(int) > 0 {
+		aggregate["open_rate"] = public.Round(float64(aggregate["opened"].(int))/float64(aggregate["delivered"].(int))*100, 2)
+		aggregate["click_rate"] = public.Round(float64(aggregate["clicked"].(int))/float64(aggregate["delivered"].(int))*100, 2)
+	} else {
 		aggregate["open_rate"] = 0
 		aggregate["click_rate"] = 0
 	}

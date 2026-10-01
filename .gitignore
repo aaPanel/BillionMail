@@ -35,3 +35,15 @@ conf/rspamd/local.d/redis.conf
 ssl-self-signed/cert.pem
 ssl-self-signed/key.pem
 core/billionmail*
+
+# Claude Code
+.claude/
+core/.claude/
+core/frontend/.claude/
+
+# Frontend dev artifacts
+core/frontend/.pnpm-store/
+core/frontend/coverage/
+
+# Python
+__pycache__/

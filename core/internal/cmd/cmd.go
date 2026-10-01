@@ -22,6 +22,7 @@ import (
 	"billionmail-core/internal/controller/settings"
 	"billionmail-core/internal/controller/subscribe_list"
 	"billionmail-core/internal/controller/tags"
+	video_outreach_ctrl "billionmail-core/internal/controller/video_outreach"
 	"billionmail-core/internal/service/database_initialization"
 	docker "billionmail-core/internal/service/dockerapi"
 	"billionmail-core/internal/service/maillog_stat"
@@ -38,6 +39,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"os"
 	"strings"
 	"sync"
 	"time"
@@ -47,6 +49,65 @@ import (
 	"github.com/gogf/gf/v2/os/gcmd"
 	"github.com/gogf/gf/v2/util/gconv"
 )
+
+func normalizeWebBasePath(path string) string {
+	path = strings.TrimSpace(path)
+	if path == "" || path == "/" {
+		return ""
+	}
+
+	if strings.Contains(path, "\\") || strings.Contains(path, "..") {
+		return ""
+	}
+
+	path = "/" + strings.Trim(path, "/")
+	if strings.Contains(path, "//") {
+		return ""
+	}
+
+	return path
+}
+
+func configuredWebBasePath() string {
+	for _, key := range []string{"WEB_BASE_PATH", "PUBLIC_PATH"} {
+		if value := normalizeWebBasePath(os.Getenv(key)); value != "" {
+			return value
+		}
+
+		if value := normalizeWebBasePath(public.MustGetDockerEnv(key, "")); value != "" {
+			return value
+		}
+	}
+
+	return ""
+}
+
+func webBaseRoot(basePath string) string {
+	if basePath == "" {
+		return "/"
+	}
+
+	return basePath + "/"
+}
+
+func stripWebBasePathMiddleware(basePath string) ghttp.HandlerFunc {
+	return func(r *ghttp.Request) {
+		if basePath != "" {
+			if r.URL.Path == basePath {
+				r.URL.Path = "/"
+			} else if strings.HasPrefix(r.URL.Path, basePath+"/") {
+				r.URL.Path = strings.TrimPrefix(r.URL.Path, basePath)
+				if r.URL.Path == "" {
+					r.URL.Path = "/"
+				}
+			}
+
+			r.URL.RawPath = ""
+		}
+
+		r.Middleware.Next()
+	}
+}
 
 var (
 	Main = gcmd.Command{
@@ -112,6 +173,10 @@ var (
 					}
 				}
 			}
+			if public.HostWorkDir == "" {
+				public.HostWorkDir = public.AbsPath("../")
+				g.Log().Warning(ctx, "HostWorkDir not found via Docker label, using fallback: ", public.HostWorkDir)
+			}
 
 			// Operation log type
 			public.LogTypeMap = consts.GetLogTypeMap()
@@ -126,9 +191,13 @@ var (
 
 			// Create a new server instance
 			s := g.Server(consts.DEFAULT_SERVER_NAME)
+			webBasePath := configuredWebBasePath()
 
 			// Use Redis for session storage
 			// s.SetSessionStorage(gsession.NewStorageRedis(g.Redis()))
+
+			// Allow BillionMail to run behind a path-prefix reverse proxy.
+			s.Use(stripWebBasePathMiddleware(webBasePath))
 
 			// ip whitelist middleware
 			s.Use(middleware.IPWhitelist)
@@ -139,6 +208,7 @@ var (
 				"/robots.txt":                    {},
 				"/unsubscribe.html":              {},
 				"/unsubscribe_new.html":          {},
+				"/api/aapanel/sso":               {},
 				"/api/unsubscribe/user_group":    {},
 				"/api/unsubscribe":               {},
 				"/api/unsubscribe_new":           {},
@@ -178,7 +248,7 @@ var (
 							return
 						}
 
-						if !r.IsFileRequest() && !strings.HasPrefix(r.URL.Path, "/api/") {
+						if r.IsFileRequest() {
 							return
 						}
 
@@ -236,7 +306,7 @@ var (
 				group.Middleware(rbac2.JWT().JWTAuthMiddleware)
 
 				// Add RBAC middleware
-				// group.Middleware(middlewares.NewRBACMiddleware().PermissionCheck)
+				group.Middleware(middlewares.NewRBACMiddleware().PermissionCheck)
 
 				// group.Middleware(ghttp.MiddlewareHandlerResponse)
 
@@ -262,8 +332,14 @@ var (
 					operation_log.NewV1(),
 					askai.NewV1(),
 					tags.NewV1(),
+					video_outreach_ctrl.NewV1(),
 				)
 			})
+
+			// Public video landing page (no auth — recipients click from email)
+			s.BindHandler("GET:/landing/video", video_outreach_ctrl.ServeLandingPage)
+
+			// SPA fallback
 
 			// Add PHP-FPM middleware
 			s.BindMiddleware("/roundcube/*any", func(r *ghttp.Request) {
@@ -364,7 +440,7 @@ var (
 				}
 
 				if r.GetCtxVar("JustVisitedSafePath", false).Bool() {
-					r.Response.RedirectTo("/")
+					r.Response.RedirectTo(webBaseRoot(webBasePath))
 					return
 				}
 
