@@ -233,8 +233,16 @@ func (e *EmailSender) connectWithSSL() error {
 
 // connectPlain establishes a plain SMTP connection
 func (e *EmailSender) connectPlain() error {
-	client, err := smtp.Dial(net.JoinHostPort(e.Host, e.Port))
+	addr := net.JoinHostPort(e.Host, e.Port)
+	conn, err := (&net.Dialer{Timeout: 10 * time.Second}).Dial("tcp", addr)
 	if err != nil {
+		return fmt.Errorf("SMTP dial: %w", err)
+	}
+	conn.SetDeadline(time.Now().Add(30 * time.Second))
+
+	client, err := smtp.NewClient(conn, e.Host)
+	if err != nil {
+		conn.Close()
 		return fmt.Errorf("SMTP dial: %w", err)
 	}
 
@@ -262,6 +270,8 @@ func (e *EmailSender) connectPlain() error {
 		client.Close()
 		return fmt.Errorf("SMTP auth: %w", err)
 	}
+
+	conn.SetDeadline(time.Time{})
 
 	e.client = client
 	return nil
