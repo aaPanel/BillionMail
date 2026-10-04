@@ -47,7 +47,7 @@ type EditMailForwardReq struct {
 	g.Meta        `path:"/mail_forward/edit" method:"post" summary:"edit mail forward"`
 	Authorization string `json:"authorization" dc:"Authorization" in:"header"`
 	Address       string `json:"address" v:"required" desc:"forwarded email address"`
-	Goto          string `json:"goto" v:"email" desc:"forward target address, multiple addresses separated by newline. not set means only modify status"`
+	Goto          string `json:"goto" desc:"forward target address, multiple addresses separated by newline. not set means only modify status"`
 	Active        int    `json:"active" v:"in:0,1" desc:"status: 1-enabled, 0-disabled"`
 }
 
